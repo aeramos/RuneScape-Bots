@@ -15,6 +15,6 @@
     <internal-id>SuperMiner</internal-id>
     <!--The rest are optional-->
     <open-source>false</open-source>
-    <hidden>false</hidden> <!--If you  need to hide it from the bot store for maintenance-->
+    <hidden>false</hidden> <!--If you need to hide it from the bot store for maintenance-->
     <access>public</access>
 </manifest>
