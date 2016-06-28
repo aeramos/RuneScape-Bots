@@ -1,8 +1,8 @@
 <manifest>
     <main-class>com.SuperBotter.bots.SuperMiner.SuperMiner</main-class>
     <name>SuperMiner</name>
-    <tag-line>A simple mining bot</tag-line><!--Max of 50 chars-->
-    <description>Can bank and powermine. Currently supports Rimmington mine only!</description><!--Max of 110 chars-->
+    <tag-line>The super mining bot</tag-line><!--Max of 50 chars-->
+    <description>Very early version, currently banks iron ore from Rimmington mine only.</description><!--Max of 110 chars-->
     <version>0.1.0</version>
     <compatibility>
         <game>OSRS</game>
@@ -16,7 +16,7 @@
     <!--The rest are optional-->
     <open-source>false</open-source>
     <hidden>false</hidden> <!--If you need to hide it from the bot store for maintenance-->
-    <access>private</access>
+    <access>public</access>
     <tags> <!--Tags-->
         <tag></tag>
     </tags>
