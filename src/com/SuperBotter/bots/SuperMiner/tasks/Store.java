@@ -1,14 +1,12 @@
 package com.SuperBotter.bots.SuperMiner.tasks;
 
+import com.SuperBotter.bots.SuperMiner.SuperMiner;
 import com.runemate.game.api.hybrid.entities.GameObject;
 import com.runemate.game.api.hybrid.local.Camera;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Bank;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Inventory;
 import com.runemate.game.api.hybrid.location.Area;
 import com.runemate.game.api.hybrid.location.Coordinate;
-import com.runemate.game.api.hybrid.location.navigation.basic.BresenhamPath;
-import com.runemate.game.api.hybrid.location.navigation.basic.ViewportPath;
-import com.runemate.game.api.hybrid.location.navigation.cognizant.RegionPath;
 import com.runemate.game.api.hybrid.region.GameObjects;
 import com.runemate.game.api.hybrid.region.Players;
 import com.runemate.game.api.script.framework.task.Task;
@@ -40,14 +38,7 @@ public class Store extends Task {
                         Bank.open();
                     }
                 } else {
-                    ViewportPath p;
-                    p = ViewportPath.convert(RegionPath.buildTo(clanCampBankArea.getRandomCoordinate()));
-                    if (p == null) {
-                        p = ViewportPath.convert(BresenhamPath.buildTo(clanCampBankArea.getRandomCoordinate()));
-                    }
-                    if(p != null) {
-                        p.step();
-                    }
+                    SuperMiner.goToArea(clanCampBankArea);
                 }
                 break;
         }

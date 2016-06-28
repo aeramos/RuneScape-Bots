@@ -1,5 +1,6 @@
 package com.SuperBotter.bots.SuperMiner.tasks;
 
+import com.SuperBotter.bots.SuperMiner.SuperMiner;
 import com.runemate.game.api.hybrid.entities.GameObject;
 import com.runemate.game.api.hybrid.local.Camera;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Bank;
@@ -29,7 +30,7 @@ public class Mine extends Task {
         switch (mineArea) {
             case "Rimmington":
                 if (!RimmingtonMine.contains(Players.getLocal())) {
-                    goToArea(RimmingtonMine);
+                    SuperMiner.goToArea(RimmingtonMine);
                 }
                 break;
         }
@@ -48,18 +49,10 @@ public class Mine extends Task {
                     }
                 }
             } else if (oreToMine.interact("Mine")) {
+                System.out.println("Mining ore");
                 Execution.delayUntil(() -> Players.getLocal().getAnimationId() != -1);
+                System.out.println("Done with this rock");
             }
-        }
-    }
-    public void goToArea(Area destination) {
-        ViewportPath p;
-        p = ViewportPath.convert(RegionPath.buildTo(destination.getRandomCoordinate()));
-        if (p == null) {
-            p = ViewportPath.convert(BresenhamPath.buildTo(destination.getRandomCoordinate()));
-        }
-        if(p != null) {
-            p.step();
         }
     }
 }
