@@ -1,5 +1,6 @@
 package com.SuperBotter.bots.SuperMiner.tasks;
 
+import com.SuperBotter.bots.SuperMiner.SuperMiner;
 import com.runemate.game.api.hybrid.local.hud.interfaces.InterfaceWindows;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Inventory;
 import com.runemate.game.api.hybrid.local.hud.interfaces.SpriteItem;
@@ -16,14 +17,15 @@ public class Drop extends Task {
 
     @Override
     public void execute() {
+        SuperMiner.isMining = false;
         // if the inventory is open
         if(InterfaceWindows.getInventory().isOpen()) {
             // do this to all the willow logs in the inventory
             for(SpriteItem item: Inventory.getItems(ore)) {
                 // drop them
                 if(item.interact("Drop")) {
-                    // wait until the player is ready to drop another
-                    Execution.delayUntil(() -> !item.isValid(), 1000);
+                    // wait until the player is ready to drop another or until 2 seconds have passed
+                    Execution.delayUntil(() -> !item.isValid(), 2000);
                 }
             }
         // if the inventory is closed
