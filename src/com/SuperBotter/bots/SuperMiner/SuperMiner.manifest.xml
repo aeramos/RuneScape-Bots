@@ -2,8 +2,8 @@
     <main-class>com.SuperBotter.bots.SuperMiner.SuperMiner</main-class>
     <name>SuperMiner</name>
     <tag-line>The super mining bot</tag-line><!--Max of 50 chars-->
-    <description>Very early version, currently banks iron ore from Rimmington mine only.</description><!--Max of 110 chars-->
-    <version>0.1.0</version>
+    <description>Early version, currently banks iron ore from Rimmington mine only.</description><!--Max of 110 chars-->
+    <version>0.1.1</version>
     <compatibility>
         <game>OSRS</game>
         <game>RS3</game>
@@ -17,10 +17,4 @@
     <open-source>false</open-source>
     <hidden>false</hidden> <!--If you need to hide it from the bot store for maintenance-->
     <access>public</access>
-    <tags> <!--Tags-->
-        <tag></tag>
-    </tags>
-    <resources> <!--Images-->
-        <resource></resource>
-    </resources>
 </manifest>

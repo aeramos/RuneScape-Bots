@@ -21,6 +21,7 @@ public class Store extends Task {
     }
     @Override
     public void execute() {
+        SuperMiner.isMining = false;
         switch (mineArea) {
             case "Rimmington":
                 if (clanCampBankArea.contains(Players.getLocal())) {
