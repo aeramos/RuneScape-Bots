@@ -1,5 +1,5 @@
 <manifest>
-    <main-class>com.SuperBotter.bots.SuperMiner</main-class>
+    <main-class>com.SuperBotter.bots.SuperMiner.SuperMiner</main-class>
     <name>SuperMiner</name>
     <tag-line>A simple mining bot</tag-line><!--Max of 50 chars-->
     <description>Can bank and powermine. Currently supports Rimmington mine only!</description><!--Max of 110 chars-->
@@ -15,7 +15,7 @@
     <internal-id>SuperMiner</internal-id>
     <!--The rest are optional-->
     <open-source>false</open-source>
-    <hidden>true</hidden> <!--If you need to hide it from the bot store for maintenance-->
+    <hidden>false</hidden> <!--If you need to hide it from the bot store for maintenance-->
     <access>private</access>
     <tags> <!--Tags-->
         <tag></tag>
