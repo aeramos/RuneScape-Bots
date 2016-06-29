@@ -42,7 +42,11 @@ public class Mine extends Task {
                 break;
         }
         SuperMiner.oreToMine = GameObjects.newQuery().names(ore).results().nearest();
-        SuperMiner.oreToMineCoordHash = SuperMiner.oreToMine.getPosition().hashCode();
+        if (SuperMiner.oreToMine == null) {
+            return;
+        } else {
+            SuperMiner.oreToMineCoordHash = SuperMiner.oreToMine.getPosition().hashCode();
+        }
         if (SuperMiner.oreToMine != null && SuperMiner.oreToMine.getDefinition() != null) {
             if (!SuperMiner.oreToMine.isVisible()) {
                 Camera.turnTo(SuperMiner.oreToMine);
