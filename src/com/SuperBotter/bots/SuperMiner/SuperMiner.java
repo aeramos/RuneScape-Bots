@@ -1,31 +1,123 @@
 package com.SuperBotter.bots.SuperMiner;
 
+import com.SuperBotter.bots.SuperMiner.tasks.Drop;
 import com.SuperBotter.bots.SuperMiner.tasks.Mine;
 import com.SuperBotter.bots.SuperMiner.tasks.Store;
+import com.SuperBotter.bots.SuperMiner.ui.FXGui;
+import com.SuperBotter.bots.SuperMiner.ui.Info;
+import com.SuperBotter.bots.SuperMiner.ui.InfoUI;
+import com.runemate.game.api.client.embeddable.EmbeddableUI;
 import com.runemate.game.api.hybrid.entities.GameObject;
+import com.runemate.game.api.hybrid.entities.definitions.ItemDefinition;
 import com.runemate.game.api.hybrid.location.Area;
 import com.runemate.game.api.hybrid.location.navigation.Path;
 import com.runemate.game.api.hybrid.location.navigation.Traversal;
 import com.runemate.game.api.hybrid.location.navigation.cognizant.RegionPath;
 import com.runemate.game.api.hybrid.location.navigation.web.WebPath;
 import com.runemate.game.api.hybrid.util.StopWatch;
+import com.runemate.game.api.hybrid.util.calculations.CommonMath;
+import com.runemate.game.api.script.Execution;
+import com.runemate.game.api.script.framework.listeners.InventoryListener;
+import com.runemate.game.api.script.framework.listeners.events.ItemEvent;
 import com.runemate.game.api.script.framework.task.TaskScript;
+import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.scene.Node;
 
-public class SuperMiner extends TaskScript {
+import java.util.concurrent.TimeUnit;
+
+public class SuperMiner extends TaskScript implements EmbeddableUI, InventoryListener{
+    // Mining variables (need to be saved between iterations here)
     public static boolean isMining = false;
     public static boolean hasMined = false;
     public static GameObject oreToMine;
     public static int oreToMineCoordHash;
     public static int isBeingMinedCoordHash;
-    public static StopWatch stopWatch = new StopWatch();
     public static long startMineTime = -7500; // so that mining can start instantly
+
+    // General variables and statistics
+    public static Area mineArea;
+    public static String mineName;
+
+    public static Boolean bank;
+    public static Area bankArea;
+    public static String bankName;
+    public static String bankType;
+
+    public static String oreRockName;
+    public static String oreName;
+    private static long oreCount = 0;
+
+    public static StopWatch stopWatch = new StopWatch();
+
+    // GUI variables
+    public static Info info;
+    private FXGui configUI;
+    private static InfoUI infoUI;
+    private SimpleObjectProperty<Node> botInterfaceProperty;
+    public Boolean guiWait = true;
+    public static String currentAction;
+
+    public SuperMiner() {
+        setEmbeddableUI(this);
+    }
+    @Override
+    public ObjectProperty<? extends Node> botInterfaceProperty() {
+        if (botInterfaceProperty == null) {
+            botInterfaceProperty = new SimpleObjectProperty<>(configUI = new FXGui(this));
+            infoUI = new InfoUI(this);
+        }
+        return botInterfaceProperty;
+    }
+    // When called, switch the botInterfaceProperty to reflect the InfoUI
+    public void setToInfoProperty(){
+        botInterfaceProperty.set(infoUI);
+    }
+    // This method is used to update the GUI thread from the bot thread
+    public static void updateInfo() {
+        try {
+            // Assign all values to a new instance of the Info class
+            info = new Info(
+                    (long) CommonMath.rate(TimeUnit.HOURS, stopWatch.getRuntime(), oreCount), // Ore per hour
+                    oreCount,                                                                 // Ore mined
+                    stopWatch.getRuntimeAsString(),                                           // Total Runtime
+                    currentAction);                                                           // What its doing now
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+        // Be sure to run infoUI.update() through runLater.
+        // This will run infoUI.update() on the dedicated JavaFX thread which is the only thread allowed to update anything related to JavaFX rendering
+        Platform.runLater(() -> infoUI.update());
+    }
+    @Override
+    public void onItemAdded(ItemEvent event) {
+        ItemDefinition definition = event.getItem().getDefinition();
+        if (definition != null) {
+            if (definition.getName().contains(oreName)) {
+                oreCount++;
+            }
+        }
+    }
     @Override
     public void onStart(String... args) {
         stopWatch.start();
         setLoopDelay(100, 300); // in ms (1000ms = 1s)
-        add(new Mine(), new Store());
-        // get input from player on what to mine
-        // used to decide if you add bank or drop
+        add(new Mine());
+        getEventDispatcher().addListener(this);
+        currentAction = "Starting bot";
+        if (!Execution.delayUntil(() -> !guiWait, 60000)) {
+            System.err.println("Still waiting for GUI after a minute, stopping.");
+            stop();
+            return;
+        }
+        if (bank) {
+            add(new Store());
+        } else {
+            add(new Drop());
+        }
     }
     @Override
     public void onPause() {

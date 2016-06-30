@@ -4,8 +4,6 @@ import com.SuperBotter.bots.SuperMiner.SuperMiner;
 import com.runemate.game.api.hybrid.local.Camera;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Bank;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Inventory;
-import com.runemate.game.api.hybrid.location.Area;
-import com.runemate.game.api.hybrid.location.Coordinate;
 import com.runemate.game.api.hybrid.location.navigation.Traversal;
 import com.runemate.game.api.hybrid.location.navigation.basic.ViewportPath;
 import com.runemate.game.api.hybrid.location.navigation.cognizant.RegionPath;
@@ -15,9 +13,6 @@ import com.runemate.game.api.hybrid.region.Players;
 import com.runemate.game.api.script.framework.task.Task;
 
 public class Mine extends Task {
-    private String ore = "Iron ore rocks"; // becomes "Iron rocks" when mined
-    private String mineArea = "Rimmington";
-    private Area RimmingtonMine = new Area.Rectangular(new Coordinate(2981, 3242), new Coordinate(2964, 3229));
     @Override
     public boolean validate() {
         //             if the player is idle          and the inventory isn't full  and the bank is closed
@@ -34,15 +29,15 @@ public class Mine extends Task {
     @Override
     public void execute() {
         SuperMiner.hasMined = true;
-        switch (mineArea) {
-            case "Rimmington":
-                if (!RimmingtonMine.contains(Players.getLocal())) {
-                    SuperMiner.goToArea(RimmingtonMine);
-                }
-                break;
+        if(!SuperMiner.mineArea.contains(Players.getLocal())) {
+            SuperMiner.currentAction = "Going to " + SuperMiner.mineName;
+            SuperMiner.updateInfo();
+            SuperMiner.goToArea(SuperMiner.mineArea);
         }
-        SuperMiner.oreToMine = GameObjects.newQuery().names(ore).results().nearest();
+        SuperMiner.currentAction = "Mining " + SuperMiner.oreName;
+        SuperMiner.oreToMine = GameObjects.newQuery().names(SuperMiner.oreRockName).results().nearest();
         if (SuperMiner.oreToMine == null) {
+            SuperMiner.updateInfo();
             return;
         } else {
             SuperMiner.oreToMineCoordHash = SuperMiner.oreToMine.getPosition().hashCode();
@@ -74,5 +69,6 @@ public class Mine extends Task {
                 }
             }
         }
+        SuperMiner.updateInfo();
     }
 }
