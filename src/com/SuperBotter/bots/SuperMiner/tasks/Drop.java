@@ -8,7 +8,6 @@ import com.runemate.game.api.script.Execution;
 import com.runemate.game.api.script.framework.task.Task;
 
 public class Drop extends Task {
-    private String ore = "Iron ore";
     @Override
     public boolean validate() {
         // if the inventory is full
@@ -17,11 +16,12 @@ public class Drop extends Task {
 
     @Override
     public void execute() {
+        SuperMiner.currentAction = "Dropping " + SuperMiner.oreName;
         SuperMiner.isMining = false;
         // if the inventory is open
         if(InterfaceWindows.getInventory().isOpen()) {
-            // do this to all the willow logs in the inventory
-            for(SpriteItem item: Inventory.getItems(ore)) {
+            // do this to all the ore in the inventory
+            for(SpriteItem item: Inventory.getItems(SuperMiner.oreName)) {
                 // drop them
                 if(item.interact("Drop")) {
                     // wait until the player is ready to drop another or until 2 seconds have passed
@@ -33,5 +33,6 @@ public class Drop extends Task {
             // open the inventory
             InterfaceWindows.getInventory().open();
         }
+        SuperMiner.updateInfo();
     }
 }
