@@ -37,6 +37,8 @@ public class SuperMiner extends TaskScript implements EmbeddableUI, InventoryLis
     public static long startMineTime = -7500; // so that mining can start instantly
 
     // General variables and statistics
+    public static Boolean isDropping = false;
+
     public static Area mineArea;
     public static String mineName;
 
@@ -57,7 +59,7 @@ public class SuperMiner extends TaskScript implements EmbeddableUI, InventoryLis
     private static InfoUI infoUI;
     private SimpleObjectProperty<Node> botInterfaceProperty;
     public Boolean guiWait = true;
-    public static String currentAction;
+    public Boolean startButtonPressed = false;
 
     public SuperMiner() {
         setEmbeddableUI(this);
@@ -75,7 +77,7 @@ public class SuperMiner extends TaskScript implements EmbeddableUI, InventoryLis
         botInterfaceProperty.set(infoUI);
     }
     // This method is used to update the GUI thread from the bot thread
-    public static void updateInfo() {
+    public static void updateInfo(String currentAction) {
         try {
             // Assign all values to a new instance of the Info class
             info = new Info(
@@ -103,21 +105,23 @@ public class SuperMiner extends TaskScript implements EmbeddableUI, InventoryLis
     }
     @Override
     public void onStart(String... args) {
+        stopWatch.reset();
         stopWatch.start();
         setLoopDelay(100, 300); // in ms (1000ms = 1s)
         add(new Mine());
         getEventDispatcher().addListener(this);
-        currentAction = "Starting bot";
         if (!Execution.delayUntil(() -> !guiWait, 60000)) {
             System.err.println("Still waiting for GUI after a minute, stopping.");
             stop();
             return;
         }
+        Execution.delayUntil(() -> (bank != null));
         if (bank) {
             add(new Store());
         } else {
             add(new Drop());
         }
+        Execution.delayUntil(() -> (startButtonPressed));
     }
     @Override
     public void onPause() {
@@ -130,6 +134,7 @@ public class SuperMiner extends TaskScript implements EmbeddableUI, InventoryLis
     @Override
     public void onStop() {
         stopWatch.stop();
+        stopWatch.reset();
     }
 
     // run by Mine and Store to go to their different areas

@@ -1,38 +1,30 @@
 package com.SuperBotter.bots.SuperMiner.tasks;
 
 import com.SuperBotter.bots.SuperMiner.SuperMiner;
-import com.runemate.game.api.hybrid.local.hud.interfaces.InterfaceWindows;
+import com.runemate.game.api.hybrid.input.Keyboard;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Inventory;
-import com.runemate.game.api.hybrid.local.hud.interfaces.SpriteItem;
-import com.runemate.game.api.script.Execution;
+import com.runemate.game.api.rs3.local.hud.interfaces.eoc.ActionBar;
 import com.runemate.game.api.script.framework.task.Task;
 
 public class Drop extends Task {
     @Override
     public boolean validate() {
         // if the inventory is full
-        return Inventory.isFull();
+        return Inventory.isFull() || SuperMiner.isDropping;
     }
-
     @Override
     public void execute() {
-        SuperMiner.currentAction = "Dropping " + SuperMiner.oreName;
+        SuperMiner.updateInfo("Dropping " + SuperMiner.oreName);
         SuperMiner.isMining = false;
-        // if the inventory is open
-        if(InterfaceWindows.getInventory().isOpen()) {
-            // do this to all the ore in the inventory
-            for(SpriteItem item: Inventory.getItems(SuperMiner.oreName)) {
-                // drop them
-                if(item.interact("Drop")) {
-                    // wait until the player is ready to drop another or until 2 seconds have passed
-                    Execution.delayUntil(() -> !item.isValid(), 2000);
-                }
+        SuperMiner.isDropping = true;
+        ActionBar.Slot oreSlot = ActionBar.newQuery().names(SuperMiner.oreName).results().first();
+        if (oreSlot != null) {
+            for (int i = 0; i < Inventory.getQuantity(SuperMiner.oreName); i++) {
+                Keyboard.typeKey(oreSlot.getKeyBind());
             }
-        // if the inventory is closed
-        } else {
-            // open the inventory
-            InterfaceWindows.getInventory().open();
         }
-        SuperMiner.updateInfo();
+        if (Inventory.getQuantity(SuperMiner.oreName) == 0) {
+            SuperMiner.isDropping = false;
+        }
     }
 }

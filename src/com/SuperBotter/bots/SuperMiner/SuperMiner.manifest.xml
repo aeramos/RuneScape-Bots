@@ -3,7 +3,7 @@
     <name>SuperMiner</name>
     <tag-line>The super mining bot</tag-line><!--Max of 50 chars-->
     <description>Early version, only supports Rimmington mine currently.</description><!--Max of 110 chars-->
-    <version>0.2.0</version>
+    <version>0.2.1</version>
     <compatibility>
         <game>OSRS</game>
         <game>RS3</game>
