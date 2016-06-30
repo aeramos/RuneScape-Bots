@@ -59,14 +59,13 @@ class FXController implements Initializable {
 
         Location_ComboBox.setOnAction(getLocation_ComboBoxEvent());
         Ore_ComboBox.setOnAction(getOre_ComboBoxEvent());
+        bot.guiWait = false;
     }
 
     private EventHandler<ActionEvent> getStart_BTAction() {
         return event -> {
             try {
-                // Initialize all variables in your bot
-                bot.guiWait = false;
-
+                bot.startButtonPressed = true;
                 // Set the EmbeddableUI property to reflect your Info GUI
                 Platform.runLater(() -> bot.setToInfoProperty());
 

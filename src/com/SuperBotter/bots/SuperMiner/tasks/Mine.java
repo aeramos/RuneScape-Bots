@@ -15,6 +15,9 @@ import com.runemate.game.api.script.framework.task.Task;
 public class Mine extends Task {
     @Override
     public boolean validate() {
+        if (SuperMiner.isDropping) {
+            return false;
+        }
         //             if the player is idle          and the inventory isn't full  and the bank is closed
         if (!SuperMiner.hasMined) {
             return Players.getLocal().getAnimationId() == -1 && !Inventory.isFull() && !Bank.isOpen();
@@ -30,17 +33,15 @@ public class Mine extends Task {
     public void execute() {
         SuperMiner.hasMined = true;
         if(!SuperMiner.mineArea.contains(Players.getLocal())) {
-            SuperMiner.currentAction = "Going to " + SuperMiner.mineName;
-            SuperMiner.updateInfo();
+            SuperMiner.updateInfo("Going to " + SuperMiner.mineName);
             SuperMiner.goToArea(SuperMiner.mineArea);
         }
-        SuperMiner.currentAction = "Mining " + SuperMiner.oreName;
+        SuperMiner.updateInfo("Mining " + SuperMiner.oreName);
         SuperMiner.oreToMine = GameObjects.newQuery().names(SuperMiner.oreRockName).results().nearest();
-        if (SuperMiner.oreToMine == null) {
-            SuperMiner.updateInfo();
-            return;
-        } else {
+        if (SuperMiner.oreToMine != null) {
             SuperMiner.oreToMineCoordHash = SuperMiner.oreToMine.getPosition().hashCode();
+        } else {
+            return;
         }
         if (SuperMiner.oreToMine != null && SuperMiner.oreToMine.getDefinition() != null) {
             if (!SuperMiner.oreToMine.isVisible()) {
@@ -69,6 +70,5 @@ public class Mine extends Task {
                 }
             }
         }
-        SuperMiner.updateInfo();
     }
 }
