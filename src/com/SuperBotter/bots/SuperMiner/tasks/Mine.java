@@ -35,38 +35,39 @@ public class Mine extends Task {
         if(!SuperMiner.mineArea.contains(Players.getLocal())) {
             SuperMiner.updateInfo("Going to " + SuperMiner.mineName);
             SuperMiner.goToArea(SuperMiner.mineArea);
-        }
-        SuperMiner.updateInfo("Mining " + SuperMiner.oreName);
-        SuperMiner.oreToMine = GameObjects.newQuery().names(SuperMiner.oreRockName).results().nearest();
-        if (SuperMiner.oreToMine != null) {
-            SuperMiner.oreToMineCoordHash = SuperMiner.oreToMine.getPosition().hashCode();
         } else {
-            return;
-        }
-        if (SuperMiner.oreToMine != null && SuperMiner.oreToMine.getDefinition() != null) {
-            if (!SuperMiner.oreToMine.isVisible()) {
-                Camera.turnTo(SuperMiner.oreToMine);
+            SuperMiner.updateInfo("Mining " + SuperMiner.oreName);
+            SuperMiner.oreToMine = GameObjects.newQuery().names(SuperMiner.oreRockName).results().nearest();
+            if (SuperMiner.oreToMine != null) {
+                SuperMiner.oreToMineCoordHash = SuperMiner.oreToMine.getPosition().hashCode();
+            } else {
+                return;
+            }
+            if (SuperMiner.oreToMine != null && SuperMiner.oreToMine.getDefinition() != null) {
                 if (!SuperMiner.oreToMine.isVisible()) {
-                    ViewportPath p;
-                    p = ViewportPath.convert(RegionPath.buildTo(SuperMiner.oreToMine));
-                    if (p == null) {
-                        WebPath wp = Traversal.getDefaultWeb().getPathBuilder().buildTo(SuperMiner.oreToMine);
-                        if (wp != null) {
-                            wp.step();
+                    Camera.turnTo(SuperMiner.oreToMine);
+                    if (!SuperMiner.oreToMine.isVisible()) {
+                        ViewportPath p;
+                        p = ViewportPath.convert(RegionPath.buildTo(SuperMiner.oreToMine));
+                        if (p == null) {
+                            WebPath wp = Traversal.getDefaultWeb().getPathBuilder().buildTo(SuperMiner.oreToMine);
+                            if (wp != null) {
+                                wp.step();
+                                SuperMiner.isMining = false;
+                            }
+                        }
+                        // if Web path was done then p is still null and this will not run
+                        if (p != null) {
+                            p.step();
                             SuperMiner.isMining = false;
                         }
                     }
-                    // if Web path was done then p is still null and this will not run
-                    if (p != null) {
-                        p.step();
-                        SuperMiner.isMining = false;
+                } else if (SuperMiner.oreToMineCoordHash != SuperMiner.isBeingMinedCoordHash || SuperMiner.startMineTime + 7500 <= SuperMiner.stopWatch.getRuntime()) {
+                    if (SuperMiner.oreToMine.interact("Mine", SuperMiner.oreToMine.getDefinition().getName())) {
+                        SuperMiner.startMineTime = SuperMiner.stopWatch.getRuntime();
+                        SuperMiner.isMining = true;
+                        SuperMiner.isBeingMinedCoordHash = SuperMiner.oreToMineCoordHash;
                     }
-                }
-            } else if (SuperMiner.oreToMineCoordHash != SuperMiner.isBeingMinedCoordHash || SuperMiner.startMineTime + 7500 <= SuperMiner.stopWatch.getRuntime()) {
-                if (SuperMiner.oreToMine.interact("Mine", SuperMiner.oreToMine.getDefinition().getName())) {
-                    SuperMiner.startMineTime = SuperMiner.stopWatch.getRuntime();
-                    SuperMiner.isMining = true;
-                    SuperMiner.isBeingMinedCoordHash = SuperMiner.oreToMineCoordHash;
                 }
             }
         }
