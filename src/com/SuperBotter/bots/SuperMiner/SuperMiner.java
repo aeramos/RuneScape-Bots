@@ -7,6 +7,7 @@ import com.SuperBotter.bots.SuperMiner.ui.FXGui;
 import com.SuperBotter.bots.SuperMiner.ui.Info;
 import com.SuperBotter.bots.SuperMiner.ui.InfoUI;
 import com.runemate.game.api.client.embeddable.EmbeddableUI;
+import com.runemate.game.api.hybrid.GameEvents;
 import com.runemate.game.api.hybrid.entities.GameObject;
 import com.runemate.game.api.hybrid.entities.definitions.ItemDefinition;
 import com.runemate.game.api.hybrid.location.Area;
@@ -29,16 +30,9 @@ import java.util.concurrent.TimeUnit;
 
 public class SuperMiner extends TaskScript implements EmbeddableUI, InventoryListener{
     // Mining variables (need to be saved between iterations here)
-    public static boolean isMining = false;
-    public static boolean hasMined = false;
-    public static GameObject oreToMine;
-    public static int oreToMineCoordHash;
-    public static int isBeingMinedCoordHash;
-    public static long startMineTime = -7500; // so that mining can start instantly
+    public static GameObject oreBeingMined;
 
     // General variables and statistics
-    public static Boolean isDropping = false;
-
     public static Area mineArea;
     public static String mineName;
 
@@ -51,7 +45,7 @@ public class SuperMiner extends TaskScript implements EmbeddableUI, InventoryLis
     public static String oreName;
     private static long oreCount = 0;
 
-    public static StopWatch stopWatch = new StopWatch();
+    private static StopWatch stopWatch = new StopWatch();
 
     // GUI variables
     public static Info info;
@@ -91,15 +85,19 @@ public class SuperMiner extends TaskScript implements EmbeddableUI, InventoryLis
         }
 
         // Be sure to run infoUI.update() through runLater.
-        // This will run infoUI.update() on the dedicated JavaFX thread which is the only thread allowed to update anything related to JavaFX rendering
+        // This will run infoUI.update() on the dedicated JavaFX thread which is the only thread allowed to update
+        // anything related to JavaFX rendering
         Platform.runLater(() -> infoUI.update());
+
     }
     @Override
     public void onItemAdded(ItemEvent event) {
-        ItemDefinition definition = event.getItem().getDefinition();
-        if (definition != null) {
-            if (definition.getName().contains(oreName)) {
-                oreCount++;
+        if (event != null) {
+            ItemDefinition definition = event.getItem().getDefinition();
+            if (definition != null) {
+                if (oreName != null && definition.getName().contains(oreName)) {
+                    oreCount++;
+                }
             }
         }
     }
@@ -107,6 +105,7 @@ public class SuperMiner extends TaskScript implements EmbeddableUI, InventoryLis
     public void onStart(String... args) {
         stopWatch.reset();
         stopWatch.start();
+        GameEvents.RS3.UNEXPECTED_ITEM_HANDLER.disable();
         setLoopDelay(100, 300); // in ms (1000ms = 1s)
         add(new Mine());
         getEventDispatcher().addListener(this);

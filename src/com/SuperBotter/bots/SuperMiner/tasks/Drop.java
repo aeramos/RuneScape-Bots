@@ -10,21 +10,20 @@ public class Drop extends Task {
     @Override
     public boolean validate() {
         // if the inventory is full
-        return Inventory.isFull() || SuperMiner.isDropping;
+        return Inventory.isFull();
     }
     @Override
     public void execute() {
         SuperMiner.updateInfo("Dropping " + SuperMiner.oreName);
-        SuperMiner.isMining = false;
-        SuperMiner.isDropping = true;
+        // press space just in case the full inv prompt is there
+        Keyboard.type(" ", false);
         ActionBar.Slot oreSlot = ActionBar.newQuery().names(SuperMiner.oreName).results().first();
         if (oreSlot != null) {
-            for (int i = 0; i < Inventory.getQuantity(SuperMiner.oreName); i++) {
-                Keyboard.typeKey(oreSlot.getKeyBind());
+            while (Inventory.contains(SuperMiner.oreName)) {
+                for (int i = 0; i < Inventory.getQuantity(SuperMiner.oreName); i++) {
+                    Keyboard.typeKey(oreSlot.getKeyBind());
+                }
             }
-        }
-        if (Inventory.getQuantity(SuperMiner.oreName) == 0) {
-            SuperMiner.isDropping = false;
         }
     }
 }

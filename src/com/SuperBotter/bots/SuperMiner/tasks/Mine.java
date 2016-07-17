@@ -10,66 +10,60 @@ import com.runemate.game.api.hybrid.location.navigation.cognizant.RegionPath;
 import com.runemate.game.api.hybrid.location.navigation.web.WebPath;
 import com.runemate.game.api.hybrid.region.GameObjects;
 import com.runemate.game.api.hybrid.region.Players;
+import com.runemate.game.api.script.Execution;
 import com.runemate.game.api.script.framework.task.Task;
 
 public class Mine extends Task {
     @Override
     public boolean validate() {
-        if (SuperMiner.isDropping) {
-            return false;
-        }
-        //             if the player is idle          and the inventory isn't full  and the bank is closed
-        if (!SuperMiner.hasMined) {
-            return Players.getLocal().getAnimationId() == -1 && !Inventory.isFull() && !Bank.isOpen();
-        } else {
-            if (Inventory.isFull() || Bank.isOpen()) {
-                return false;
-            }
-            return Players.getLocal().getAnimationId() == -1 || (SuperMiner.isMining || SuperMiner.oreToMine == null);
-        }
-        // then run execute()
+        // if the inventory is not full and the player isn't banking or dropping
+        return !(Inventory.isFull() || Bank.isOpen());
     }
     @Override
     public void execute() {
-        SuperMiner.hasMined = true;
-        if(!SuperMiner.mineArea.contains(Players.getLocal())) {
-            SuperMiner.updateInfo("Going to " + SuperMiner.mineName);
-            SuperMiner.goToArea(SuperMiner.mineArea);
-        } else {
+        // if the player is in the mine
+        if(SuperMiner.mineArea.contains(Players.getLocal())) {
             SuperMiner.updateInfo("Mining " + SuperMiner.oreName);
-            SuperMiner.oreToMine = GameObjects.newQuery().names(SuperMiner.oreRockName).results().nearest();
-            if (SuperMiner.oreToMine != null) {
-                SuperMiner.oreToMineCoordHash = SuperMiner.oreToMine.getPosition().hashCode();
-            } else {
-                return;
-            }
-            if (SuperMiner.oreToMine != null && SuperMiner.oreToMine.getDefinition() != null) {
-                if (!SuperMiner.oreToMine.isVisible()) {
-                    Camera.turnTo(SuperMiner.oreToMine);
-                    if (!SuperMiner.oreToMine.isVisible()) {
+            SuperMiner.oreBeingMined = GameObjects.newQuery().names(SuperMiner.oreRockName).results().nearest();
+            // if such a rock actually exists in the region
+            if (SuperMiner.oreBeingMined != null && SuperMiner.oreBeingMined.getDefinition() != null) {
+                if (SuperMiner.oreBeingMined.isVisible()) {
+                    if (SuperMiner.oreBeingMined.interact("Mine", SuperMiner.oreBeingMined.getDefinition().getName())) {
+                        // the bot has 3 seconds to click on the rock
+                        // before this, the bot would sometimes never click on the rock until the player went to the lobby and back
+                        Execution.delayUntil(() -> (Players.getLocal().getAnimationId() != -1 || Players.getLocal().isMoving()), 3000);
+                        if (Players.getLocal().isMoving()) {
+                            Execution.delayUntil(() -> !Players.getLocal().isMoving());
+                        }
+                        if (Players.getLocal().getAnimationId() != -1) {
+                            // wait until the ore is gone. this means that either the player or another player took it
+                            Execution.delayUntil(() -> !GameObjects.newQuery().names(SuperMiner.oreRockName).results().contains(SuperMiner.oreBeingMined));
+                        }
+                    }
+                } else {
+                    SuperMiner.updateInfo("Turing to face " + SuperMiner.oreRockName);
+                    Camera.turnTo(SuperMiner.oreBeingMined);
+                    if (!SuperMiner.oreBeingMined.isVisible()) {
+                        SuperMiner.updateInfo("Going to " + SuperMiner.oreRockName);
                         ViewportPath p;
-                        p = ViewportPath.convert(RegionPath.buildTo(SuperMiner.oreToMine));
+                        p = ViewportPath.convert(RegionPath.buildTo(SuperMiner.oreBeingMined));
                         if (p == null) {
-                            WebPath wp = Traversal.getDefaultWeb().getPathBuilder().buildTo(SuperMiner.oreToMine);
+                            WebPath wp = Traversal.getDefaultWeb().getPathBuilder().buildTo(SuperMiner.oreBeingMined);
                             if (wp != null) {
                                 wp.step();
-                                SuperMiner.isMining = false;
                             }
                         }
                         // if Web path was done then p is still null and this will not run
                         if (p != null) {
                             p.step();
-                            SuperMiner.isMining = false;
                         }
-                    }
-                } else if (SuperMiner.oreToMineCoordHash != SuperMiner.isBeingMinedCoordHash || SuperMiner.startMineTime + 7500 <= SuperMiner.stopWatch.getRuntime()) {
-                    if (SuperMiner.oreToMine.interact("Mine", SuperMiner.oreToMine.getDefinition().getName())) {
-                        SuperMiner.startMineTime = SuperMiner.stopWatch.getRuntime();
-                        SuperMiner.isMining = true;
-                        SuperMiner.isBeingMinedCoordHash = SuperMiner.oreToMineCoordHash;
                     }
                 }
             }
+        // if the player is not in the mine
+        } else {
+            SuperMiner.updateInfo("Going to " + SuperMiner.mineName);
+            SuperMiner.goToArea(SuperMiner.mineArea);
         }
     }
 }
