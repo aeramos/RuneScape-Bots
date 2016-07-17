@@ -103,7 +103,7 @@ class FXController implements Initializable {
                 switch(Location_ComboBox.getSelectionModel().getSelectedItem().toString()){
                     case "Rimmington":
                         bot.mineArea = new Area.Rectangular(new Coordinate(2981, 3242), new Coordinate(2964, 3229));
-                        bot.bankArea = new Area.Rectangular(new Coordinate(2957, 3299), new Coordinate(2954, 3295));
+                        bot.bankArea = new Area.Circular(new Coordinate(2955, 3297), 5);
                         bot.bankName = "Clan Camp bank chest";
                         bot.bankType = "Bank chest";
                         Ore_ComboBox.getItems().addAll("Tin ore", "Copper ore", "Clay", "Gold ore", "Iron ore");

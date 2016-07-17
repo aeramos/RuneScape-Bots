@@ -17,7 +17,6 @@ public class Store extends Task {
     }
     @Override
     public void execute() {
-        SuperMiner.isMining = false;
         if (SuperMiner.bankArea.contains(Players.getLocal())) {
             if (Bank.isOpen()) {
                 if (Inventory.isFull()) {
@@ -28,13 +27,16 @@ public class Store extends Task {
                     Bank.close();
                 }
             } else {
-                GameObject bankChest = GameObjects.newQuery().names(SuperMiner.bankType).results().first();
-                if(!bankChest.isVisible()) {
-                    SuperMiner.updateInfo("Turning to face " + SuperMiner.bankName);
-                    Camera.turnTo(bankChest);
+                GameObject bankChest = GameObjects.newQuery().names(SuperMiner.bankType).results().nearest();
+                if (bankChest != null) {
+                    if (!bankChest.isVisible()) {
+                        SuperMiner.updateInfo("Turning to face " + SuperMiner.bankName);
+                        Camera.turnTo(bankChest);
+                    } else {
+                        SuperMiner.updateInfo("Opening " + SuperMiner.bankName);
+                        Bank.open();
+                    }
                 }
-                SuperMiner.updateInfo("Opening bank " + SuperMiner.bankName);
-                Bank.open();
             }
         } else {
             SuperMiner.updateInfo("Going to " + SuperMiner.bankName);
