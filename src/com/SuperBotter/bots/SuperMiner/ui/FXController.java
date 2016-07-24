@@ -52,6 +52,7 @@ class FXController implements Initializable {
         Location_ComboBox.getItems().addAll(
                 "Falador south-west",
                 "Lumbridge Swamp east",
+                "Lumbridge Swamp west",
                 "Rimmington"
         );
         Start_BT.setOnAction(getStart_BTAction());
@@ -114,6 +115,13 @@ class FXController implements Initializable {
                         bot.setBankName("Al Kharid bank");
                         bot.setBankType("Bank booth");
                         Ore_ComboBox.getItems().addAll("Copper ore", "Tin ore");
+                        break;
+                    case "Lumbridge Swamp west":
+                        bot.setMineArea(new Area.Rectangular(new Coordinate(3149, 3152, 0), new Coordinate(3144, 3144, 0)));
+                        bot.setBankArea(new Area.Rectangular(new Coordinate(3097, 3246, 0), new Coordinate(3092, 3240, 0)));
+                        bot.setBankName("Draynor bank");
+                        bot.setBankType("Counter");
+                        Ore_ComboBox.getItems().addAll("Coal", "Mithril ore", "Adamantite ore");
                         break;
                     case "Rimmington":
                         bot.setMineArea(new Area.Rectangular(new Coordinate(2981, 3242, 0), new Coordinate(2964, 3229, 0)));

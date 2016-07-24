@@ -43,7 +43,7 @@ public class Mine extends Task {
                         if (Players.getLocal().isMoving()) {
                             Execution.delayUntil(() -> !Players.getLocal().isMoving());
                         }
-                        // if the player is mining
+                        // if the player is mining (as opposed to woodcutting or something (don't wait for misclicks))
                         if (Players.getLocal().getAnimationId() == 624) {
                             // wait until the ore is gone. this means that either the player or another player took it
                             Execution.delayUntil(() -> !GameObjects.newQuery().names(bot.getOreRockName()).results().contains(oreBeingMined));
