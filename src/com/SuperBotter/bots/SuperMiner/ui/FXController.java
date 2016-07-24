@@ -38,8 +38,6 @@ class FXController implements Initializable {
     @FXML
     private Button Start_BT;
 
-    // Bank or Powermine
-    private Boolean dropTypeHasBeenSelected = false;
     @FXML
     private RadioButton Bank_BT;
     @FXML
@@ -51,8 +49,11 @@ class FXController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        Location_ComboBox.getItems().addAll("Rimmington");
-
+        Location_ComboBox.getItems().addAll(
+                "Falador south-west",
+                "Lumbridge Swamp east",
+                "Rimmington"
+        );
         Start_BT.setOnAction(getStart_BTAction());
         Bank_BT.setOnAction(getBank_BTAction());
         Powermine_BT.setOnAction(getPowermine_BTAction());
@@ -77,8 +78,7 @@ class FXController implements Initializable {
     private EventHandler<ActionEvent> getBank_BTAction() {
         return event -> {
             try {
-                dropTypeHasBeenSelected = true;
-                bot.bank = true;
+                bot.setBank(true);
                 Start_BT.setDisable(false);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -88,8 +88,7 @@ class FXController implements Initializable {
     private EventHandler<ActionEvent> getPowermine_BTAction() {
         return event -> {
             try {
-                dropTypeHasBeenSelected = true;
-                bot.bank = false;
+                bot.setBank(false);
                 Start_BT.setDisable(false);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -98,20 +97,37 @@ class FXController implements Initializable {
     }
     private EventHandler<ActionEvent> getLocation_ComboBoxEvent(){
         return event ->{
+            Ore_ComboBox.getSelectionModel().clearSelection();
+            Ore_ComboBox.getItems().clear();
             if(Location_ComboBox.getSelectionModel().getSelectedItem() != null) {
-                Ore_ComboBox.setDisable(false);
                 switch(Location_ComboBox.getSelectionModel().getSelectedItem().toString()){
+                    case "Falador south-west":
+                        bot.setMineArea(new Area.Rectangular(new Coordinate(2930, 3340, 0), new Coordinate(2922, 3334, 0)));
+                        bot.setBankArea(new Area.Circular(new Coordinate(2955, 3297, 0), 5));
+                        bot.setBankName("Clan Camp bank chest");
+                        bot.setBankType("Bank chest");
+                        Ore_ComboBox.getItems().addAll("Copper ore", "Tin ore", "Iron ore", "Coal");
+                        break;
+                    case "Lumbridge Swamp east":
+                        bot.setMineArea(new Area.Rectangular(new Coordinate(3233, 3151, 0), new Coordinate(3223, 3145, 0)));
+                        bot.setBankArea(new Area.Rectangular(new Coordinate(3272, 3168, 0), new Coordinate(3268, 3161, 0)));
+                        bot.setBankName("Al Kharid bank");
+                        bot.setBankType("Bank booth");
+                        Ore_ComboBox.getItems().addAll("Copper ore", "Tin ore");
+                        break;
                     case "Rimmington":
-                        bot.mineArea = new Area.Rectangular(new Coordinate(2981, 3242), new Coordinate(2964, 3229));
-                        bot.bankArea = new Area.Circular(new Coordinate(2955, 3297), 5);
-                        bot.bankName = "Clan Camp bank chest";
-                        bot.bankType = "Bank chest";
-                        Ore_ComboBox.getItems().addAll("Tin ore", "Copper ore", "Clay", "Gold ore", "Iron ore");
+                        bot.setMineArea(new Area.Rectangular(new Coordinate(2981, 3242, 0), new Coordinate(2964, 3229, 0)));
+                        bot.setBankArea(new Area.Circular(new Coordinate(2955, 3297, 0), 5));
+                        bot.setBankName("Clan Camp bank chest");
+                        bot.setBankType("Bank chest");
+                        Ore_ComboBox.getItems().addAll("Copper ore", "Tin ore", "Clay", "Gold ore", "Iron ore");
                         break;
                 }
-                bot.mineName = Location_ComboBox.getSelectionModel().getSelectedItem().toString() + " mine";
+                Ore_ComboBox.setDisable(false);
+                bot.setMineName(Location_ComboBox.getSelectionModel().getSelectedItem().toString() + " mine");
             } else {
                 Start_BT.setDisable(true);
+                Ore_ComboBox.setDisable(true);
             }
         };
     }
@@ -120,9 +136,10 @@ class FXController implements Initializable {
             if(Ore_ComboBox.getSelectionModel().getSelectedItem() != null) {
                 Bank_BT.setDisable(false);
                 Powermine_BT.setDisable(false);
-                bot.oreName = Ore_ComboBox.getSelectionModel().getSelectedItem().toString();
-                bot.oreRockName = bot.oreName + " rocks";
+                bot.setOreName(Ore_ComboBox.getSelectionModel().getSelectedItem().toString());
+                bot.setOreRockName(bot.getOreName() + " rocks");
             } else {
+                // the value of the ore combobox is made null whenever the location is selected/changed
                 Start_BT.setDisable(true);
             }
         };

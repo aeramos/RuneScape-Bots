@@ -8,9 +8,9 @@ import com.SuperBotter.bots.SuperMiner.ui.Info;
 import com.SuperBotter.bots.SuperMiner.ui.InfoUI;
 import com.runemate.game.api.client.embeddable.EmbeddableUI;
 import com.runemate.game.api.hybrid.GameEvents;
-import com.runemate.game.api.hybrid.entities.GameObject;
 import com.runemate.game.api.hybrid.entities.definitions.ItemDefinition;
 import com.runemate.game.api.hybrid.location.Area;
+import com.runemate.game.api.hybrid.location.Coordinate;
 import com.runemate.game.api.hybrid.location.navigation.Path;
 import com.runemate.game.api.hybrid.location.navigation.Traversal;
 import com.runemate.game.api.hybrid.location.navigation.cognizant.RegionPath;
@@ -29,28 +29,79 @@ import javafx.scene.Node;
 import java.util.concurrent.TimeUnit;
 
 public class SuperMiner extends TaskScript implements EmbeddableUI, InventoryListener{
-    // Mining variables (need to be saved between iterations here)
-    public static GameObject oreBeingMined;
-
     // General variables and statistics
-    public static Area mineArea;
-    public static String mineName;
+    private Area mineArea;
+    public Area getMineArea() {
+        return mineArea;
+    }
+    public void setMineArea(Area mineArea) {
+        this.mineArea = mineArea;
+    }
 
-    public static Boolean bank;
-    public static Area bankArea;
-    public static String bankName;
-    public static String bankType;
+    private String mineName;
+    public String getMineName() {
+        return mineName;
+    }
+    public void setMineName(String mineName) {
+        this.mineName = mineName;
+    }
 
-    public static String oreRockName;
-    public static String oreName;
-    private static long oreCount = 0;
+    private Boolean bank;
+    public Boolean getBank() {
+        return bank;
+    }
+    public void setBank(Boolean bank) {
+        this.bank = bank;
+    }
 
-    private static StopWatch stopWatch = new StopWatch();
+    private Area bankArea;
+    public Area getBankArea() {
+        return bankArea;
+    }
+    public void setBankArea(Area bankArea) {
+        this.bankArea = bankArea;
+    }
+
+    private String bankName;
+    public String getBankName() {
+        return bankName;
+    }
+    public void setBankName(String bankName) {
+        this.bankName = bankName;
+    }
+
+    private String bankType;
+    public String getBankType() {
+        return bankType;
+    }
+    public void setBankType(String bankType) {
+        this.bankType = bankType;
+    }
+
+    private String oreRockName;
+    public String getOreRockName() {
+        return oreRockName;
+    }
+    public void setOreRockName(String oreRockName) {
+        this.oreRockName = oreRockName;
+    }
+
+    private String oreName;
+    public String getOreName() {
+        return oreName;
+    }
+    public void setOreName(String oreName) {
+        this.oreName = oreName;
+    }
+
+    private long oreCount = 0;
+
+    private StopWatch stopWatch = new StopWatch();
 
     // GUI variables
-    public static Info info;
+    public Info info;
     private FXGui configUI;
-    private static InfoUI infoUI;
+    private InfoUI infoUI;
     private SimpleObjectProperty<Node> botInterfaceProperty;
     public Boolean guiWait = true;
     public Boolean startButtonPressed = false;
@@ -71,7 +122,7 @@ public class SuperMiner extends TaskScript implements EmbeddableUI, InventoryLis
         botInterfaceProperty.set(infoUI);
     }
     // This method is used to update the GUI thread from the bot thread
-    public static void updateInfo(String currentAction) {
+    public void updateInfo(String currentAction) {
         try {
             // Assign all values to a new instance of the Info class
             info = new Info(
@@ -104,23 +155,23 @@ public class SuperMiner extends TaskScript implements EmbeddableUI, InventoryLis
     @Override
     public void onStart(String... args) {
         stopWatch.reset();
-        stopWatch.start();
         GameEvents.RS3.UNEXPECTED_ITEM_HANDLER.disable();
-        setLoopDelay(100, 300); // in ms (1000ms = 1s)
-        add(new Mine());
         getEventDispatcher().addListener(this);
         if (!Execution.delayUntil(() -> !guiWait, 60000)) {
             System.err.println("Still waiting for GUI after a minute, stopping.");
             stop();
             return;
         }
-        Execution.delayUntil(() -> (bank != null));
-        if (bank) {
-            add(new Store());
-        } else {
-            add(new Drop());
-        }
         Execution.delayUntil(() -> (startButtonPressed));
+        setLoopDelay(100, 300); // in ms (1000ms = 1s)
+        add(new Mine(this));
+        if (bank) {
+            add(new Store(this));
+        } else {
+            add(new Drop(this));
+        }
+        // there's no point in adding the time it takes for the user to config the bot
+        stopWatch.start();
     }
     @Override
     public void onPause() {
@@ -137,11 +188,11 @@ public class SuperMiner extends TaskScript implements EmbeddableUI, InventoryLis
     }
 
     // run by Mine and Store to go to their different areas
-    public static void goToArea(Area destination) {
+    public void goToArea(Coordinate destination) {
         Path p;
-        p = RegionPath.buildTo(destination.getRandomCoordinate());
+        p = RegionPath.buildTo(destination);
         if (p == null) {
-            WebPath wp = Traversal.getDefaultWeb().getPathBuilder().buildTo(destination.getRandomCoordinate());
+            WebPath wp = Traversal.getDefaultWeb().getPathBuilder().buildTo(destination);
             if (wp != null) {
                 wp.step();
             }

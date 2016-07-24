@@ -7,6 +7,12 @@ import com.runemate.game.api.rs3.local.hud.interfaces.eoc.ActionBar;
 import com.runemate.game.api.script.framework.task.Task;
 
 public class Drop extends Task {
+    private SuperMiner bot;
+
+    public Drop(SuperMiner bot) {
+        this.bot = bot;
+    }
+
     @Override
     public boolean validate() {
         // if the inventory is full
@@ -14,13 +20,13 @@ public class Drop extends Task {
     }
     @Override
     public void execute() {
-        SuperMiner.updateInfo("Dropping " + SuperMiner.oreName);
+        bot.updateInfo("Dropping " + bot.getOreName());
         // press space just in case the full inv prompt is there
         Keyboard.type(" ", false);
-        ActionBar.Slot oreSlot = ActionBar.newQuery().names(SuperMiner.oreName).results().first();
+        ActionBar.Slot oreSlot = ActionBar.newQuery().names(bot.getOreName()).results().first();
         if (oreSlot != null) {
-            while (Inventory.contains(SuperMiner.oreName)) {
-                for (int i = 0; i < Inventory.getQuantity(SuperMiner.oreName); i++) {
+            while (Inventory.contains(bot.getOreName())) {
+                for (int i = 0; i < Inventory.getQuantity(bot.getOreName()); i++) {
                     Keyboard.typeKey(oreSlot.getKeyBind());
                 }
             }

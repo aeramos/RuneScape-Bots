@@ -11,36 +11,42 @@ import com.runemate.game.api.script.framework.task.Task;
 
 // had to name it Store instead of Bank to prevent conflicts with RuneMate's Bank (in the API)
 public class Store extends Task {
+    private SuperMiner bot;
+
+    public Store(SuperMiner bot) {
+        this.bot = bot;
+    }
+
     @Override
     public boolean validate() {
         return Inventory.isFull() || Bank.isOpen();
     }
     @Override
     public void execute() {
-        if (SuperMiner.bankArea.contains(Players.getLocal())) {
+        if (bot.getBankArea().contains(Players.getLocal())) {
             if (Bank.isOpen()) {
                 if (Inventory.isFull()) {
-                    SuperMiner.updateInfo("Depositing inventory");
+                    bot.updateInfo("Depositing inventory");
                     Bank.depositInventory();
                 } else {
-                    SuperMiner.updateInfo("Closing " + SuperMiner.bankName);
+                    bot.updateInfo("Closing " + bot.getBankName());
                     Bank.close();
                 }
             } else {
-                GameObject bankChest = GameObjects.newQuery().names(SuperMiner.bankType).results().nearest();
+                GameObject bankChest = GameObjects.newQuery().names(bot.getBankType()).results().nearest();
                 if (bankChest != null) {
                     if (!bankChest.isVisible()) {
-                        SuperMiner.updateInfo("Turning to face " + SuperMiner.bankName);
+                        bot.updateInfo("Turning to face " + bot.getBankName());
                         Camera.turnTo(bankChest);
                     } else {
-                        SuperMiner.updateInfo("Opening " + SuperMiner.bankName);
+                        bot.updateInfo("Opening " + bot.getBankName());
                         Bank.open();
                     }
                 }
             }
         } else {
-            SuperMiner.updateInfo("Going to " + SuperMiner.bankName);
-            SuperMiner.goToArea(SuperMiner.bankArea);
+            bot.updateInfo("Going to " + bot.getBankName());
+            bot.goToArea(bot.getBankArea().getRandomCoordinate());
         }
     }
 }
