@@ -20,13 +20,13 @@ public class Drop extends Task {
     }
     @Override
     public void execute() {
-        bot.updateInfo("Dropping " + bot.getOreName());
+        bot.updateInfo("Dropping " + bot.oreName);
         // press space just in case the full inv prompt is there
         Keyboard.type(" ", false);
-        ActionBar.Slot oreSlot = ActionBar.newQuery().names(bot.getOreName()).results().first();
+        ActionBar.Slot oreSlot = ActionBar.newQuery().names(bot.oreName).results().first();
         if (oreSlot != null) {
-            while (Inventory.contains(bot.getOreName())) {
-                for (int i = 0; i < Inventory.getQuantity(bot.getOreName()); i++) {
+            while (Inventory.contains(bot.oreName)) {
+                for (int i = 0; i < Inventory.getQuantity(bot.oreName); i++) {
                     Keyboard.typeKey(oreSlot.getKeyBind());
                 }
             }

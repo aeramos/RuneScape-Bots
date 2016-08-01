@@ -23,30 +23,30 @@ public class Store extends Task {
     }
     @Override
     public void execute() {
-        if (bot.getBankArea().contains(Players.getLocal())) {
+        if (bot.bankArea.contains(Players.getLocal())) {
             if (Bank.isOpen()) {
                 if (Inventory.isFull()) {
                     bot.updateInfo("Depositing inventory");
                     Bank.depositInventory();
                 } else {
-                    bot.updateInfo("Closing " + bot.getBankName());
+                    bot.updateInfo("Closing " + bot.bankName);
                     Bank.close();
                 }
             } else {
-                GameObject bankChest = GameObjects.newQuery().names(bot.getBankType()).results().nearest();
+                GameObject bankChest = GameObjects.newQuery().names(bot.bankType).results().nearest();
                 if (bankChest != null) {
                     if (!bankChest.isVisible()) {
-                        bot.updateInfo("Turning to face " + bot.getBankName());
+                        bot.updateInfo("Turning to face " + bot.bankName);
                         Camera.turnTo(bankChest);
                     } else {
-                        bot.updateInfo("Opening " + bot.getBankName());
+                        bot.updateInfo("Opening " + bot.bankName);
                         Bank.open();
                     }
                 }
             }
         } else {
-            bot.updateInfo("Going to " + bot.getBankName());
-            bot.goToArea(bot.getBankArea().getRandomCoordinate());
+            bot.updateInfo("Going to " + bot.bankName);
+            bot.goToArea(bot.bankArea.getRandomCoordinate());
         }
     }
 }

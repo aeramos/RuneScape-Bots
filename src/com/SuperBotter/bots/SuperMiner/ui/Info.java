@@ -12,19 +12,23 @@ package com.SuperBotter.bots.SuperMiner.ui;
  */
 public class Info {
 
-    long orePerHour, oreCount;
+    long orePerHour, oreCount, xpPerHour, xpGained;
     String runTime, currentAction;
 
     public Info(){
         this.orePerHour = 0;
         this.oreCount = 0;
+        this.xpPerHour = 0;
+        this.xpGained = 0;
         this.runTime = "";
         this.currentAction = "";
     }
 
-    public Info(long orePerHour, long oreCount, String runTime, String currentAction) {
+    public Info(long orePerHour, long oreCount, long xpPerHour, long xpGained, String runTime, String currentAction) {
         this.orePerHour = orePerHour;
         this.oreCount = oreCount;
+        this.xpPerHour = xpPerHour;
+        this.xpGained = xpGained;
         this.runTime = runTime;
         this.currentAction = currentAction;
     }

@@ -30,9 +30,9 @@ public class Mine extends Task {
     public void execute() {
         GameObject oreBeingMined;
         // if the player is in the mine
-        if(bot.getMineArea().contains(Players.getLocal())) {
-            bot.updateInfo("Mining " + bot.getOreName());
-            oreBeingMined = GameObjects.newQuery().names(bot.getOreRockName()).results().nearest();
+        if(bot.mineArea.contains(Players.getLocal())) {
+            bot.updateInfo("Mining " + bot.oreName);
+            oreBeingMined = GameObjects.newQuery().names(bot.oreRockName).results().nearest();
             // if such a rock actually exists in the region
             if (oreBeingMined != null && oreBeingMined.getDefinition() != null) {
                 if (oreBeingMined.isVisible()) {
@@ -46,14 +46,14 @@ public class Mine extends Task {
                         // if the player is mining (as opposed to woodcutting or something (don't wait for misclicks))
                         if (Players.getLocal().getAnimationId() == 624) {
                             // wait until the ore is gone. this means that either the player or another player took it
-                            Execution.delayUntil(() -> !GameObjects.newQuery().names(bot.getOreRockName()).results().contains(oreBeingMined));
+                            Execution.delayUntil(() -> !GameObjects.newQuery().names(bot.oreRockName).results().contains(oreBeingMined));
                         }
                     }
                 } else {
-                    bot.updateInfo("Turing to face " + bot.getOreRockName());
+                    bot.updateInfo("Turing to face " + bot.oreRockName);
                     Camera.turnTo(oreBeingMined);
                     if (!oreBeingMined.isVisible()) {
-                        bot.updateInfo("Going to " + bot.getOreRockName());
+                        bot.updateInfo("Going to " + bot.oreRockName);
                         ViewportPath p;
                         p = ViewportPath.convert(RegionPath.buildTo(oreBeingMined));
                         if (p == null) {
@@ -71,8 +71,8 @@ public class Mine extends Task {
             }
         // if the player is not in the mine
         } else {
-            bot.updateInfo("Going to " + bot.getMineName());
-            bot.goToArea(bot.getMineArea().getRandomCoordinate());
+            bot.updateInfo("Going to " + bot.mineName);
+            bot.goToArea(bot.mineArea.getRandomCoordinate());
         }
     }
 }

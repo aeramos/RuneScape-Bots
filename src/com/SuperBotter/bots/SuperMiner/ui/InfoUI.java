@@ -5,8 +5,8 @@ import com.runemate.game.api.hybrid.util.Resources;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
+import javafx.scene.text.Text;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,7 +26,7 @@ public class InfoUI extends GridPane implements Initializable {
     private SuperMiner bot;
 
     @FXML
-    private Label orePerHour_L, oreCount_L, Runtime_L, CurrentAction_L;
+    private Text orePerHour_T, oreCount_T, xpPerHour_T, xpGained_T, Runtime_T, CurrentAction_T;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -63,10 +63,12 @@ public class InfoUI extends GridPane implements Initializable {
         try {
             Info i = bot.info;
 
-            orePerHour_L.textProperty().set("" + i.orePerHour);
-            oreCount_L.textProperty().set("" + i.oreCount);
-            Runtime_L.textProperty().set("" + i.runTime);
-            CurrentAction_L.textProperty().set(i.currentAction);
+            orePerHour_T.textProperty().set("" + i.orePerHour);
+            oreCount_T.textProperty().set("" + i.oreCount);
+            xpPerHour_T.textProperty().set("" + i.xpPerHour);
+            xpGained_T.textProperty().set("" + i.xpGained);
+            Runtime_T.textProperty().set("" + i.runTime);
+            CurrentAction_T.textProperty().set(i.currentAction);
 
         }catch(Exception e){
             e.printStackTrace();

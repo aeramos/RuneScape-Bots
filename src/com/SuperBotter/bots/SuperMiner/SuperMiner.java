@@ -9,12 +9,14 @@ import com.SuperBotter.bots.SuperMiner.ui.InfoUI;
 import com.runemate.game.api.client.embeddable.EmbeddableUI;
 import com.runemate.game.api.hybrid.GameEvents;
 import com.runemate.game.api.hybrid.entities.definitions.ItemDefinition;
+import com.runemate.game.api.hybrid.local.Skill;
 import com.runemate.game.api.hybrid.location.Area;
 import com.runemate.game.api.hybrid.location.Coordinate;
 import com.runemate.game.api.hybrid.location.navigation.Path;
 import com.runemate.game.api.hybrid.location.navigation.Traversal;
 import com.runemate.game.api.hybrid.location.navigation.cognizant.RegionPath;
 import com.runemate.game.api.hybrid.location.navigation.web.WebPath;
+import com.runemate.game.api.hybrid.region.Players;
 import com.runemate.game.api.hybrid.util.StopWatch;
 import com.runemate.game.api.hybrid.util.calculations.CommonMath;
 import com.runemate.game.api.script.Execution;
@@ -30,70 +32,16 @@ import java.util.concurrent.TimeUnit;
 
 public class SuperMiner extends TaskScript implements EmbeddableUI, InventoryListener{
     // General variables and statistics
-    private Area mineArea;
-    public Area getMineArea() {
-        return mineArea;
-    }
-    public void setMineArea(Area mineArea) {
-        this.mineArea = mineArea;
-    }
+    private int startingXP = Skill.MINING.getExperience();
 
-    private String mineName;
-    public String getMineName() {
-        return mineName;
-    }
-    public void setMineName(String mineName) {
-        this.mineName = mineName;
-    }
-
-    private Boolean bank;
-    public Boolean getBank() {
-        return bank;
-    }
-    public void setBank(Boolean bank) {
-        this.bank = bank;
-    }
-
-    private Area bankArea;
-    public Area getBankArea() {
-        return bankArea;
-    }
-    public void setBankArea(Area bankArea) {
-        this.bankArea = bankArea;
-    }
-
-    private String bankName;
-    public String getBankName() {
-        return bankName;
-    }
-    public void setBankName(String bankName) {
-        this.bankName = bankName;
-    }
-
-    private String bankType;
-    public String getBankType() {
-        return bankType;
-    }
-    public void setBankType(String bankType) {
-        this.bankType = bankType;
-    }
-
-    private String oreRockName;
-    public String getOreRockName() {
-        return oreRockName;
-    }
-    public void setOreRockName(String oreRockName) {
-        this.oreRockName = oreRockName;
-    }
-
-    private String oreName;
-    public String getOreName() {
-        return oreName;
-    }
-    public void setOreName(String oreName) {
-        this.oreName = oreName;
-    }
-
+    public Area mineArea;
+    public String mineName;
+    public Boolean bank;
+    public Area bankArea;
+    public String bankName;
+    public String bankType;
+    public String oreRockName;
+    public String oreName;
     private long oreCount = 0;
 
     private StopWatch stopWatch = new StopWatch();
@@ -126,8 +74,10 @@ public class SuperMiner extends TaskScript implements EmbeddableUI, InventoryLis
         try {
             // Assign all values to a new instance of the Info class
             info = new Info(
-                    (long) CommonMath.rate(TimeUnit.HOURS, stopWatch.getRuntime(), oreCount), // Ore per hour
+                    (long)CommonMath.rate(TimeUnit.HOURS, stopWatch.getRuntime(), oreCount), // Ore per hour
                     oreCount,                                                                 // Ore mined
+                    (long)CommonMath.rate(TimeUnit.HOURS, stopWatch.getRuntime(), (Skill.MINING.getExperience() - startingXP)),
+                    (Skill.MINING.getExperience() - startingXP),
                     stopWatch.getRuntimeAsString(),                                           // Total Runtime
                     currentAction);                                                           // What its doing now
 
@@ -189,17 +139,19 @@ public class SuperMiner extends TaskScript implements EmbeddableUI, InventoryLis
 
     // run by Mine and Store to go to their different areas
     public void goToArea(Coordinate destination) {
-        Path p;
-        p = RegionPath.buildTo(destination);
-        if (p == null) {
-            WebPath wp = Traversal.getDefaultWeb().getPathBuilder().buildTo(destination);
-            if (wp != null) {
-                wp.step();
+        if (!Players.getLocal().isMoving()) {
+            Path p;
+            p = RegionPath.buildTo(destination);
+            if (p == null) {
+                WebPath wp = Traversal.getDefaultWeb().getPathBuilder().buildTo(destination);
+                if (wp != null) {
+                    wp.step();
+                }
             }
-        }
-        // if Web path was done then p is still null and this will not run
-        if(p != null) {
-            p.step();
+            // if Web path was done then p is still null and this will not run
+            if (p != null) {
+                p.step();
+            }
         }
     }
 }

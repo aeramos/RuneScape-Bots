@@ -79,7 +79,8 @@ class FXController implements Initializable {
     private EventHandler<ActionEvent> getBank_BTAction() {
         return event -> {
             try {
-                bot.setBank(true);
+                Powermine_BT.setSelected(false);
+                bot.bank = true;
                 Start_BT.setDisable(false);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -89,7 +90,8 @@ class FXController implements Initializable {
     private EventHandler<ActionEvent> getPowermine_BTAction() {
         return event -> {
             try {
-                bot.setBank(false);
+                Bank_BT.setSelected(false);
+                bot.bank = false;
                 Start_BT.setDisable(false);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -102,37 +104,49 @@ class FXController implements Initializable {
             Ore_ComboBox.getItems().clear();
             if(Location_ComboBox.getSelectionModel().getSelectedItem() != null) {
                 switch(Location_ComboBox.getSelectionModel().getSelectedItem().toString()){
+                    /* Commented out until I figure out how to handle doors in a non mine specific way so that it works
+                           for all mines that are behind doors, stairs, ladders, etc.
+                    */
+                    /*
+                    case "Crafting Guild":
+                        bot.mineArea = new Area.Rectangular(new Coordinate(2943, 3291, 0), new Coordinate(2937, 3276, 0));
+                        bot.bankArea = new Area.Circular(new Coordinate(2955, 3297, 0), 5);
+                        bot.bankName = "Clan Camp bank chest";
+                        bot.bankType = "Bank chest";
+                        Ore_ComboBox.getItems().addAll("Clay", "Silver ore", "Gold ore");
+                        break;
+                    */
                     case "Falador south-west":
-                        bot.setMineArea(new Area.Rectangular(new Coordinate(2930, 3340, 0), new Coordinate(2922, 3334, 0)));
-                        bot.setBankArea(new Area.Circular(new Coordinate(2955, 3297, 0), 5));
-                        bot.setBankName("Clan Camp bank chest");
-                        bot.setBankType("Bank chest");
+                        bot.mineArea = new Area.Rectangular(new Coordinate(2930, 3340, 0), new Coordinate(2922, 3334, 0));
+                        bot.bankArea = new Area.Circular(new Coordinate(2955, 3297, 0), 5);
+                        bot.bankName = "Clan Camp bank chest";
+                        bot.bankType = "Bank chest";
                         Ore_ComboBox.getItems().addAll("Copper ore", "Tin ore", "Iron ore", "Coal");
                         break;
                     case "Lumbridge Swamp east":
-                        bot.setMineArea(new Area.Rectangular(new Coordinate(3233, 3151, 0), new Coordinate(3223, 3145, 0)));
-                        bot.setBankArea(new Area.Rectangular(new Coordinate(3272, 3168, 0), new Coordinate(3268, 3161, 0)));
-                        bot.setBankName("Al Kharid bank");
-                        bot.setBankType("Bank booth");
+                        bot.mineArea = new Area.Rectangular(new Coordinate(3233, 3151, 0), new Coordinate(3223, 3145, 0));
+                        bot.bankArea = new Area.Rectangular(new Coordinate(3272, 3168, 0), new Coordinate(3268, 3161, 0));
+                        bot.bankName = "Al Kharid bank";
+                        bot.bankType = "Bank booth";
                         Ore_ComboBox.getItems().addAll("Copper ore", "Tin ore");
                         break;
                     case "Lumbridge Swamp west":
-                        bot.setMineArea(new Area.Rectangular(new Coordinate(3149, 3152, 0), new Coordinate(3144, 3144, 0)));
-                        bot.setBankArea(new Area.Rectangular(new Coordinate(3097, 3246, 0), new Coordinate(3092, 3240, 0)));
-                        bot.setBankName("Draynor bank");
-                        bot.setBankType("Counter");
+                        bot.mineArea = new Area.Rectangular(new Coordinate(3149, 3152, 0), new Coordinate(3144, 3144, 0));
+                        bot.bankArea = new Area.Rectangular(new Coordinate(3097, 3246, 0), new Coordinate(3092, 3240, 0));
+                        bot.bankName = "Draynor bank";
+                        bot.bankType = "Counter";
                         Ore_ComboBox.getItems().addAll("Coal", "Mithril ore", "Adamantite ore");
                         break;
                     case "Rimmington":
-                        bot.setMineArea(new Area.Rectangular(new Coordinate(2981, 3242, 0), new Coordinate(2964, 3229, 0)));
-                        bot.setBankArea(new Area.Circular(new Coordinate(2955, 3297, 0), 5));
-                        bot.setBankName("Clan Camp bank chest");
-                        bot.setBankType("Bank chest");
+                        bot.mineArea = new Area.Rectangular(new Coordinate(2981, 3242, 0), new Coordinate(2964, 3229, 0));
+                        bot.bankArea = new Area.Circular(new Coordinate(2955, 3297, 0), 5);
+                        bot.bankName = "Clan Camp bank chest";
+                        bot.bankType = "Bank chest";
                         Ore_ComboBox.getItems().addAll("Copper ore", "Tin ore", "Clay", "Gold ore", "Iron ore");
                         break;
                 }
+                bot.mineName = Location_ComboBox.getSelectionModel().getSelectedItem().toString() + " mine";
                 Ore_ComboBox.setDisable(false);
-                bot.setMineName(Location_ComboBox.getSelectionModel().getSelectedItem().toString() + " mine");
             } else {
                 Start_BT.setDisable(true);
                 Ore_ComboBox.setDisable(true);
@@ -142,10 +156,10 @@ class FXController implements Initializable {
     private EventHandler<ActionEvent> getOre_ComboBoxEvent() {
         return event -> {
             if(Ore_ComboBox.getSelectionModel().getSelectedItem() != null) {
+                bot.oreName = Ore_ComboBox.getSelectionModel().getSelectedItem().toString();
+                bot.oreRockName = bot.oreName + " rocks";
                 Bank_BT.setDisable(false);
                 Powermine_BT.setDisable(false);
-                bot.setOreName(Ore_ComboBox.getSelectionModel().getSelectedItem().toString());
-                bot.setOreRockName(bot.getOreName() + " rocks");
             } else {
                 // the value of the ore combobox is made null whenever the location is selected/changed
                 Start_BT.setDisable(true);
