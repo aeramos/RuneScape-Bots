@@ -50,10 +50,13 @@ class FXController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         Location_ComboBox.getItems().addAll(
+                "Draynor",
                 "Falador south-west",
                 "Lumbridge Swamp east",
                 "Lumbridge Swamp west",
-                "Rimmington"
+                "Rimmington",
+                "Varrock south-east",
+                "Varrock south-west"
         );
         Start_BT.setOnAction(getStart_BTAction());
         Bank_BT.setOnAction(getBank_BTAction());
@@ -116,6 +119,13 @@ class FXController implements Initializable {
                         Ore_ComboBox.getItems().addAll("Clay", "Silver ore", "Gold ore");
                         break;
                     */
+                    case "Draynor":
+                        bot.mineArea = new Area.Rectangular(new Coordinate(3138, 3315, 0), new Coordinate(3143, 3320, 0));
+                        bot.bankArea = new Area.Circular(new Coordinate(3170, 3280, 0), 5);
+                        bot.bankName = "Cabbage Facepunch Bonanza bank chest";
+                        bot.bankType = "Bank chest";
+                        Ore_ComboBox.getItems().addAll("Clay");
+                        break;
                     case "Falador south-west":
                         bot.mineArea = new Area.Rectangular(new Coordinate(2930, 3340, 0), new Coordinate(2922, 3334, 0));
                         bot.bankArea = new Area.Circular(new Coordinate(2955, 3297, 0), 5);
@@ -143,6 +153,20 @@ class FXController implements Initializable {
                         bot.bankName = "Clan Camp bank chest";
                         bot.bankType = "Bank chest";
                         Ore_ComboBox.getItems().addAll("Copper ore", "Tin ore", "Clay", "Gold ore", "Iron ore");
+                        break;
+                    case "Varrock south-east":
+                        bot.mineArea = new Area.Rectangular(new Coordinate(3280, 3361, 0), new Coordinate(3291, 3371, 0));
+                        bot.bankArea = new Area.Rectangular(new Coordinate(3250, 3420, 0), new Coordinate(3257, 3423, 0));
+                        bot.bankName = "Varrock east bank";
+                        bot.bankType = "Bank booth";
+                        Ore_ComboBox.getItems().addAll("Copper ore", "Tin ore", "Iron ore");
+                        break;
+                    case "Varrock south-west":
+                        bot.mineArea = new Area.Rectangular(new Coordinate(3171, 3364, 0), new Coordinate(3188, 3380, 0));
+                        bot.bankArea = new Area.Rectangular(new Coordinate(3182, 3433, 0), new Coordinate(3189, 3446, 0));
+                        bot.bankName = "Varrock west bank";
+                        bot.bankType = "Bank booth";
+                        Ore_ComboBox.getItems().addAll("Clay", "Tin ore", "Silver ore", "Iron ore");
                         break;
                 }
                 bot.mineName = Location_ComboBox.getSelectionModel().getSelectedItem().toString() + " mine";

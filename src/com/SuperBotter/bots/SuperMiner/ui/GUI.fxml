@@ -65,7 +65,7 @@
                         <Font size="24.0" />
                      </font>
                   </Text>
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Version 0.4.0" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Version 0.5.0" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
                      <font>
                         <Font size="24.0" />
                      </font>
