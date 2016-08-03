@@ -105,6 +105,11 @@ class FXController implements Initializable {
         return event ->{
             Ore_ComboBox.getSelectionModel().clearSelection();
             Ore_ComboBox.getItems().clear();
+            Start_BT.setDisable(true);
+            Bank_BT.setDisable(true);
+            Powermine_BT.setDisable(true);
+            Bank_BT.setSelected(false);
+            Powermine_BT.setSelected(false);
             if(Location_ComboBox.getSelectionModel().getSelectedItem() != null) {
                 switch(Location_ComboBox.getSelectionModel().getSelectedItem().toString()){
                     /* Commented out until I figure out how to handle doors in a non mine specific way so that it works
@@ -172,21 +177,23 @@ class FXController implements Initializable {
                 bot.mineName = Location_ComboBox.getSelectionModel().getSelectedItem().toString() + " mine";
                 Ore_ComboBox.setDisable(false);
             } else {
-                Start_BT.setDisable(true);
                 Ore_ComboBox.setDisable(true);
             }
         };
     }
     private EventHandler<ActionEvent> getOre_ComboBoxEvent() {
         return event -> {
+            Start_BT.setDisable(true);
+            Bank_BT.setSelected(false);
+            Powermine_BT.setSelected(false);
             if(Ore_ComboBox.getSelectionModel().getSelectedItem() != null) {
                 bot.oreName = Ore_ComboBox.getSelectionModel().getSelectedItem().toString();
                 bot.oreRockName = bot.oreName + " rocks";
                 Bank_BT.setDisable(false);
                 Powermine_BT.setDisable(false);
             } else {
-                // the value of the ore combobox is made null whenever the location is selected/changed
-                Start_BT.setDisable(true);
+                Bank_BT.setDisable(true);
+                Powermine_BT.setDisable(true);
             }
         };
     }
