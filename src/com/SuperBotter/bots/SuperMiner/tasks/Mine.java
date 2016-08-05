@@ -23,7 +23,7 @@ public class Mine extends Task {
 
     @Override
     public boolean validate() {
-        // if the inventory is not full and the player isn't banking or dropping
+        // if the inventory is not full and the player isn't banking
         return !(Inventory.isFull() || Bank.isOpen());
     }
     @Override
@@ -42,9 +42,10 @@ public class Mine extends Task {
                         Execution.delayUntil(() -> (Players.getLocal().getAnimationId() != -1 || Players.getLocal().isMoving()), 3000);
                         if (Players.getLocal().isMoving()) {
                             Execution.delayUntil(() -> !Players.getLocal().isMoving());
+                            Execution.delay(1600); // one game tick because the player stands still for a tick
                         }
                         // if the player is mining (as opposed to woodcutting or something (don't wait for misclicks))
-                        if (Players.getLocal().getAnimationId() == 624) {
+                        if (Players.getLocal().getAnimationId() == 626) {
                             // wait until the ore is gone. this means that either the player or another player took it
                             Execution.delayUntil(() -> !GameObjects.newQuery().names(bot.oreRockName).results().contains(oreBeingMined));
                         }
