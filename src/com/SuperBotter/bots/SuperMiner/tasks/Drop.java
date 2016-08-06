@@ -59,7 +59,10 @@ public class Drop extends Task {
             for (int i = 0; i < itemsToDrop.size(); i++) {
                 if (itemsToDrop.get(i) != null) {
                     bot.updateInfo("Dropping " + itemsToDrop.get(i).getName());
-                    Keyboard.typeKey(itemsToDrop.get(i).getKeyBind());
+                    final int j = i; // delay can't use non-final variables
+                    Keyboard.pressKey(itemsToDrop.get(i).getKeyBind().codePointAt(0)); // hold the Action Bar keybind
+                    Execution.delayUntil(() -> !Inventory.contains(itemsToDrop.get(j).getName()));
+                    Keyboard.releaseKey(itemsToDrop.get(i).getKeyBind().codePointAt(0));
                 }
             }
         }
