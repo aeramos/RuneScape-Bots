@@ -16,22 +16,22 @@ import java.util.concurrent.Future;
 /**
  * Java FX Gui for configuring SuperMiner bot settings before it starts
  */
-public class FXGui extends GridPane implements Initializable {
+public class Config extends GridPane implements Initializable {
     @Override
     public void initialize(URL arg0, ResourceBundle arg1) {
         setVisible(true);
     }
 
-    public FXGui(SuperMiner bot) {
+    public Config(SuperMiner bot) {
         // Load the fxml file using RuneMate's Resources class.
         FXMLLoader loader = new FXMLLoader();
 
         // Input your Settings GUI FXML file location here.
         // NOTE: DO NOT FORGET TO ADD IT TO MANIFEST AS A RESOURCE
-        Future<InputStream> stream = bot.getPlatform().invokeLater(() -> Resources.getAsStream("com/SuperBotter/bots/SuperMiner/ui/GUI.fxml"));
+        Future<InputStream> stream = bot.getPlatform().invokeLater(() -> Resources.getAsStream("com/SuperBotter/api/ui/Config.fxml"));
 
         // Set FlaxFXController as the class that will be handling our events
-        loader.setController(new FXController(bot));
+        loader.setController(new ConfigController(bot));
 
         // Set the FXML load's root to this class
         loader.setRoot(this);

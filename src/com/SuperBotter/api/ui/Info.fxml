@@ -2,7 +2,7 @@
 
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
-<fx:root hgap="5.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="250.0" prefWidth="600.0" type="javafx.scene.layout.GridPane" vgap="5.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root hgap="5.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="250.0" prefWidth="600.0" type="javafx.scene.layout.GridPane" vgap="5.0" xmlns="http://javafx.com/javafx/8.0.76-ea" xmlns:fx="http://javafx.com/fxml/1">
     <columnConstraints>
         <ColumnConstraints />
     </columnConstraints>
@@ -21,17 +21,17 @@
                   <RowConstraints maxHeight="339.0" minHeight="10.0" prefHeight="174.0" vgrow="SOMETIMES" />
                </rowConstraints>
                <children>
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="SuperMiner" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.valignment="TOP">
+                  <Text fx:id="name_T" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.valignment="TOP">
                      <font>
                         <Font size="24.0" />
                      </font>
                   </Text>
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Version 0.5.2" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                  <Text fx:id="version_T" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
                      <font>
                         <Font size="24.0" />
                      </font>
                   </Text>
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="By SuperBotter" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
+                  <Text fx:id="author_T" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
                      <font>
                         <Font size="24.0" />
                      </font>
@@ -50,12 +50,12 @@
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                      <children>
-                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Ore mined: " textAlignment="CENTER" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
+                        <Text fx:id="ItemCountLabel_T" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
                            <font>
                               <Font size="18.0" />
                            </font>
                         </Text>
-                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Ore per hour: " textAlignment="CENTER" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                        <Text fx:id="ItemPerHourLabel_T" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
                            <font>
                               <Font size="18.0" />
                            </font>
@@ -80,32 +80,32 @@
                               <Font size="18.0" />
                            </font>
                         </Text>
-                        <Text fx:id="oreCount_T" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.valignment="CENTER">
+                        <Text fx:id="itemCount_T" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.valignment="CENTER">
                            <font>
                               <Font size="18.0" />
                            </font>
                         </Text>
-                        <Text fx:id="orePerHour_T" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                        <Text fx:id="itemPerHour_T" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
                            <font>
                               <Font size="18.0" />
                            </font>
                         </Text>
-                        <Text fx:id="xpGained_T" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="CENTER" fx:id="xpGained_T">
                            <font>
                               <Font size="18.0" />
                            </font>
                         </Text>
-                        <Text fx:id="xpPerHour_T" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="CENTER">
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="CENTER" fx:id="xpPerHour_T">
                            <font>
                               <Font size="18.0" />
                            </font>
                         </Text>
-                        <Text fx:id="Runtime_T" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="4" GridPane.valignment="CENTER">
+                        <Text fx:id="runtime_T" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="4" GridPane.valignment="CENTER">
                            <font>
                               <Font size="18.0" />
                            </font>
                         </Text>
-                        <Text fx:id="CurrentAction_T" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="5" GridPane.valignment="CENTER">
+                        <Text fx:id="currentAction_T" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="5" GridPane.valignment="CENTER">
                            <font>
                               <Font size="18.0" />
                            </font>

@@ -2,8 +2,8 @@
     <main-class>com.SuperBotter.bots.SuperMiner.SuperMiner</main-class>
     <name>SuperMiner</name>
     <tag-line>The super mining bot</tag-line><!--Max of 50 chars-->
-    <description>A super mining bot that supports banking and powermining in many locations with more to come!</description><!--Max of 110 chars-->
-    <version>0.5.2</version>
+    <description>A super mining bot that banks or powermines with the Action Bar in many locations with more to come!</description><!--Max of 110 chars-->
+    <version>0.5.3</version>
     <compatibility>
         <game>RS3</game>
     </compatibility>
@@ -17,7 +17,7 @@
     <hidden>false</hidden> <!--If you need to hide it from the bot store for maintenance-->
     <access>public</access>
     <resources>
-        <resource>com/SuperBotter/bots/SuperMiner/ui/GUI.fxml</resource>
-        <resource>com/SuperBotter/bots/SuperMiner/ui/InfoUI.fxml</resource>
+        <resource>com/SuperBotter/api/ui/Config.fxml</resource>
+        <resource>com/SuperBotter/api/ui/Info.fxml</resource>
     </resources>
 </manifest>

@@ -1,22 +1,17 @@
 package com.SuperBotter.bots.SuperMiner;
 
-import com.SuperBotter.bots.SuperMiner.tasks.Drop;
-import com.SuperBotter.bots.SuperMiner.tasks.Mine;
-import com.SuperBotter.bots.SuperMiner.tasks.Store;
-import com.SuperBotter.bots.SuperMiner.ui.FXGui;
+import com.SuperBotter.api.Globals;
+import com.SuperBotter.api.tasks.Drop;
+import com.SuperBotter.api.tasks.NonMenuAction;
+import com.SuperBotter.api.tasks.Store;
+import com.SuperBotter.bots.SuperMiner.ui.Config;
 import com.SuperBotter.bots.SuperMiner.ui.Info;
-import com.SuperBotter.bots.SuperMiner.ui.InfoUI;
+import com.SuperBotter.bots.SuperMiner.ui.InfoController;
 import com.runemate.game.api.client.embeddable.EmbeddableUI;
 import com.runemate.game.api.hybrid.GameEvents;
 import com.runemate.game.api.hybrid.entities.definitions.ItemDefinition;
 import com.runemate.game.api.hybrid.local.Skill;
 import com.runemate.game.api.hybrid.location.Area;
-import com.runemate.game.api.hybrid.location.Coordinate;
-import com.runemate.game.api.hybrid.location.navigation.Path;
-import com.runemate.game.api.hybrid.location.navigation.Traversal;
-import com.runemate.game.api.hybrid.location.navigation.cognizant.RegionPath;
-import com.runemate.game.api.hybrid.location.navigation.web.WebPath;
-import com.runemate.game.api.hybrid.region.Players;
 import com.runemate.game.api.hybrid.util.StopWatch;
 import com.runemate.game.api.hybrid.util.calculations.CommonMath;
 import com.runemate.game.api.script.Execution;
@@ -28,6 +23,8 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class SuperMiner extends TaskScript implements EmbeddableUI, InventoryListener{
@@ -47,50 +44,57 @@ public class SuperMiner extends TaskScript implements EmbeddableUI, InventoryLis
     private StopWatch stopWatch = new StopWatch();
 
     // GUI variables
-    public Info info;
-    private FXGui configUI;
-    private InfoUI infoUI;
+    public InfoController infoController;
+    private Config config;
+    private Info info;
     private SimpleObjectProperty<Node> botInterfaceProperty;
     public Boolean guiWait = true;
     public Boolean startButtonPressed = false;
+    private ScheduledExecutorService executor;
+
+    private Globals globals = new Globals();
 
     public SuperMiner() {
+        executor = Executors.newScheduledThreadPool(1);
         setEmbeddableUI(this);
     }
     @Override
     public ObjectProperty<? extends Node> botInterfaceProperty() {
         if (botInterfaceProperty == null) {
-            botInterfaceProperty = new SimpleObjectProperty<>(configUI = new FXGui(this));
-            infoUI = new InfoUI(this);
+            botInterfaceProperty = new SimpleObjectProperty<>(config = new Config(this));
+            info = new Info(this);
         }
         return botInterfaceProperty;
     }
-    // When called, switch the botInterfaceProperty to reflect the InfoUI
+    // When called, switch the botInterfaceProperty to reflect the Info
     public void setToInfoProperty(){
-        botInterfaceProperty.set(infoUI);
+        botInterfaceProperty.set(info);
+        executor.scheduleAtFixedRate(updateInfo, 0, 1, TimeUnit.SECONDS);
     }
     // This method is used to update the GUI thread from the bot thread
-    public void updateInfo(String currentAction) {
-        try {
-            // Assign all values to a new instance of the Info class
-            info = new Info(
-                    (long)CommonMath.rate(TimeUnit.HOURS, stopWatch.getRuntime(), oreCount), // Ore per hour
-                    oreCount,                                                                 // Ore mined
-                    (long)CommonMath.rate(TimeUnit.HOURS, stopWatch.getRuntime(), (Skill.MINING.getExperience() - startingXP)),
-                    (Skill.MINING.getExperience() - startingXP),
-                    stopWatch.getRuntimeAsString(),                                           // Total Runtime
-                    currentAction);                                                           // What its doing now
+    private Runnable updateInfo = new Runnable() {
+        public void run() {
+            try {
+                // Assign all values to a new instance of the InfoController class
+                infoController = new InfoController(
+                        (long) CommonMath.rate(TimeUnit.HOURS, stopWatch.getRuntime(), oreCount), // Ore per hour
+                        oreCount,                                                                 // Ore mined
+                        (long) CommonMath.rate(TimeUnit.HOURS, stopWatch.getRuntime(), (Skill.MINING.getExperience() - startingXP)),
+                        (Skill.MINING.getExperience() - startingXP),
+                        stopWatch.getRuntimeAsString(),                                           // Total Runtime
+                        globals.currentAction);                                                           // What its doing now
 
-        }catch(Exception e){
-            e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            // Be sure to run info.update() through runLater.
+            // This will run info.update() on the dedicated JavaFX thread which is the only thread allowed to update
+            // anything related to JavaFX rendering
+            Platform.runLater(() -> info.update());
+
         }
-
-        // Be sure to run infoUI.update() through runLater.
-        // This will run infoUI.update() on the dedicated JavaFX thread which is the only thread allowed to update
-        // anything related to JavaFX rendering
-        Platform.runLater(() -> infoUI.update());
-
-    }
+    };
     @Override
     public void onItemAdded(ItemEvent event) {
         if (event != null) {
@@ -114,11 +118,11 @@ public class SuperMiner extends TaskScript implements EmbeddableUI, InventoryLis
         }
         Execution.delayUntil(() -> (startButtonPressed));
         setLoopDelay(100, 300); // in ms (1000ms = 1s)
-        add(new Mine(this));
+        add(new NonMenuAction(globals, mineArea, mineName, oreName, oreRockName, "Mine", "Mining"));
         if (bank) {
-            add(new Store(this));
+            add(new Store(globals, bankArea, new String[0], bankName, bankType));
         } else {
-            add(new Drop(this));
+            add(new Drop(globals, new String[0]));
         }
         // there's no point in adding the time it takes for the user to config the bot
         stopWatch.start();
@@ -126,32 +130,18 @@ public class SuperMiner extends TaskScript implements EmbeddableUI, InventoryLis
     @Override
     public void onPause() {
         stopWatch.stop();
+        globals.botIsStopped = true;
     }
     @Override
     public void onResume() {
         stopWatch.start();
+        globals.botIsStopped = false;
     }
     @Override
     public void onStop() {
         stopWatch.stop();
         stopWatch.reset();
-    }
-
-    // run by Mine and Store to go to their different areas
-    public void goToArea(Coordinate destination) {
-        if (!Players.getLocal().isMoving()) {
-            Path p;
-            p = RegionPath.buildTo(destination);
-            if (p == null) {
-                WebPath wp = Traversal.getDefaultWeb().getPathBuilder().buildTo(destination);
-                if (wp != null) {
-                    wp.step();
-                }
-            }
-            // if Web path was done then p is still null and this will not run
-            if (p != null) {
-                p.step();
-            }
-        }
+        globals.botIsStopped = true;
+        executor.shutdown();
     }
 }
