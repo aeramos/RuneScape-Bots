@@ -62,12 +62,12 @@ public class SuperMiner extends TaskScript implements EmbeddableUI, InventoryLis
     public ObjectProperty<? extends Node> botInterfaceProperty() {
         if (botInterfaceProperty == null) {
             botInterfaceProperty = new SimpleObjectProperty<>(config = new Config(this));
-            info = new Info(this);
         }
         return botInterfaceProperty;
     }
     // When called, switch the botInterfaceProperty to reflect the Info
     public void setToInfoProperty(){
+        info = new Info(this);
         botInterfaceProperty.set(info);
         executor.scheduleAtFixedRate(updateInfo, 0, 1, TimeUnit.SECONDS);
     }
