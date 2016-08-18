@@ -1,5 +1,6 @@
 package com.SuperBotter.bots.SuperMiner.ui;
 
+import com.SuperBotter.api.ui.InfoController;
 import com.SuperBotter.bots.SuperMiner.SuperMiner;
 import com.runemate.game.api.hybrid.util.Resources;
 import javafx.fxml.FXML;

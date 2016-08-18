@@ -1,4 +1,4 @@
-package com.SuperBotter.bots.SuperMiner.ui;
+package com.SuperBotter.api.ui;
 
 /**
  *  --- InfoController Class ---
@@ -12,8 +12,8 @@ package com.SuperBotter.bots.SuperMiner.ui;
  */
 public class InfoController {
 
-    long itemPerHour, itemCount, xpPerHour, xpGained;
-    String runtime, currentAction;
+    public long itemPerHour, itemCount, xpPerHour, xpGained;
+    public String runtime, currentAction;
 
     public InfoController(){
         this.itemPerHour = 0;

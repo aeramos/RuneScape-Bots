@@ -1,5 +1,6 @@
 package com.SuperBotter.bots.SuperMiner.ui;
 
+import com.SuperBotter.api.Banks;
 import com.SuperBotter.bots.SuperMiner.SuperMiner;
 import com.runemate.game.api.hybrid.location.Area;
 import com.runemate.game.api.hybrid.location.Coordinate;
@@ -69,10 +70,10 @@ class ConfigController implements Initializable {
         );
         Start_BT.setOnAction(getStart_BTAction());
         Bank_BT.setOnAction(getBank_BTAction());
-        Power_BT.setOnAction(getPowermine_BTAction());
+        Power_BT.setOnAction(getPower_BTAction());
 
         Location_ComboBox.setOnAction(getLocation_ComboBoxEvent());
-        Item_ComboBox.setOnAction(getOre_ComboBoxEvent());
+        Item_ComboBox.setOnAction(getItem_ComboBoxEvent());
         bot.guiWait = false;
     }
 
@@ -92,18 +93,18 @@ class ConfigController implements Initializable {
         return event -> {
             try {
                 Power_BT.setSelected(false);
-                bot.bank = true;
+                bot.dontDrop = true;
                 Start_BT.setDisable(false);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         };
     }
-    private EventHandler<ActionEvent> getPowermine_BTAction() {
+    private EventHandler<ActionEvent> getPower_BTAction() {
         return event -> {
             try {
                 Bank_BT.setSelected(false);
-                bot.bank = false;
+                bot.dontDrop = false;
                 Start_BT.setDisable(false);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -127,59 +128,44 @@ class ConfigController implements Initializable {
                     /*
                     case "Crafting Guild":
                         bot.mineArea = new Area.Rectangular(new Coordinate(2943, 3291, 0), new Coordinate(2937, 3276, 0));
-                        bot.bankArea = new Area.Circular(new Coordinate(2955, 3297, 0), 5);
-                        bot.bankName = "Clan Camp bank chest";
-                        bot.bankType = "Bank chest";
+                        bot.bank = new Banks("Clan Camp");
                         Ore_ComboBox.getItems().addAll("Clay", "Silver ore", "Gold ore");
                         break;
                     */
                     case "Draynor":
                         bot.mineArea = new Area.Rectangular(new Coordinate(3138, 3315, 0), new Coordinate(3143, 3320, 0));
-                        bot.bankArea = new Area.Circular(new Coordinate(3170, 3280, 0), 5);
-                        bot.bankName = "Cabbage Facepunch Bonanza bank chest";
-                        bot.bankType = "Bank chest";
+                        bot.bank = new Banks(Banks.BankName.CABBAGE_FACEPUNCH_BONANZA);
                         Item_ComboBox.getItems().addAll("Clay");
                         break;
                     case "Falador south-west":
                         bot.mineArea = new Area.Rectangular(new Coordinate(2930, 3340, 0), new Coordinate(2922, 3334, 0));
-                        bot.bankArea = new Area.Circular(new Coordinate(2955, 3297, 0), 5);
-                        bot.bankName = "Clan Camp bank chest";
-                        bot.bankType = "Bank chest";
+                        bot.bank = new Banks(Banks.BankName.CLAN_CAMP);
                         Item_ComboBox.getItems().addAll("Copper ore", "Tin ore", "Iron ore", "Coal");
                         break;
                     case "Lumbridge Swamp east":
                         bot.mineArea = new Area.Rectangular(new Coordinate(3233, 3151, 0), new Coordinate(3223, 3145, 0));
-                        bot.bankArea = new Area.Rectangular(new Coordinate(3272, 3168, 0), new Coordinate(3268, 3161, 0));
-                        bot.bankName = "Al Kharid bank";
-                        bot.bankType = "Bank booth";
+                        bot.bank = new Banks(Banks.BankName.AL_KHARID);
                         Item_ComboBox.getItems().addAll("Copper ore", "Tin ore");
+                        new Banks(Banks.BankName.AL_KHARID);
                         break;
                     case "Lumbridge Swamp west":
                         bot.mineArea = new Area.Rectangular(new Coordinate(3149, 3152, 0), new Coordinate(3144, 3144, 0));
-                        bot.bankArea = new Area.Rectangular(new Coordinate(3097, 3246, 0), new Coordinate(3092, 3240, 0));
-                        bot.bankName = "Draynor bank";
-                        bot.bankType = "Counter";
+                        bot.bank = new Banks(Banks.BankName.DRAYNOR);
                         Item_ComboBox.getItems().addAll("Coal", "Mithril ore", "Adamantite ore");
                         break;
                     case "Rimmington":
                         bot.mineArea = new Area.Rectangular(new Coordinate(2981, 3242, 0), new Coordinate(2964, 3229, 0));
-                        bot.bankArea = new Area.Circular(new Coordinate(2955, 3297, 0), 5);
-                        bot.bankName = "Clan Camp bank chest";
-                        bot.bankType = "Bank chest";
+                        bot.bank = new Banks(Banks.BankName.CLAN_CAMP);
                         Item_ComboBox.getItems().addAll("Copper ore", "Tin ore", "Clay", "Gold ore", "Iron ore");
                         break;
                     case "Varrock south-east":
                         bot.mineArea = new Area.Rectangular(new Coordinate(3280, 3361, 0), new Coordinate(3291, 3371, 0));
-                        bot.bankArea = new Area.Rectangular(new Coordinate(3250, 3420, 0), new Coordinate(3257, 3423, 0));
-                        bot.bankName = "Varrock east bank";
-                        bot.bankType = "Bank booth";
+                        bot.bank = new Banks(Banks.BankName.VARROCK_EAST);
                         Item_ComboBox.getItems().addAll("Copper ore", "Tin ore", "Iron ore");
                         break;
                     case "Varrock south-west":
                         bot.mineArea = new Area.Rectangular(new Coordinate(3171, 3364, 0), new Coordinate(3188, 3380, 0));
-                        bot.bankArea = new Area.Rectangular(new Coordinate(3182, 3433, 0), new Coordinate(3189, 3446, 0));
-                        bot.bankName = "Varrock west bank";
-                        bot.bankType = "Bank booth";
+                        bot.bank = new Banks(Banks.BankName.VARROCK_WEST);
                         Item_ComboBox.getItems().addAll("Clay", "Tin ore", "Silver ore", "Iron ore");
                         break;
                 }
@@ -190,7 +176,7 @@ class ConfigController implements Initializable {
             }
         };
     }
-    private EventHandler<ActionEvent> getOre_ComboBoxEvent() {
+    private EventHandler<ActionEvent> getItem_ComboBoxEvent() {
         return event -> {
             Start_BT.setDisable(true);
             Bank_BT.setSelected(false);

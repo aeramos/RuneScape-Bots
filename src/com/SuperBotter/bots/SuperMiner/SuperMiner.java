@@ -1,12 +1,14 @@
 package com.SuperBotter.bots.SuperMiner;
 
+import com.SuperBotter.api.Banks;
 import com.SuperBotter.api.Globals;
+import com.SuperBotter.api.Methods;
 import com.SuperBotter.api.tasks.Drop;
 import com.SuperBotter.api.tasks.NonMenuAction;
 import com.SuperBotter.api.tasks.Store;
+import com.SuperBotter.api.ui.InfoController;
 import com.SuperBotter.bots.SuperMiner.ui.Config;
 import com.SuperBotter.bots.SuperMiner.ui.Info;
-import com.SuperBotter.bots.SuperMiner.ui.InfoController;
 import com.runemate.game.api.client.embeddable.EmbeddableUI;
 import com.runemate.game.api.hybrid.GameEvents;
 import com.runemate.game.api.hybrid.entities.definitions.ItemDefinition;
@@ -33,10 +35,7 @@ public class SuperMiner extends TaskScript implements EmbeddableUI, InventoryLis
 
     public Area mineArea;
     public String mineName;
-    public Boolean bank;
-    public Area bankArea;
-    public String bankName;
-    public String bankType;
+    public Boolean dontDrop;
     public String oreRockName;
     public String oreName;
     private long oreCount = 0;
@@ -53,6 +52,8 @@ public class SuperMiner extends TaskScript implements EmbeddableUI, InventoryLis
     private ScheduledExecutorService executor;
 
     private Globals globals = new Globals();
+    private Methods methods = new Methods();
+    public Banks bank;
 
     public SuperMiner() {
         executor = Executors.newScheduledThreadPool(1);
@@ -118,12 +119,13 @@ public class SuperMiner extends TaskScript implements EmbeddableUI, InventoryLis
         }
         Execution.delayUntil(() -> (startButtonPressed));
         setLoopDelay(100, 300); // in ms (1000ms = 1s)
-        add(new NonMenuAction(globals, mineArea, mineName, oreName, oreRockName, "Mine", "Mining"));
-        if (bank) {
-            add(new Store(globals, bankArea, new String[0], bankName, bankType));
+        add(new NonMenuAction(globals, methods, mineArea, mineName, oreName, oreRockName, "Mine", "Mining"));
+        if (dontDrop) {
+            add(new Store(globals, methods, bank, new String[0]));
         } else {
             add(new Drop(globals, new String[0]));
         }
+
         // there's no point in adding the time it takes for the user to config the bot
         stopWatch.start();
     }
