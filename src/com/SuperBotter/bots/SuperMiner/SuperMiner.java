@@ -132,12 +132,10 @@ public class SuperMiner extends TaskScript implements EmbeddableUI, InventoryLis
     @Override
     public void onPause() {
         stopWatch.stop();
-        globals.botIsStopped = true;
     }
     @Override
     public void onResume() {
         stopWatch.start();
-        globals.botIsStopped = false;
     }
     @Override
     public void onStop() {
