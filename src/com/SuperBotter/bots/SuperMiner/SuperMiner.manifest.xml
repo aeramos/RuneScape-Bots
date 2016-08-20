@@ -3,12 +3,13 @@
     <name>SuperMiner</name>
     <tag-line>The super mining bot</tag-line><!--Max of 50 chars-->
     <description>A super mining bot that banks or powermines with the Action Bar in many locations with more to come!</description><!--Max of 110 chars-->
-    <version>0.5.4</version>
+    <version>0.5.5</version>
     <compatibility>
         <game>RS3</game>
     </compatibility>
     <categories>
         <category>MINING</category>
+        <category>MONEYMAKING</category>
     </categories>
     <!--Required to publish on the bot store-->
     <internal-id>SuperMiner</internal-id>
