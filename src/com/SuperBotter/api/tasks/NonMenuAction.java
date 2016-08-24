@@ -57,6 +57,7 @@ public class NonMenuAction extends Task {
                 GameObject gameObject = GameObjects.newQuery().names(interactWithName).results().nearest();
                 Npc npc;
                 boolean notNull = false;
+                boolean isGameObject = false;
                 Interactable interactable = null;
                 Locatable locatable = null;
                 Validatable validatable = null;
@@ -65,11 +66,13 @@ public class NonMenuAction extends Task {
                     locatable = gameObject;
                     validatable = gameObject;
                     notNull = true;
+                    isGameObject = true;
                 } else if ((npc = Npcs.newQuery().names(interactWithName).results().nearest()) != null && npc.getDefinition() != null) {
                     interactable = npc;
                     locatable = npc;
                     validatable = npc;
                     notNull = true;
+                    isGameObject = false;
                 }
                 if (notNull) {
                     if (interactable.isVisible()) {
@@ -83,7 +86,13 @@ public class NonMenuAction extends Task {
                             // it clicked on something
                             if (player.getAnimationId() != -1) {
                                 Validatable finalValidatable = validatable;
-                                Execution.delayUntil(() -> !finalValidatable.isValid() || player.getTarget() == null);
+                                if (isGameObject) {
+                                    Execution.delayUntil(() -> !finalValidatable.isValid() || player.getAnimationId() == -1);
+                                } else {
+                                    if (player.getTarget() != null) {
+                                        Execution.delayUntil(() -> player.getTarget() == null);
+                                    }
+                                }
                             }
                         }
                     } else {

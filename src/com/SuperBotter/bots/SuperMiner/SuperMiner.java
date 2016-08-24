@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
 
 public class SuperMiner extends TaskScript implements EmbeddableUI, InventoryListener{
     // General variables and statistics
-    private int startingXP = Skill.MINING.getExperience();
+    private int startingXP;
 
     public Area mineArea;
     public String mineName;
@@ -51,11 +51,14 @@ public class SuperMiner extends TaskScript implements EmbeddableUI, InventoryLis
     public Boolean startButtonPressed = false;
     private ScheduledExecutorService executor;
 
-    private Globals globals = new Globals();
-    private Methods methods = new Methods();
+    private Globals globals;
+    private Methods methods;
     public Banks bank;
 
     public SuperMiner() {
+        startingXP = Skill.MINING.getExperience();
+        globals = new Globals();
+        methods = new Methods();
         executor = Executors.newScheduledThreadPool(1);
         setEmbeddableUI(this);
     }
