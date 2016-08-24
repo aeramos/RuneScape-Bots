@@ -32,7 +32,8 @@ public class Store extends Task {
     }
     @Override
     public void execute() {
-        if (bank.area.contains(Players.getLocal())) {
+        GameObject bankChest = GameObjects.newQuery().names(bank.type).results().nearest();
+        if (bank.area.contains(Players.getLocal()) || (bankChest != null && bankChest.isVisible())) {
             if (Bank.isOpen()) {
                 if (Inventory.isFull()) {
                     if (dontDeposit.length != 0) {
@@ -49,7 +50,6 @@ public class Store extends Task {
                     Bank.close();
                 }
             } else {
-                GameObject bankChest = GameObjects.newQuery().names(bank.type).results().nearest();
                 if (bankChest != null) {
                     if (!bankChest.isVisible()) {
                         globals.currentAction = "Turning to face " + bank.name;

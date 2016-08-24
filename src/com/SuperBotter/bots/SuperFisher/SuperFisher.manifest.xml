@@ -1,0 +1,24 @@
+<manifest>
+    <main-class>com.SuperBotter.bots.SuperFisher.SuperFisher</main-class>
+    <name>SuperFisher</name>
+    <tag-line>The super fishing bot</tag-line><!--Max of 50 chars-->
+    <description>A super fishing bot that banks or powerfishes with the Action Bar in many locations with more to come!</description><!--Max of 110 chars-->
+    <version>0.1.0</version>
+    <compatibility>
+        <game>RS3</game>
+    </compatibility>
+    <categories>
+        <category>FISHING</category>
+        <category>MONEYMAKING</category>
+    </categories>
+    <!--Required to publish on the bot store-->
+    <internal-id>SuperFisher</internal-id>
+    <!--The rest are optional-->
+    <open-source>false</open-source>
+    <hidden>false</hidden> <!--If you need to hide it from the bot store for maintenance-->
+    <access>public</access>
+    <resources>
+        <resource>com/SuperBotter/api/ui/Config.fxml</resource>
+        <resource>com/SuperBotter/api/ui/Info.fxml</resource>
+    </resources>
+</manifest>
