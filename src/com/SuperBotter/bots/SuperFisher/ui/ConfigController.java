@@ -120,9 +120,14 @@ class ConfigController implements Initializable {
                         bot.botArea = new Area.Rectangular(new Coordinate(3256, 3203, 0), new Coordinate(3258, 3207, 0));
                         bot.bank = new Banks(Banks.BankName.COMBAT_ACADEMY);
                         Item_ComboBox.getItems().addAll("Raw crayfish");
-                        break;
+                        break;/*
+                    case "Lum Bridge":
+                        bot.botArea = new Area.Rectangular(new Coordinate(3239, 3241, 0), new Coordinate(3242, 3257, 0));
+                        bot.bank = new Banks(Banks.BankName.COMBAT_ACADEMY);
+                        Item_ComboBox.getItems().addAll("Raw pike", "Raw salmon", "Raw trout");
+                        break;*/
                 }
-                bot.botAreaName = Location_ComboBox.getSelectionModel().getSelectedItem().toString() + " mine";
+                bot.botAreaName = Location_ComboBox.getSelectionModel().getSelectedItem().toString() + " fishing spot";
                 Item_ComboBox.setDisable(false);
             } else {
                 Item_ComboBox.setDisable(true);
@@ -140,7 +145,16 @@ class ConfigController implements Initializable {
                     case "Raw crayfish":
                         bot.actionName = "Cage";
                         bot.actionIng = "Caging";
+                        break;/*
+                    case "Raw pike":
+                        bot.actionName = "Bait";
+                        bot.actionIng = "Baiting";
                         break;
+                    case "Raw salmon":
+                    case "Raw trout":
+                        bot.actionName = "Lure";
+                        bot.actionIng = "Luring";
+                        break;*/
                 }
                 Bank_BT.setDisable(false);
                 Power_BT.setDisable(false);

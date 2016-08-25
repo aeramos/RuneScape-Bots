@@ -44,7 +44,6 @@ public class SuperMiner extends TaskScript implements EmbeddableUI, InventoryLis
 
     // GUI variables
     public InfoController infoController;
-    private Config config;
     private Info info;
     private SimpleObjectProperty<Node> botInterfaceProperty;
     public Boolean guiWait = true;
@@ -65,7 +64,7 @@ public class SuperMiner extends TaskScript implements EmbeddableUI, InventoryLis
     @Override
     public ObjectProperty<? extends Node> botInterfaceProperty() {
         if (botInterfaceProperty == null) {
-            botInterfaceProperty = new SimpleObjectProperty<>(config = new Config(this));
+            botInterfaceProperty = new SimpleObjectProperty<>(new Config(this));
         }
         return botInterfaceProperty;
     }

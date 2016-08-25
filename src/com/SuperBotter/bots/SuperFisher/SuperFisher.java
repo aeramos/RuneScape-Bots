@@ -45,7 +45,6 @@ public class SuperFisher extends TaskScript implements EmbeddableUI, InventoryLi
 
     // GUI variables
     public InfoController infoController;
-    private Config config;
     private Info info;
     private SimpleObjectProperty<Node> botInterfaceProperty;
     public Boolean guiWait = true;
@@ -66,7 +65,7 @@ public class SuperFisher extends TaskScript implements EmbeddableUI, InventoryLi
     @Override
     public ObjectProperty<? extends Node> botInterfaceProperty() {
         if (botInterfaceProperty == null) {
-            botInterfaceProperty = new SimpleObjectProperty<>(config = new Config(this));
+            botInterfaceProperty = new SimpleObjectProperty<>(new Config(this));
         }
         return botInterfaceProperty;
     }

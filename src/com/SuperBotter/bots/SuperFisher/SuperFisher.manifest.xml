@@ -3,7 +3,7 @@
     <name>SuperFisher</name>
     <tag-line>The super fishing bot</tag-line><!--Max of 50 chars-->
     <description>A super fishing bot that banks or powerfishes with the Action Bar in many locations with more to come!</description><!--Max of 110 chars-->
-    <version>0.1.0</version>
+    <version>0.1.1</version>
     <compatibility>
         <game>RS3</game>
     </compatibility>
