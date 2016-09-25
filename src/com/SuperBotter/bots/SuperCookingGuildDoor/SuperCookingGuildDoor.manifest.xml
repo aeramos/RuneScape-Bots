@@ -1,0 +1,22 @@
+<manifest>
+    <main-class>com.SuperBotter.bots.SuperCookingGuildDoor.SuperCookingGuildDoor</main-class>
+    <name>SuperCookingGuildDoor</name>
+    <tag-line>The super Cooking Guild door bot</tag-line><!--Max of 50 chars-->
+    <description>A super bot that clicks on the Cooking Guild door...forever</description><!--Max of 110 chars-->
+    <version>1.0.0</version>
+    <compatibility>
+        <game>RS3</game>
+    </compatibility>
+    <categories>
+        <category>OTHER</category>
+    </categories>
+    <!--Required to publish on the bot store-->
+    <internal-id>SuperCookingGuildDoor</internal-id>
+    <!--The rest are optional-->
+    <open-source>false</open-source>
+    <hidden>false</hidden> <!--If you need to hide it from the bot store for maintenance-->
+    <access>private</access>
+    <resources>
+        <resource>com/SuperBotter/bots/SuperCookingGuildDoor/ui/Info.fxml</resource>
+    </resources>
+</manifest>
