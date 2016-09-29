@@ -2,7 +2,6 @@ package com.SuperBotter.bots.SuperCookingGuildDoor.tasks;
 
 import com.SuperBotter.bots.SuperCookingGuildDoor.SuperCookingGuildDoor;
 import com.runemate.game.api.hybrid.entities.GameObject;
-import com.runemate.game.api.hybrid.entities.Player;
 import com.runemate.game.api.hybrid.local.Camera;
 import com.runemate.game.api.hybrid.location.Area;
 import com.runemate.game.api.hybrid.location.navigation.Traversal;
@@ -11,7 +10,6 @@ import com.runemate.game.api.hybrid.location.navigation.cognizant.RegionPath;
 import com.runemate.game.api.hybrid.location.navigation.web.WebPath;
 import com.runemate.game.api.hybrid.queries.results.LocatableEntityQueryResults;
 import com.runemate.game.api.hybrid.region.GameObjects;
-import com.runemate.game.api.hybrid.region.Players;
 import com.runemate.game.api.script.Execution;
 import com.runemate.game.api.script.framework.task.Task;
 
@@ -24,12 +22,7 @@ public class EnterDoor extends Task {
     }
     @Override
     public boolean validate() {
-        if (bot.player != null && !bot.player.isMoving()) {
-            // return true if the player is not moving
-            return !bot.player.isMoving();
-        } else {
-            return false;
-        }
+        return bot.player != null && !bot.player.isMoving();
     }
 
     @Override
