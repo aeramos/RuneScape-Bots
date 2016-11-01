@@ -25,13 +25,11 @@ public class Drop extends Task {
 
     @Override
     public boolean validate() {
-        System.out.printf("in dropping validate");
         // if the inventory is full
         return Inventory.isFull();
     }
     @Override
     public void execute() {
-        System.out.printf("in dropping");
         boolean droppingDone = false;
         while (!droppingDone) {
             Keyboard.type(" ", false); // press space just in case the full inventory prompt is in the chatbox

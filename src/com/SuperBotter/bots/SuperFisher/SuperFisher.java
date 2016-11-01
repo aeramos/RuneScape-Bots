@@ -66,7 +66,7 @@ public class SuperFisher extends TaskBot implements EmbeddableUI, InventoryListe
     }
     // When called, switch the botInterfaceProperty to reflect the Info
     private void setToInfoProperty(){
-        info = new Info(getPlatform(), getMetaData(), configSettings);
+        info = new Info(getPlatform(), getMetaData(), configSettings, "caught");
         botInterfaceProperty.set(info);
         executor.scheduleAtFixedRate(updateInfo, 0, 1, TimeUnit.SECONDS);
     }
@@ -142,5 +142,6 @@ public class SuperFisher extends TaskBot implements EmbeddableUI, InventoryListe
         stopWatch.stop();
         globals.botIsStopped = true;
         executor.shutdown();
+        executor.shutdownNow();
     }
 }

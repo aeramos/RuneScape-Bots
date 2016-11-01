@@ -67,7 +67,7 @@ public class SuperMiner extends TaskBot implements EmbeddableUI, InventoryListen
     }
     // When called, switch the botInterfaceProperty to reflect the Info
     private void setToInfoProperty(){
-        info = new Info(getPlatform(), getMetaData(), configSettings);
+        info = new Info(getPlatform(), getMetaData(), configSettings, "mined");
         botInterfaceProperty.set(info);
         executor.scheduleAtFixedRate(updateInfo, 0, 1, TimeUnit.SECONDS);
     }
@@ -143,5 +143,6 @@ public class SuperMiner extends TaskBot implements EmbeddableUI, InventoryListen
         stopWatch.stop();
         globals.botIsStopped = true;
         executor.shutdown();
+        executor.shutdownNow();
     }
 }

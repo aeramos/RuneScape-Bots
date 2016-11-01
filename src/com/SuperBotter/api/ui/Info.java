@@ -28,6 +28,7 @@ public class Info extends GridPane implements Initializable {
 
     private ScriptMetaData metaData;
     private ConfigSettings configSettings;
+    private String acquiredVerb;
 
     @FXML
     private Text name_T, version_T, author_T, itemPerHourLabel_T, itemCountLabel_T, itemPerHour_T, itemCount_T, xpPerHour_T, xpGained_T, runtime_T, currentAction_T;
@@ -38,7 +39,7 @@ public class Info extends GridPane implements Initializable {
         version_T.textProperty().set("Version " + metaData.getVersion());
         author_T.textProperty().set("By " + metaData.getAuthor());
         itemPerHourLabel_T.textProperty().set(configSettings.itemName + " per hour: ");
-        itemCountLabel_T.textProperty().set(configSettings.itemName + " caught: ");
+        itemCountLabel_T.textProperty().set(configSettings.itemName + " " + acquiredVerb + ": ");
         setVisible(true);
     }
 
@@ -46,9 +47,10 @@ public class Info extends GridPane implements Initializable {
     // listeners to. In this case the property contains our controller class
     // (this)
 
-    public Info(BotPlatform botPlatform, ScriptMetaData metaData, ConfigSettings configSettings) {
+    public Info(BotPlatform botPlatform, ScriptMetaData metaData, ConfigSettings configSettings, String acquiredVerb) {
         this.metaData = metaData;
         this.configSettings = configSettings;
+        this.acquiredVerb = acquiredVerb;
 
         // Load the fxml file using RuneMate's Resources class.
         FXMLLoader loader = new FXMLLoader();
