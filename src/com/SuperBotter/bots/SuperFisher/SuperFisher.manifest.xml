@@ -2,8 +2,8 @@
     <main-class>com.SuperBotter.bots.SuperFisher.SuperFisher</main-class>
     <name>SuperFisher</name>
     <tag-line>The super fishing bot</tag-line><!--Max of 50 chars-->
-    <description>A super fishing bot that banks or powerfishes with the Action Bar in many locations with more to come!</description><!--Max of 110 chars-->
-    <version>0.1.1</version>
+    <description>A super fishing bot that banks in many locations or powerfishes anywhere!</description><!--Max of 110 chars-->
+    <version>0.2.0</version>
     <compatibility>
         <game>RS3</game>
     </compatibility>

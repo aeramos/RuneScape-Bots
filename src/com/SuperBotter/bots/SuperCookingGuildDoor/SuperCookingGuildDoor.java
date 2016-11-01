@@ -13,7 +13,7 @@ import com.runemate.game.api.hybrid.region.Players;
 import com.runemate.game.api.hybrid.util.StopWatch;
 import com.runemate.game.api.hybrid.util.calculations.CommonMath;
 import com.runemate.game.api.script.Execution;
-import com.runemate.game.api.script.framework.task.TaskScript;
+import com.runemate.game.api.script.framework.task.TaskBot;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -23,7 +23,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class SuperCookingGuildDoor extends TaskScript implements EmbeddableUI{
+public class SuperCookingGuildDoor extends TaskBot implements EmbeddableUI{
     public long clickCount = 0;
 
     private StopWatch stopWatch = new StopWatch();

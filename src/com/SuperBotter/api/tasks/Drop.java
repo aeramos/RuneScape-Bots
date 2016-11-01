@@ -16,33 +16,36 @@ import java.util.Objects;
 
 public class Drop extends Task {
     private Globals globals;
-    private String[] dontDrop;
+    private String[] requiredItems;
 
-    public Drop(Globals globals, String[] dontDrop) {
+    public Drop(Globals globals, String[] requiredItems) {
         this.globals = globals;
-        this.dontDrop = dontDrop;
+        this.requiredItems = requiredItems;
     }
 
     @Override
     public boolean validate() {
+        System.out.printf("in dropping validate");
         // if the inventory is full
         return Inventory.isFull();
     }
     @Override
     public void execute() {
-        Boolean droppingDone = false;
+        System.out.printf("in dropping");
+        boolean droppingDone = false;
         while (!droppingDone) {
-            Keyboard.type(" ", false); // press space just in case the full inv prompt is there
+            Keyboard.type(" ", false); // press space just in case the full inventory prompt is in the chatbox
             SpriteItemQueryResults originalInv = Inventory.newQuery().results();
             for (int i = 0; i < originalInv.size(); i++) {
-                Boolean canDrop = true;
+                boolean canDrop = true;
                 SpriteItemQueryResults currentInv = Inventory.newQuery().results();
                 if (currentInv.size() <= i) {
                     i = 0;
                 }
+                // if the current item in the inventory is an item the bot needs, don't drop it
                 String currentItemName = currentInv.get(i).getDefinition().getName();
-                for (int j = 0; j < dontDrop.length; j++) {
-                    if (Objects.equals(currentItemName, dontDrop[j])) {
+                for (int j = 0; j < requiredItems.length; j++) {
+                    if (Objects.equals(currentItemName, requiredItems[j])) {
                         canDrop = false;
                     }
                 }
@@ -54,11 +57,11 @@ public class Drop extends Task {
                         if (initialItemOnBar == null || initialItemOnBar.size() == 0) {
                             ActionBarQueryResults emptySlots = ActionBar.getEmptySlots();
                             // if there are empty slots on the action bar
-                            if (emptySlots != null && emptySlots.size() != 0) {
+                            if (emptySlots != null && emptySlots.size() != 0 && emptySlots.get(0) != null) {
                                 globals.currentAction = "Dragging " + currentItemName + " to Action Bar";
                                 final int j = i;
                                 // drag item to Action Bar for no longer than 5 seconds
-                                Execution.delayUntil(() -> Mouse.drag(currentInv.get(j), ActionBar.getEmptySlots().get(0).getBounds(), Mouse.Button.LEFT), 5000);
+                                Execution.delayUntil(() -> Mouse.drag(currentInv.get(j), emptySlots.get(0).getBounds(), Mouse.Button.LEFT), 5000);
                             }
                         }
                         ActionBarQueryResults itemOnBar = ActionBar.newQuery().names(currentItemName).results();
@@ -75,7 +78,7 @@ public class Drop extends Task {
                         manuallyDrop(itemInInventory);
                     }
                 }
-                if (!Inventory.containsAnyExcept(dontDrop) || globals.botIsStopped) {
+                if (!Inventory.containsAnyExcept(requiredItems) || globals.botIsStopped) {
                     droppingDone = true;
                     break;
                 }

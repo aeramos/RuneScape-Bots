@@ -1,7 +1,7 @@
-package com.SuperBotter.bots.SuperFisher.ui;
+package com.SuperBotter.api.ui;
 
-import com.SuperBotter.bots.SuperFisher.SuperFisher;
 import com.runemate.game.api.hybrid.util.Resources;
+import com.runemate.game.api.script.framework.core.BotPlatform;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.GridPane;
@@ -22,16 +22,17 @@ public class Config extends GridPane implements Initializable {
         setVisible(true);
     }
 
-    public Config(SuperFisher bot) {
+    public Config(Object configController, BotPlatform botPlatform) {
         // Load the fxml file using RuneMate's Resources class.
         FXMLLoader loader = new FXMLLoader();
 
         // Input your Settings GUI FXML file location here.
         // NOTE: DO NOT FORGET TO ADD IT TO MANIFEST AS A RESOURCE
-        Future<InputStream> stream = bot.getPlatform().invokeLater(() -> Resources.getAsStream("com/SuperBotter/api/ui/Config.fxml"));
+        Future<InputStream> stream = botPlatform.invokeLater(() -> Resources.getAsStream("com/SuperBotter/api/ui/Config.fxml"));
 
         // Set FlaxFXController as the class that will be handling our events
-        loader.setController(new ConfigController(bot));
+        //loader.setController(new ConfigController(metaData, configSettings));
+        loader.setController(configController);
 
         // Set the FXML load's root to this class
         loader.setRoot(this);

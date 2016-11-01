@@ -1,5 +1,6 @@
 package com.SuperBotter.api.tasks;
 
+import com.SuperBotter.api.ConfigSettings;
 import com.SuperBotter.api.Globals;
 import com.SuperBotter.api.Methods;
 import com.runemate.game.api.hybrid.entities.GameObject;
@@ -24,102 +25,103 @@ import com.runemate.game.api.script.framework.task.Task;
 
 public class NonMenuAction extends Task {
     private Globals globals;
+    private ConfigSettings configSettings;
     private Methods methods;
-    private Area botArea;
-    private String botAreaName, itemName, interactWithName, actionName, actionIng;
 
-    public NonMenuAction(Globals globals, Methods methods, Area botArea, String botAreaName, String itemName, String interactWithName, String actionName, String actionIng) {
+    public NonMenuAction(Globals globals, ConfigSettings configSettings, Methods methods) {
         this.globals = globals;
         this.methods = methods;
-        this.botArea = botArea;
-        this.botAreaName = botAreaName;
-        this.itemName = itemName;
-        this.interactWithName = interactWithName;
-        this.actionName = actionName;
-        this.actionIng = actionIng;
+        this.configSettings = configSettings;
     }
 
     @Override
     public boolean validate() {
-        // if the inventory is not full and the player isn't banking
-        return !(Inventory.isFull() || Bank.isOpen());
+        // if the inventory is not full, the player isn't banking, and the inventory contains the required items
+        return !Inventory.isFull() && !Bank.isOpen() && (Inventory.containsAllOf(configSettings.requiredItems) || (!Inventory.containsAllOf(configSettings.requiredItems) && !configSettings.dontDrop));
     }
     @Override
     public void execute() {
-        Player player = Players.getLocal();
-        // if the player is in the area or if there is no area
-        if(botArea == null || botArea.contains(player)) {
-            if (player.getAnimationId() == -1 || player.isMoving()) {
-                // prevents spam clicking, but allows misclicks (misclicks are too rare to worry about too much.
-                // its either this or i have to maintain a list of Animation IDs that correspond to each action)
+        if (Inventory.containsAllOf(configSettings.requiredItems)) {
+            Player player = Players.getLocal();
+            if (player != null) {
+                // if the player is in the area or if they using a custom area
+                if (configSettings.radius != -1 || configSettings.botArea.contains(player)) {
+                    if (configSettings.radius != -1) {
+                        configSettings.botArea = new Area.Circular(player.getPosition(), configSettings.radius);
+                    }
+                    if (player.getAnimationId() == -1 || player.isMoving()) {
+                        // prevents spam clicking, but allows misclicks (misclicks are too rare to worry about too much.
+                        // its either this or i have to maintain a list of Animation IDs that correspond to each action)
 
-                globals.currentAction = actionIng + ' ' + itemName;
-                GameObject gameObject = GameObjects.newQuery().names(interactWithName).results().nearest();
-                Npc npc;
-                boolean notNull = false;
-                boolean isGameObject = false;
-                Interactable interactable = null;
-                Locatable locatable = null;
-                Validatable validatable = null;
-                if (gameObject != null && gameObject.getDefinition() != null) {
-                    interactable = gameObject;
-                    locatable = gameObject;
-                    validatable = gameObject;
-                    notNull = true;
-                    isGameObject = true;
-                } else if ((npc = Npcs.newQuery().names(interactWithName).results().nearest()) != null && npc.getDefinition() != null) {
-                    interactable = npc;
-                    locatable = npc;
-                    validatable = npc;
-                    notNull = true;
-                    isGameObject = false;
-                }
-                if (notNull) {
-                    if (interactable.isVisible()) {
-                        if (interactable.interact(actionName, interactWithName)) {
-                            // the bot has 3 seconds to click on something
-                            Execution.delayUntil(() -> (player.getAnimationId() != -1 || player.isMoving()), 3000);
-                            if (player.isMoving()) {
-                                Execution.delayUntil(() -> !player.isMoving());
-                                Execution.delay(1000); // a little more than a game tick because the game waits for up to 1 tick
-                            }
-                            // it clicked on something
-                            if (player.getAnimationId() != -1) {
-                                Validatable finalValidatable = validatable;
-                                if (isGameObject) {
-                                    Execution.delayUntil(() -> !finalValidatable.isValid() || player.getAnimationId() == -1);
-                                } else {
-                                    if (player.getTarget() != null) {
-                                        Execution.delayUntil(() -> player.getTarget() == null);
+                        globals.currentAction = configSettings.actionIng + ' ' + configSettings.itemName;
+                        GameObject gameObject = GameObjects.newQuery().names(configSettings.interactWithName).within(configSettings.botArea).results().nearest();
+                        Npc npc;
+                        boolean notNull = false;
+                        boolean isGameObject = false;
+                        Interactable interactable = null;
+                        Locatable locatable = null;
+                        Validatable validatable = null;
+                        if (gameObject != null && gameObject.getDefinition() != null) {
+                            interactable = gameObject;
+                            locatable = gameObject;
+                            validatable = gameObject;
+                            notNull = true;
+                            isGameObject = true;
+                        } else if ((npc = Npcs.newQuery().names(configSettings.interactWithName).within(configSettings.botArea).results().nearest()) != null && npc.getDefinition() != null) {
+                            interactable = npc;
+                            locatable = npc;
+                            validatable = npc;
+                            notNull = true;
+                            isGameObject = false;
+                        }
+                        if (notNull) {
+                            if (interactable.isVisible()) {
+                                if (interactable.interact(configSettings.actionName, configSettings.interactWithName)) {
+                                    // the bot has 3 seconds to click on something
+                                    Execution.delayUntil(() -> (player.getAnimationId() != -1 || player.isMoving()), 3000);
+                                    if (player.isMoving()) {
+                                        Execution.delayUntil(() -> !player.isMoving());
+                                        Execution.delay(1000); // a little more than a game tick because the game waits for up to 1 tick
+                                    }
+                                    // it clicked on something
+                                    if (player.getAnimationId() != -1) {
+                                        if (isGameObject) {
+                                            Validatable finalValidatable = validatable;
+                                            Execution.delayUntil(() -> !finalValidatable.isValid() || player.getAnimationId() == -1);
+                                        } else if (player.getTarget() != null) {
+                                            Execution.delayUntil(() -> player.getTarget() == null);
+                                        }
+                                    }
+                                }
+                            } else {
+                                globals.currentAction = "Turing to face " + configSettings.interactWithName;
+                                Camera.turnTo(locatable);
+                                if (!interactable.isVisible()) {
+                                    globals.currentAction = "Going to " + configSettings.interactWithName;
+                                    ViewportPath p;
+                                    p = ViewportPath.convert(RegionPath.buildTo(locatable));
+                                    if (p == null) {
+                                        WebPath wp = Traversal.getDefaultWeb().getPathBuilder().buildTo(locatable);
+                                        if (wp != null) {
+                                            wp.step();
+                                        }
+                                    }
+                                    // if Web path was done then p is still null and this will not run
+                                    if (p != null) {
+                                        p.step();
                                     }
                                 }
                             }
                         }
-                    } else {
-                        globals.currentAction = "Turing to face " + interactWithName;
-                        Camera.turnTo(locatable);
-                        if (!interactable.isVisible()) {
-                            globals.currentAction = "Going to " + interactWithName;
-                            ViewportPath p;
-                            p = ViewportPath.convert(RegionPath.buildTo(locatable));
-                            if (p == null) {
-                                WebPath wp = Traversal.getDefaultWeb().getPathBuilder().buildTo(locatable);
-                                if (wp != null) {
-                                    wp.step();
-                                }
-                            }
-                            // if Web path was done then p is still null and this will not run
-                            if (p != null) {
-                                p.step();
-                            }
-                        }
                     }
+                    // if the player is not in the area
+                } else {
+                    globals.currentAction = "Going to " + configSettings.botAreaName;
+                    methods.travelTo(configSettings.botArea.getRandomCoordinate(), player);
                 }
             }
-        // if the player is not in the area
         } else {
-            globals.currentAction = "Going to " + botAreaName;
-            methods.goToArea(botArea.getRandomCoordinate());
+            Methods.shutdownBot(globals, "Stopping bot - ran out of required items");
         }
     }
 }

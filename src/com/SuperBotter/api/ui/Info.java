@@ -1,8 +1,9 @@
-package com.SuperBotter.bots.SuperMiner.ui;
+package com.SuperBotter.api.ui;
 
-import com.SuperBotter.api.ui.InfoController;
-import com.SuperBotter.bots.SuperMiner.SuperMiner;
+import com.SuperBotter.api.ConfigSettings;
 import com.runemate.game.api.hybrid.util.Resources;
+import com.runemate.game.api.script.data.ScriptMetaData;
+import com.runemate.game.api.script.framework.core.BotPlatform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -22,20 +23,22 @@ import java.util.concurrent.Future;
  *  This will show various live stats on the bot
  *      (updated every time updateInfo() is run, which is run at the end of each task
  */
+
 public class Info extends GridPane implements Initializable {
 
-    private SuperMiner bot;
+    private ScriptMetaData metaData;
+    private ConfigSettings configSettings;
 
     @FXML
     private Text name_T, version_T, author_T, itemPerHourLabel_T, itemCountLabel_T, itemPerHour_T, itemCount_T, xpPerHour_T, xpGained_T, runtime_T, currentAction_T;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        name_T.textProperty().set(bot.getMetaData().getName());
-        version_T.textProperty().set("Version " + bot.getMetaData().getVersion());
-        author_T.textProperty().set("By " + bot.getMetaData().getAuthor());
-        itemPerHourLabel_T.textProperty().set(bot.oreName + " per hour: ");
-        itemCountLabel_T.textProperty().set(bot.oreName + " mined: ");
+        name_T.textProperty().set(metaData.getName());
+        version_T.textProperty().set("Version " + metaData.getVersion());
+        author_T.textProperty().set("By " + metaData.getAuthor());
+        itemPerHourLabel_T.textProperty().set(configSettings.itemName + " per hour: ");
+        itemCountLabel_T.textProperty().set(configSettings.itemName + " caught: ");
         setVisible(true);
     }
 
@@ -43,15 +46,16 @@ public class Info extends GridPane implements Initializable {
     // listeners to. In this case the property contains our controller class
     // (this)
 
-    public Info(SuperMiner bot) {
-        this.bot = bot;
+    public Info(BotPlatform botPlatform, ScriptMetaData metaData, ConfigSettings configSettings) {
+        this.metaData = metaData;
+        this.configSettings = configSettings;
 
         // Load the fxml file using RuneMate's Resources class.
         FXMLLoader loader = new FXMLLoader();
 
         // Input your Info FXML file location here.
         // NOTE: DO NOT FORGET TO ADD IT TO MANIFEST AS A RESOURCE
-        Future<InputStream> stream = bot.getPlatform().invokeLater(() -> Resources.getAsStream("com/SuperBotter/api/ui/Info.fxml"));
+        Future<InputStream> stream = botPlatform.invokeLater(() -> Resources.getAsStream("com/SuperBotter/api/ui/Info.fxml"));
 
         // Set this class as root AND Controller for the Java FX GUI
         loader.setController(this);
@@ -65,9 +69,9 @@ public class Info extends GridPane implements Initializable {
     }
 
     // This method will update the text that is presented to the end user
-    public void update() {
+    public void update(InfoController infoController) {
         try {
-            InfoController i = bot.infoController;
+            InfoController i = infoController;
 
             itemPerHour_T.textProperty().set("" + i.itemPerHour);
             itemCount_T.textProperty().set("" + i.itemCount);

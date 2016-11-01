@@ -1,10 +1,10 @@
 package com.SuperBotter.bots.SuperMiner.ui;
 
 import com.SuperBotter.api.Banks;
-import com.SuperBotter.bots.SuperMiner.SuperMiner;
+import com.SuperBotter.api.ConfigSettings;
 import com.runemate.game.api.hybrid.location.Area;
 import com.runemate.game.api.hybrid.location.Coordinate;
-import javafx.application.Platform;
+import com.runemate.game.api.script.data.ScriptMetaData;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -12,9 +12,11 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.Slider;
 import javafx.scene.text.Text;
 
 import java.net.URL;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 /**
@@ -25,10 +27,11 @@ import java.util.ResourceBundle;
  *      Only the start button and the ore selector needs to be disabled, but this way makes the user keep on going down the list of options
  *  When location is chosen, ores at that mine are allowed to be chosen
  *  Then the user can decide if they want to bank the ores they mine or powermine
- *  Then the user can press start and the bot will begin, following the options they selected
+ *  Then the user can press start and the configSettings will begin, following the options they selected
  */
-class ConfigController implements Initializable {
-    private SuperMiner bot;
+public class ConfigController implements Initializable {
+    private ScriptMetaData metaData;
+    private ConfigSettings configSettings;
 
     // ComboBox
     @FXML
@@ -46,20 +49,25 @@ class ConfigController implements Initializable {
     private RadioButton Power_BT;
 
     @FXML
-    private Text name_T, version_T, author_T;
+    private Text name_T, version_T, author_T, radius_T, radiusValue_T, bankOrPower_T;
 
-    ConfigController(SuperMiner bot) {
-        this.bot = bot;
+    @FXML
+    private Slider radius_S;
+
+    public ConfigController(ScriptMetaData metaData, ConfigSettings configSettings) {
+        this.metaData = metaData;
+        this.configSettings = configSettings;
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        name_T.textProperty().set(bot.getMetaData().getName());
-        version_T.textProperty().set("Version " + bot.getMetaData().getVersion());
-        author_T.textProperty().set("By " + bot.getMetaData().getAuthor());
+        name_T.textProperty().set(metaData.getName());
+        version_T.textProperty().set("Version " + metaData.getVersion());
+        author_T.textProperty().set("By " + metaData.getAuthor());
         Item_ComboBox.promptTextProperty().set("Ore");
         Power_BT.textProperty().set("Powermine");
         Location_ComboBox.getItems().addAll(
+                "Custom Location (powermining only)",
                 "Draynor",
                 "Falador south-west",
                 "Lumbridge Swamp east",
@@ -71,19 +79,24 @@ class ConfigController implements Initializable {
         Start_BT.setOnAction(getStart_BTAction());
         Bank_BT.setOnAction(getBank_BTAction());
         Power_BT.setOnAction(getPower_BTAction());
-
         Location_ComboBox.setOnAction(getLocation_ComboBoxEvent());
         Item_ComboBox.setOnAction(getItem_ComboBoxEvent());
-        bot.guiWait = false;
+
+        // custom radius
+        radius_T.setVisible(false);
+        radius_S.setVisible(false);
+        radiusValue_T.setVisible(false);
+        radius_S.valueProperty().addListener((observable, oldValue, newValue) -> {
+            configSettings.radius = (int)radius_S.getValue();
+            radiusValue_T.textProperty().set(String.valueOf(configSettings.radius));
+        });
+        configSettings.guiWait = false;
     }
 
     private EventHandler<ActionEvent> getStart_BTAction() {
         return event -> {
             try {
-                bot.startButtonPressed = true;
-                // Set the EmbeddableUI property to reflect your InfoController GUI
-                Platform.runLater(() -> bot.setToInfoProperty());
-
+                configSettings.startButtonPressed = true;
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -93,7 +106,7 @@ class ConfigController implements Initializable {
         return event -> {
             try {
                 Power_BT.setSelected(false);
-                bot.dontDrop = true;
+                configSettings.dontDrop = true;
                 Start_BT.setDisable(false);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -104,15 +117,15 @@ class ConfigController implements Initializable {
         return event -> {
             try {
                 Bank_BT.setSelected(false);
-                bot.dontDrop = false;
+                configSettings.dontDrop = false;
                 Start_BT.setDisable(false);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         };
     }
-    private EventHandler<ActionEvent> getLocation_ComboBoxEvent(){
-        return event ->{
+    private EventHandler<ActionEvent> getLocation_ComboBoxEvent() {
+        return event -> {
             Item_ComboBox.getSelectionModel().clearSelection();
             Item_ComboBox.getItems().clear();
             Start_BT.setDisable(true);
@@ -120,56 +133,75 @@ class ConfigController implements Initializable {
             Power_BT.setDisable(true);
             Bank_BT.setSelected(false);
             Power_BT.setSelected(false);
-            if(Location_ComboBox.getSelectionModel().getSelectedItem() != null) {
-                switch(Location_ComboBox.getSelectionModel().getSelectedItem().toString()){
-                    /* Commented out until I figure out how to handle doors in a non mine specific way so that it works
-                           for all mines that are behind doors, stairs, ladders, etc.
-                    */
-                    /*
+            bankOrPower_T.setVisible(true);
+            radius_T.setVisible(false);
+            radius_S.setVisible(false);
+            radiusValue_T.setVisible(false);
+            if (Location_ComboBox.getSelectionModel().getSelectedItem() != null) {
+                switch (Location_ComboBox.getSelectionModel().getSelectedItem().toString()) {
+                    case "Custom Location (powermining only)":
+                        configSettings.botArea = null;
+                        configSettings.bank = null;
+                        Power_BT.setDisable(true);
+                        Bank_BT.setDisable(true);
+                        Power_BT.setSelected(true);
+                        Bank_BT.setSelected(false);
+                        bankOrPower_T.setVisible(false);
+                        radius_T.setVisible(true);
+                        radius_S.setVisible(true);
+                        radiusValue_T.setVisible(true);
+                        configSettings.dontDrop = false;
+                        Item_ComboBox.getItems().addAll("Adamantite ore", "Clay", "Coal", "Copper ore", "Iron ore", "Mithril ore", "Runite ore", "Silver ore");
+                        break;
+                    /* Commented out until the default web supports the crafting guild or until I learn how to use custom webs
                     case "Crafting Guild":
-                        bot.mineArea = new Area.Rectangular(new Coordinate(2943, 3291, 0), new Coordinate(2937, 3276, 0));
-                        bot.bank = new Banks("Clan Camp");
-                        Ore_ComboBox.getItems().addAll("Clay", "Silver ore", "Gold ore");
+                        configSettings.botArea = new Area.Rectangular(new Coordinate(2943, 3291, 0), new Coordinate(2937, 3276, 0));
+                        configSettings.bank = new Banks(Banks.BankName.CLAN_CAMP);
+                        Item_ComboBox.getItems().addAll("Clay", "Silver ore", "Gold ore");
                         break;
                     */
                     case "Draynor":
-                        bot.mineArea = new Area.Rectangular(new Coordinate(3138, 3315, 0), new Coordinate(3143, 3320, 0));
-                        bot.bank = new Banks(Banks.BankName.CABBAGE_FACEPUNCH_BONANZA);
+                        configSettings.botArea = new Area.Rectangular(new Coordinate(3138, 3315, 0), new Coordinate(3143, 3320, 0));
+                        configSettings.bank = new Banks(Banks.BankName.CABBAGE_FACEPUNCH_BONANZA);
                         Item_ComboBox.getItems().addAll("Clay");
                         break;
                     case "Falador south-west":
-                        bot.mineArea = new Area.Rectangular(new Coordinate(2930, 3340, 0), new Coordinate(2922, 3334, 0));
-                        bot.bank = new Banks(Banks.BankName.CLAN_CAMP);
+                        configSettings.botArea = new Area.Rectangular(new Coordinate(2930, 3340, 0), new Coordinate(2922, 3334, 0));
+                        configSettings.bank = new Banks(Banks.BankName.CLAN_CAMP);
                         Item_ComboBox.getItems().addAll("Copper ore", "Tin ore", "Iron ore", "Coal");
                         break;
                     case "Lumbridge Swamp east":
-                        bot.mineArea = new Area.Rectangular(new Coordinate(3233, 3151, 0), new Coordinate(3223, 3145, 0));
-                        bot.bank = new Banks(Banks.BankName.AL_KHARID);
+                        configSettings.botArea = new Area.Rectangular(new Coordinate(3233, 3151, 0), new Coordinate(3223, 3145, 0));
+                        configSettings.bank = new Banks(Banks.BankName.AL_KHARID);
                         Item_ComboBox.getItems().addAll("Copper ore", "Tin ore");
                         new Banks(Banks.BankName.AL_KHARID);
                         break;
                     case "Lumbridge Swamp west":
-                        bot.mineArea = new Area.Rectangular(new Coordinate(3149, 3152, 0), new Coordinate(3144, 3144, 0));
-                        bot.bank = new Banks(Banks.BankName.DRAYNOR);
+                        configSettings.botArea = new Area.Rectangular(new Coordinate(3149, 3152, 0), new Coordinate(3144, 3144, 0));
+                        configSettings.bank = new Banks(Banks.BankName.DRAYNOR);
                         Item_ComboBox.getItems().addAll("Coal", "Mithril ore", "Adamantite ore");
                         break;
                     case "Rimmington":
-                        bot.mineArea = new Area.Rectangular(new Coordinate(2981, 3242, 0), new Coordinate(2964, 3229, 0));
-                        bot.bank = new Banks(Banks.BankName.CLAN_CAMP);
+                        configSettings.botArea = new Area.Rectangular(new Coordinate(2981, 3242, 0), new Coordinate(2964, 3229, 0));
+                        configSettings.bank = new Banks(Banks.BankName.CLAN_CAMP);
                         Item_ComboBox.getItems().addAll("Copper ore", "Tin ore", "Clay", "Gold ore", "Iron ore");
                         break;
                     case "Varrock south-east":
-                        bot.mineArea = new Area.Rectangular(new Coordinate(3280, 3361, 0), new Coordinate(3291, 3371, 0));
-                        bot.bank = new Banks(Banks.BankName.VARROCK_EAST);
+                        configSettings.botArea = new Area.Rectangular(new Coordinate(3280, 3361, 0), new Coordinate(3291, 3371, 0));
+                        configSettings.bank = new Banks(Banks.BankName.VARROCK_EAST);
                         Item_ComboBox.getItems().addAll("Copper ore", "Tin ore", "Iron ore");
                         break;
                     case "Varrock south-west":
-                        bot.mineArea = new Area.Rectangular(new Coordinate(3171, 3364, 0), new Coordinate(3188, 3380, 0));
-                        bot.bank = new Banks(Banks.BankName.VARROCK_WEST);
+                        configSettings.botArea = new Area.Rectangular(new Coordinate(3171, 3364, 0), new Coordinate(3188, 3380, 0));
+                        configSettings.bank = new Banks(Banks.BankName.VARROCK_WEST);
                         Item_ComboBox.getItems().addAll("Clay", "Tin ore", "Silver ore", "Iron ore");
                         break;
                 }
-                bot.mineName = Location_ComboBox.getSelectionModel().getSelectedItem().toString() + " mine";
+                if (Objects.equals(Location_ComboBox.getSelectionModel().getSelectedItem().toString(), "Custom Location (powermining only)")) {
+                    configSettings.botAreaName = null;
+                } else {
+                    configSettings.botAreaName = Location_ComboBox.getSelectionModel().getSelectedItem().toString() + " mine";
+                }
                 Item_ComboBox.setDisable(false);
             } else {
                 Item_ComboBox.setDisable(true);
@@ -182,10 +214,19 @@ class ConfigController implements Initializable {
             Bank_BT.setSelected(false);
             Power_BT.setSelected(false);
             if(Item_ComboBox.getSelectionModel().getSelectedItem() != null) {
-                bot.oreName = Item_ComboBox.getSelectionModel().getSelectedItem().toString();
-                bot.oreRockName = bot.oreName + " rocks";
-                Bank_BT.setDisable(false);
-                Power_BT.setDisable(false);
+                configSettings.itemName = Item_ComboBox.getSelectionModel().getSelectedItem().toString();
+                configSettings.interactWithName = configSettings.itemName + " rocks";
+                if (Objects.equals(Location_ComboBox.getSelectionModel().getSelectedItem().toString(), "Custom Location (powermining only)")) {
+                    Power_BT.setDisable(true);
+                    Bank_BT.setDisable(true);
+                    Power_BT.setSelected(true);
+                    Bank_BT.setSelected(false);
+                    configSettings.dontDrop = false;
+                    Start_BT.setDisable(false);
+                } else {
+                    Bank_BT.setDisable(false);
+                    Power_BT.setDisable(false);
+                }
             } else {
                 Bank_BT.setDisable(true);
                 Power_BT.setDisable(true);

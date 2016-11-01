@@ -1,25 +1,25 @@
 package com.SuperBotter.bots.SuperMiner;
 
-import com.SuperBotter.api.Banks;
+import com.SuperBotter.api.ConfigSettings;
 import com.SuperBotter.api.Globals;
 import com.SuperBotter.api.Methods;
 import com.SuperBotter.api.tasks.Drop;
 import com.SuperBotter.api.tasks.NonMenuAction;
 import com.SuperBotter.api.tasks.Store;
+import com.SuperBotter.api.ui.Config;
+import com.SuperBotter.api.ui.Info;
 import com.SuperBotter.api.ui.InfoController;
-import com.SuperBotter.bots.SuperMiner.ui.Config;
-import com.SuperBotter.bots.SuperMiner.ui.Info;
+import com.SuperBotter.bots.SuperMiner.ui.ConfigController;
 import com.runemate.game.api.client.embeddable.EmbeddableUI;
 import com.runemate.game.api.hybrid.GameEvents;
 import com.runemate.game.api.hybrid.entities.definitions.ItemDefinition;
 import com.runemate.game.api.hybrid.local.Skill;
-import com.runemate.game.api.hybrid.location.Area;
 import com.runemate.game.api.hybrid.util.StopWatch;
 import com.runemate.game.api.hybrid.util.calculations.CommonMath;
 import com.runemate.game.api.script.Execution;
 import com.runemate.game.api.script.framework.listeners.InventoryListener;
 import com.runemate.game.api.script.framework.listeners.events.ItemEvent;
-import com.runemate.game.api.script.framework.task.TaskScript;
+import com.runemate.game.api.script.framework.task.TaskBot;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -29,48 +29,45 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class SuperMiner extends TaskScript implements EmbeddableUI, InventoryListener{
+public class SuperMiner extends TaskBot implements EmbeddableUI, InventoryListener{
     // General variables and statistics
     private int startingXP;
 
-    public Area mineArea;
-    public String mineName;
-    public Boolean dontDrop;
-    public String oreRockName;
-    public String oreName;
-    private long oreCount = 0;
+    private long itemCount = 0;
 
     private StopWatch stopWatch = new StopWatch();
 
     // GUI variables
-    public InfoController infoController;
+    private InfoController infoController;
     private Info info;
     private SimpleObjectProperty<Node> botInterfaceProperty;
-    public Boolean guiWait = true;
-    public Boolean startButtonPressed = false;
     private ScheduledExecutorService executor;
 
     private Globals globals;
     private Methods methods;
-    public Banks bank;
+    private ConfigSettings configSettings;
 
     public SuperMiner() {
         startingXP = Skill.MINING.getExperience();
         globals = new Globals();
         methods = new Methods();
+        configSettings = new ConfigSettings();
+        configSettings.actionName = "Mine";
+        configSettings.actionIng = "Mining";
+        itemCount = 0;
         executor = Executors.newScheduledThreadPool(1);
         setEmbeddableUI(this);
     }
     @Override
     public ObjectProperty<? extends Node> botInterfaceProperty() {
         if (botInterfaceProperty == null) {
-            botInterfaceProperty = new SimpleObjectProperty<>(new Config(this));
+            botInterfaceProperty = new SimpleObjectProperty<>(new Config(new ConfigController(getMetaData(), configSettings), getPlatform()));
         }
         return botInterfaceProperty;
     }
     // When called, switch the botInterfaceProperty to reflect the Info
-    public void setToInfoProperty(){
-        info = new Info(this);
+    private void setToInfoProperty(){
+        info = new Info(getPlatform(), getMetaData(), configSettings);
         botInterfaceProperty.set(info);
         executor.scheduleAtFixedRate(updateInfo, 0, 1, TimeUnit.SECONDS);
     }
@@ -80,8 +77,8 @@ public class SuperMiner extends TaskScript implements EmbeddableUI, InventoryLis
             try {
                 // Assign all values to a new instance of the InfoController class
                 infoController = new InfoController(
-                        (long) CommonMath.rate(TimeUnit.HOURS, stopWatch.getRuntime(), oreCount), // Ore per hour
-                        oreCount,                                                                 // Ore mined
+                        (long) CommonMath.rate(TimeUnit.HOURS, stopWatch.getRuntime(), itemCount), // Ore per hour
+                        itemCount,                                                                 // Ore mined
                         (long) CommonMath.rate(TimeUnit.HOURS, stopWatch.getRuntime(), (Skill.MINING.getExperience() - startingXP)),
                         (Skill.MINING.getExperience() - startingXP),
                         stopWatch.getRuntimeAsString(),                                           // Total Runtime
@@ -94,8 +91,7 @@ public class SuperMiner extends TaskScript implements EmbeddableUI, InventoryLis
             // Be sure to run info.update() through runLater.
             // This will run info.update() on the dedicated JavaFX thread which is the only thread allowed to update
             // anything related to JavaFX rendering
-            Platform.runLater(() -> info.update());
-
+            Platform.runLater(() -> info.update(infoController));
         }
     };
     @Override
@@ -103,8 +99,8 @@ public class SuperMiner extends TaskScript implements EmbeddableUI, InventoryLis
         if (event != null) {
             ItemDefinition definition = event.getItem().getDefinition();
             if (definition != null) {
-                if (oreName != null && definition.getName().contains(oreName)) {
-                    oreCount++;
+                if (configSettings.itemName != null && definition.getName().contains(configSettings.itemName)) {
+                    itemCount++;
                 }
             }
         }
@@ -114,35 +110,37 @@ public class SuperMiner extends TaskScript implements EmbeddableUI, InventoryLis
         stopWatch.reset();
         GameEvents.RS3.UNEXPECTED_ITEM_HANDLER.disable();
         getEventDispatcher().addListener(this);
-        if (!Execution.delayUntil(() -> !guiWait, 60000)) {
+        if (!Execution.delayUntil(() -> !configSettings.guiWait, 60000)) {
             System.err.println("Still waiting for GUI after a minute, stopping.");
             stop();
             return;
         }
-        Execution.delayUntil(() -> (startButtonPressed));
+        Execution.delayUntil(() -> (configSettings.startButtonPressed));
+        // Set the EmbeddableUI property to reflect your InfoController GUI
+        Platform.runLater(() -> setToInfoProperty());
         setLoopDelay(100, 300); // in ms (1000ms = 1s)
-        add(new NonMenuAction(globals, methods, mineArea, mineName, oreName, oreRockName, "Mine", "Mining"));
-        if (dontDrop) {
-            add(new Store(globals, methods, bank, new String[0]));
+        add(new NonMenuAction(globals, configSettings, methods));
+        if (configSettings.dontDrop) {
+            add(new Store(globals, configSettings, methods, new String[0]));
         } else {
             add(new Drop(globals, new String[0]));
         }
-
         // there's no point in adding the time it takes for the user to config the bot
         stopWatch.start();
     }
     @Override
     public void onPause() {
         stopWatch.stop();
+        globals.currentAction = "Paused";
     }
     @Override
     public void onResume() {
         stopWatch.start();
+        globals.currentAction = "Resuming";
     }
     @Override
     public void onStop() {
         stopWatch.stop();
-        stopWatch.reset();
         globals.botIsStopped = true;
         executor.shutdown();
     }
