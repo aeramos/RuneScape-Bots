@@ -67,8 +67,10 @@ public class ConfigController implements Initializable {
         Power_BT.textProperty().set("Powerfish");
         Location_ComboBox.getItems().addAll(
                 "Custom Location (powerfishing only)",
+                "Al Kharid west",
+                "Lum Bridge",
                 "Lumbridge Church",
-                "Lum Bridge"
+                "Lumbridge Swamp east"
         );
         Start_BT.setOnAction(getStart_BTAction());
         Bank_BT.setOnAction(getBank_BTAction());
@@ -131,6 +133,7 @@ public class ConfigController implements Initializable {
             radius_T.setVisible(false);
             radius_S.setVisible(false);
             radiusValue_T.setVisible(false);
+            configSettings.radius = -1;
             if(Location_ComboBox.getSelectionModel().getSelectedItem() != null) {
                 switch(Location_ComboBox.getSelectionModel().getSelectedItem().toString()){
                     case "Custom Location (powerfishing only)":
@@ -146,17 +149,27 @@ public class ConfigController implements Initializable {
                         radiusValue_T.setVisible(true);
                         configSettings.radius = 10; // the default amount
                         configSettings.dontDrop = false;
-                        Item_ComboBox.getItems().addAll("Raw crayfish", "Raw pike", "Raw salmon", "Raw trout");
+                        Item_ComboBox.getItems().addAll("Raw anchovies", "Raw crayfish", "Raw herring", "Raw pike", "Raw salmon", "Raw sardine", "Raw shrimps", "Raw trout");
+                        break;
+                    case "Al Kharid west":
+                        configSettings.botArea = new Area.Rectangular(new Coordinate(3255, 3159, 0), new Coordinate(3258, 3164, 0));
+                        configSettings.bank = new Banks(Banks.BankName.AL_KHARID);
+                        Item_ComboBox.getItems().addAll("Raw anchovies", "Raw herring", "Raw sardine", "Raw shrimps");
+                        break;
+                    case "Lum Bridge":
+                        configSettings.botArea = new Area.Rectangular(new Coordinate(3239, 3241, 0), new Coordinate(3242, 3257, 0));
+                        configSettings.bank = new Banks(Banks.BankName.COMBAT_ACADEMY);
+                        Item_ComboBox.getItems().addAll("Raw pike", "Raw salmon", "Raw trout");
                         break;
                     case "Lumbridge Church":
                         configSettings.botArea = new Area.Rectangular(new Coordinate(3256, 3203, 0), new Coordinate(3258, 3207, 0));
                         configSettings.bank = new Banks(Banks.BankName.COMBAT_ACADEMY);
                         Item_ComboBox.getItems().addAll("Raw crayfish");
                         break;
-                    case "Lum Bridge":
-                        configSettings.botArea = new Area.Rectangular(new Coordinate(3239, 3241, 0), new Coordinate(3242, 3257, 0));
+                    case "Lumbridge Swamp east":
+                        configSettings.botArea = new Area.Rectangular(new Coordinate(3239, 3146, 0), new Coordinate(3246, 3157, 0));
                         configSettings.bank = new Banks(Banks.BankName.COMBAT_ACADEMY);
-                        Item_ComboBox.getItems().addAll("Raw pike", "Raw salmon", "Raw trout");
+                        Item_ComboBox.getItems().addAll("Raw anchovies", "Raw herring", "Raw sardine", "Raw shrimps");
                         break;
                 }
                 configSettings.botAreaName = Location_ComboBox.getSelectionModel().getSelectedItem().toString() + " fishing spot";
@@ -184,6 +197,13 @@ public class ConfigController implements Initializable {
             if(Item_ComboBox.getSelectionModel().getSelectedItem() != null) {
                 configSettings.itemName = Item_ComboBox.getSelectionModel().getSelectedItem().toString();
                 switch (configSettings.itemName) {
+                    case "Raw anchovies":
+                    case "Raw shrimps":
+                        configSettings.actionName = "Net";
+                        configSettings.actionIng = "Netting";
+                        configSettings.requiredItems = new String[] {};
+                        configSettings.requiredItemsAmount = new int[] {};
+                        break;
                     case "Raw crayfish":
                     case "Raw lobster":
                         configSettings.actionName = "Cage";
@@ -191,7 +211,9 @@ public class ConfigController implements Initializable {
                         configSettings.requiredItems = new String[] {};
                         configSettings.requiredItemsAmount = new int[] {};
                         break;
+                    case "Raw herring":
                     case "Raw pike":
+                    case "Raw sardine":
                         configSettings.actionName = "Bait";
                         configSettings.actionIng = "Baiting";
                         configSettings.requiredItems = new String[] {"Fishing bait"};

@@ -137,6 +137,7 @@ public class ConfigController implements Initializable {
             radius_T.setVisible(false);
             radius_S.setVisible(false);
             radiusValue_T.setVisible(false);
+            configSettings.radius = -1;
             if (Location_ComboBox.getSelectionModel().getSelectedItem() != null) {
                 switch (Location_ComboBox.getSelectionModel().getSelectedItem().toString()) {
                     case "Custom Location (powermining only)":
