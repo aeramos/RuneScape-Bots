@@ -7,10 +7,12 @@ import com.runemate.game.api.hybrid.local.hud.interfaces.Inventory;
 import com.runemate.game.api.hybrid.location.Coordinate;
 import com.runemate.game.api.hybrid.location.navigation.Path;
 import com.runemate.game.api.hybrid.location.navigation.Traversal;
+import com.runemate.game.api.hybrid.location.navigation.basic.BresenhamPath;
 import com.runemate.game.api.hybrid.location.navigation.cognizant.RegionPath;
 import com.runemate.game.api.hybrid.location.navigation.web.Web;
 import com.runemate.game.api.hybrid.location.navigation.web.WebPath;
 import com.runemate.game.api.hybrid.location.navigation.web.WebPathBuilder;
+import com.runemate.game.api.hybrid.region.Region;
 import com.runemate.game.api.script.Execution;
 
 import java.util.ArrayList;
@@ -20,30 +22,36 @@ public class Methods {
     public Methods() {
         webPathBuilder = Traversal.getDefaultWeb().getPathBuilder();
     }
-    public void travelTo(Coordinate destination, Player player) {
+    public Path getPathTo(Coordinate destination, Player player) {
+        Path p = null;
+        // if the player isn't moving
         if (player != null && !player.isMoving()) {
-            Path p = RegionPath.buildTo(destination);
-            if (p == null) {
-                WebPath wp = webPathBuilder.buildTo(destination);
-                if (wp != null) {
-                    wp.step();
-                }
+            // if the destination is in the region
+            if (Region.getArea().contains(destination)) {
+                p = RegionPath.buildTo(destination);
             } else {
-                p.step();
+                p = webPathBuilder.buildTo(destination);
+            }
+            // last resort
+            if (p == null) {
+                p = BresenhamPath.buildTo(destination);
             }
         }
+        return p;
     }
-    public void travelTo(Coordinate destination, Web customWeb, Player player) {
+    public Path getPathTo(Coordinate destination, Player player, Web customWeb) {
+        WebPath p = null;
         if (player != null && !player.isMoving()) {
             if (customWeb != null) {
-                WebPath webPath = customWeb.getPathBuilder().buildTo(destination);
-                if (webPath != null) {
-                    webPath.step();
-                    return;
-                }
+                p = customWeb.getPathBuilder().buildTo(destination);
             }
-            // fallback to the default web
-            travelTo(destination, player);
+        } else {
+            return null;
+        }
+        if (p != null) {
+            return p;
+        } else {
+            return getPathTo(destination, player);
         }
     }
     public static boolean playerIsInWeb(Player player, Web web) {

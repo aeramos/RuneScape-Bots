@@ -37,6 +37,7 @@ public class Store extends Task {
             bankIsOpen = Execution.delayUntil(() -> Bank.open(), 5000);
         }
         if (configSettings.bank.area.contains(Players.getLocal()) || bankIsOpen) {
+            globals.path = null; // the bot is no longer following this path, so it can be reset
             if (bankIsOpen) {
                 if (Inventory.isFull()) {
                     if (dontDeposit.length != 0) {
@@ -87,7 +88,12 @@ public class Store extends Task {
             }
         } else {
             globals.currentAction = "Going to " + configSettings.bank.name;
-            methods.travelTo(configSettings.bank.area.getRandomCoordinate(), Players.getLocal());
+            if (globals.path == null) {
+                globals.path = methods.getPathTo(configSettings.botArea.getRandomCoordinate(), Players.getLocal());
+            }
+            if (globals.path != null) {
+                globals.path.step();
+            }
         }
     }
 }

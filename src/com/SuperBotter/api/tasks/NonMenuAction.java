@@ -46,6 +46,7 @@ public class NonMenuAction extends Task {
             if (player != null) {
                 // if the player is in the area or if they using a custom area
                 if (configSettings.radius != -1 || configSettings.botArea.contains(player)) {
+                    globals.path = null; // the bot is no longer following this path, so it can be reset
                     if (configSettings.radius != -1) {
                         configSettings.botArea = new Area.Circular(player.getPosition(), configSettings.radius);
                     }
@@ -117,7 +118,12 @@ public class NonMenuAction extends Task {
                     // if the player is not in the area
                 } else {
                     globals.currentAction = "Going to " + configSettings.botAreaName;
-                    methods.travelTo(configSettings.botArea.getRandomCoordinate(), player);
+                    if (globals.path == null) {
+                        globals.path = methods.getPathTo(configSettings.botArea.getRandomCoordinate(), player);
+                    }
+                    if (globals.path != null) {
+                        globals.path.step();
+                    }
                 }
             }
         } else {
