@@ -154,7 +154,7 @@ public class ConfigController implements Initializable {
                         radiusValue_T.setVisible(true);
                         configSettings.radius = 10; // the default amount
                         configSettings.dontDrop = false;
-                        Item_ComboBox.getItems().addAll("Adamantite ore", "Clay", "Coal", "Copper ore", "Iron ore", "Mithril ore", "Runite ore", "Silver ore");
+                        Item_ComboBox.getItems().addAll("Adamantite ore", "Clay", "Coal", "Copper ore", "Gold ore", "Iron ore", "Mithril ore", "Runite ore", "Silver ore", "Tin ore");
                         break;
                     case "Al Kharid":
                         configSettings.botArea = new Area.Rectangular(new Coordinate(3292, 3285, 0), new Coordinate(3309, 3315, 0));
