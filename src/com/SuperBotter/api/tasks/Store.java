@@ -89,7 +89,7 @@ public class Store extends Task {
         } else {
             globals.currentAction = "Going to " + configSettings.bank.name;
             if (globals.path == null) {
-                globals.path = methods.getPathTo(configSettings.botArea.getRandomCoordinate(), Players.getLocal());
+                globals.path = methods.getPathTo(configSettings.bank.area.getRandomCoordinate(), Players.getLocal());
             }
             if (globals.path != null) {
                 globals.path.step();

@@ -4,10 +4,9 @@ import com.SuperBotter.api.ConfigSettings;
 import com.SuperBotter.api.Globals;
 import com.SuperBotter.api.Methods;
 import com.runemate.game.api.hybrid.entities.GameObject;
+import com.runemate.game.api.hybrid.entities.LocatableEntity;
 import com.runemate.game.api.hybrid.entities.Npc;
 import com.runemate.game.api.hybrid.entities.Player;
-import com.runemate.game.api.hybrid.entities.details.Interactable;
-import com.runemate.game.api.hybrid.entities.details.Locatable;
 import com.runemate.game.api.hybrid.local.Camera;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Bank;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Inventory;
@@ -54,30 +53,25 @@ public class NonMenuAction extends Task {
                         // prevents spam clicking, but allows misclicks (misclicks are too rare to worry about too much.
                         // its either this or i have to maintain a list of Animation IDs that correspond to each action)
 
+                        // can probably be optimized further
                         globals.currentAction = configSettings.actionIng + ' ' + configSettings.itemName;
                         GameObject gameObject = GameObjects.newQuery().names(configSettings.interactWithName).within(configSettings.botArea).results().nearest();
                         Npc npc;
                         boolean notNull = false;
                         boolean isGameObject = false;
-                        Interactable interactable = null;
-                        Locatable locatable = null;
-                        Validatable validatable = null;
+                        LocatableEntity locatableEntity = null;
                         if (gameObject != null && gameObject.getDefinition() != null) {
-                            interactable = gameObject;
-                            locatable = gameObject;
-                            validatable = gameObject;
+                            locatableEntity = gameObject;
                             notNull = true;
                             isGameObject = true;
                         } else if ((npc = Npcs.newQuery().names(configSettings.interactWithName).within(configSettings.botArea).results().nearest()) != null && npc.getDefinition() != null) {
-                            interactable = npc;
-                            locatable = npc;
-                            validatable = npc;
+                            locatableEntity = npc;
                             notNull = true;
                             isGameObject = false;
                         }
                         if (notNull) {
-                            if (interactable.isVisible()) {
-                                if (interactable.interact(configSettings.actionName, configSettings.interactWithName)) {
+                            if (locatableEntity.isVisible()) {
+                                if (locatableEntity.interact(configSettings.actionName, configSettings.interactWithName)) {
                                     // the bot has 3 seconds to click on something
                                     Execution.delayUntil(() -> (player.getAnimationId() != -1 || player.isMoving()), 3000);
                                     if (player.isMoving()) {
@@ -87,8 +81,8 @@ public class NonMenuAction extends Task {
                                     // it clicked on something
                                     if (player.getAnimationId() != -1) {
                                         if (isGameObject) {
-                                            Validatable finalValidatable = validatable;
-                                            Execution.delayUntil(() -> !finalValidatable.isValid() || player.getAnimationId() == -1);
+                                            Validatable finalLocatableEntity = locatableEntity;
+                                            Execution.delayUntil(() -> !finalLocatableEntity.isValid() || player.getAnimationId() == -1);
                                         } else if (player.getTarget() != null) {
                                             Execution.delayUntil(() -> player.getTarget() == null);
                                         }
@@ -96,13 +90,13 @@ public class NonMenuAction extends Task {
                                 }
                             } else {
                                 globals.currentAction = "Turing to face " + configSettings.interactWithName;
-                                Camera.turnTo(locatable);
-                                if (!interactable.isVisible()) {
+                                Camera.turnTo(locatableEntity);
+                                if (!locatableEntity.isVisible()) {
                                     globals.currentAction = "Going to " + configSettings.interactWithName;
                                     ViewportPath p;
-                                    p = ViewportPath.convert(RegionPath.buildTo(locatable));
+                                    p = ViewportPath.convert(RegionPath.buildTo(locatableEntity));
                                     if (p == null) {
-                                        WebPath wp = Traversal.getDefaultWeb().getPathBuilder().buildTo(locatable);
+                                        WebPath wp = Traversal.getDefaultWeb().getPathBuilder().buildTo(locatableEntity);
                                         if (wp != null) {
                                             wp.step();
                                         }

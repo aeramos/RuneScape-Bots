@@ -68,6 +68,7 @@ public class ConfigController implements Initializable {
         Power_BT.textProperty().set("Powermine");
         Location_ComboBox.getItems().addAll(
                 "Custom Location (powermining only)",
+                "Al Kharid",
                 "Draynor",
                 "Falador south-west",
                 "Lumbridge Swamp east",
@@ -155,11 +156,16 @@ public class ConfigController implements Initializable {
                         configSettings.dontDrop = false;
                         Item_ComboBox.getItems().addAll("Adamantite ore", "Clay", "Coal", "Copper ore", "Iron ore", "Mithril ore", "Runite ore", "Silver ore");
                         break;
+                    case "Al Kharid":
+                        configSettings.botArea = new Area.Rectangular(new Coordinate(3292, 3285, 0), new Coordinate(3309, 3315, 0));
+                        configSettings.bank = new Banks(Banks.BankName.AL_KHARID);
+                        Item_ComboBox.getItems().addAll("Adamantite ore", "Coal", "Copper ore", "Gold ore", "Iron ore", "Mithril ore", "Silver ore", "Tin ore");
+                        break;
                     /* Commented out until the default web supports the crafting guild or until I learn how to use custom webs
                     case "Crafting Guild":
                         configSettings.botArea = new Area.Rectangular(new Coordinate(2943, 3291, 0), new Coordinate(2937, 3276, 0));
                         configSettings.bank = new Banks(Banks.BankName.CLAN_CAMP);
-                        Item_ComboBox.getItems().addAll("Clay", "Silver ore", "Gold ore");
+                        Item_ComboBox.getItems().addAll("Clay", "Gold ore", "Silver ore");
                         break;
                     */
                     case "Draynor":
@@ -170,7 +176,7 @@ public class ConfigController implements Initializable {
                     case "Falador south-west":
                         configSettings.botArea = new Area.Rectangular(new Coordinate(2930, 3340, 0), new Coordinate(2922, 3334, 0));
                         configSettings.bank = new Banks(Banks.BankName.CLAN_CAMP);
-                        Item_ComboBox.getItems().addAll("Copper ore", "Tin ore", "Iron ore", "Coal");
+                        Item_ComboBox.getItems().addAll("Coal", "Copper ore", "Iron ore", "Tin ore");
                         break;
                     case "Lumbridge Swamp east":
                         configSettings.botArea = new Area.Rectangular(new Coordinate(3233, 3151, 0), new Coordinate(3223, 3145, 0));
@@ -181,22 +187,22 @@ public class ConfigController implements Initializable {
                     case "Lumbridge Swamp west":
                         configSettings.botArea = new Area.Rectangular(new Coordinate(3149, 3152, 0), new Coordinate(3144, 3144, 0));
                         configSettings.bank = new Banks(Banks.BankName.DRAYNOR);
-                        Item_ComboBox.getItems().addAll("Coal", "Mithril ore", "Adamantite ore");
+                        Item_ComboBox.getItems().addAll("Adamantite ore", "Coal", "Mithril ore");
                         break;
                     case "Rimmington":
                         configSettings.botArea = new Area.Rectangular(new Coordinate(2981, 3242, 0), new Coordinate(2964, 3229, 0));
                         configSettings.bank = new Banks(Banks.BankName.CLAN_CAMP);
-                        Item_ComboBox.getItems().addAll("Copper ore", "Tin ore", "Clay", "Gold ore", "Iron ore");
+                        Item_ComboBox.getItems().addAll("Clay", "Copper ore", "Gold ore", "Iron ore", "Tin ore");
                         break;
                     case "Varrock south-east":
                         configSettings.botArea = new Area.Rectangular(new Coordinate(3280, 3361, 0), new Coordinate(3291, 3371, 0));
                         configSettings.bank = new Banks(Banks.BankName.VARROCK_EAST);
-                        Item_ComboBox.getItems().addAll("Copper ore", "Tin ore", "Iron ore");
+                        Item_ComboBox.getItems().addAll("Copper ore", "Iron ore", "Tin ore");
                         break;
                     case "Varrock south-west":
                         configSettings.botArea = new Area.Rectangular(new Coordinate(3171, 3364, 0), new Coordinate(3188, 3380, 0));
                         configSettings.bank = new Banks(Banks.BankName.VARROCK_WEST);
-                        Item_ComboBox.getItems().addAll("Clay", "Tin ore", "Silver ore", "Iron ore");
+                        Item_ComboBox.getItems().addAll("Clay", "Iron ore", "Silver ore", "Tin ore");
                         break;
                 }
                 if (Objects.equals(Location_ComboBox.getSelectionModel().getSelectedItem().toString(), "Custom Location (powermining only)")) {
