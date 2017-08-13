@@ -76,7 +76,7 @@ public class SuperCookingGuildDoor extends TaskBot implements EmbeddableUI{
     @Override
     public void onStart(String... args) {
         stopWatch.reset();
-        GameEvents.RS3.UNEXPECTED_ITEM_HANDLER.disable();
+        GameEvents.Universal.UNEXPECTED_ITEM_HANDLER.disable();
         setLoopDelay(0);
         Execution.delayUntil(() -> info != null);
         executor.scheduleAtFixedRate(updateInfo, 0, 1, TimeUnit.SECONDS);

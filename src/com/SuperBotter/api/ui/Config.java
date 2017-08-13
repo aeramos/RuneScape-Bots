@@ -1,10 +1,13 @@
 package com.SuperBotter.api.ui;
 
+import com.runemate.game.api.client.ClientUI;
+import com.runemate.game.api.hybrid.Environment;
 import com.runemate.game.api.hybrid.util.Resources;
 import com.runemate.game.api.script.framework.core.BotPlatform;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,7 +25,7 @@ public class Config extends GridPane implements Initializable {
         setVisible(true);
     }
 
-    public Config(Object configController, BotPlatform botPlatform) {
+    public Config(Object configController, BotPlatform botPlatform, String botName) {
         // Load the fxml file using RuneMate's Resources class.
         FXMLLoader loader = new FXMLLoader();
 
@@ -39,9 +42,9 @@ public class Config extends GridPane implements Initializable {
 
         try {
             loader.load(stream.get());
-        } catch (IOException | InterruptedException | ExecutionException e) {
-            System.err.println("Error loading GUI");
-            e.printStackTrace();
+        } catch (IOException | InterruptedException | ExecutionException | NullPointerException e) {
+            ClientUI.showAlert(botName + ": Unable to load GUI. Please restart the bot.", Color.RED);
+            Environment.getBot().stop();
         }
 
     }

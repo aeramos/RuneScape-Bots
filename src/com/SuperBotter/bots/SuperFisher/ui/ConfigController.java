@@ -2,6 +2,7 @@ package com.SuperBotter.bots.SuperFisher.ui;
 
 import com.SuperBotter.api.Banks;
 import com.SuperBotter.api.ConfigSettings;
+import com.SuperBotter.api.RequiredItems;
 import com.runemate.game.api.hybrid.location.Area;
 import com.runemate.game.api.hybrid.location.Coordinate;
 import com.runemate.game.api.script.data.ScriptMetaData;
@@ -32,6 +33,8 @@ import java.util.ResourceBundle;
 public class ConfigController implements Initializable {
     private ScriptMetaData metaData;
     private ConfigSettings configSettings;
+    private RequiredItems requiredItems;
+
     // ComboBox
     @FXML
     private ComboBox Location_ComboBox;
@@ -53,9 +56,10 @@ public class ConfigController implements Initializable {
     @FXML
     private Slider radius_S;
 
-    public ConfigController(ScriptMetaData metaData, ConfigSettings configSettings) {
+    public ConfigController(ScriptMetaData metaData, ConfigSettings configSettings, RequiredItems requiredItems) {
         this.metaData = metaData;
         this.configSettings = configSettings;
+        this.requiredItems = requiredItems;
     }
 
     @Override
@@ -196,43 +200,36 @@ public class ConfigController implements Initializable {
             }
             if(Item_ComboBox.getSelectionModel().getSelectedItem() != null) {
                 configSettings.itemName = Item_ComboBox.getSelectionModel().getSelectedItem().toString();
+                requiredItems.reset();
                 switch (configSettings.itemName) {
                     case "Raw anchovies":
                     case "Raw shrimps":
                         configSettings.actionName = "Net";
                         configSettings.actionIng = "Netting";
-                        configSettings.requiredItems = new String[] {};
-                        configSettings.requiredItemsAmount = new int[] {};
                         break;
                     case "Raw crayfish":
                     case "Raw lobster":
                         configSettings.actionName = "Cage";
                         configSettings.actionIng = "Caging";
-                        configSettings.requiredItems = new String[] {};
-                        configSettings.requiredItemsAmount = new int[] {};
                         break;
                     case "Raw herring":
                     case "Raw pike":
                     case "Raw sardine":
                         configSettings.actionName = "Bait";
                         configSettings.actionIng = "Baiting";
-                        configSettings.requiredItems = new String[] {"Fishing bait"};
-                        configSettings.requiredItemsAmount = new int[] {0};
+                        requiredItems.add("Fishing bait", 0);
                         break;
                     case "Raw salmon":
                     case "Raw trout":
                         configSettings.actionName = "Lure";
                         configSettings.actionIng = "Luring";
-                        configSettings.requiredItems = new String[] {"Feather"};
-                        configSettings.requiredItemsAmount = new int[] {0};
+                        requiredItems.add("Feather", 0);
                         break;
                     case "Raw tuna":
                     case "Raw swordfish":
                     case "Raw shark":
                         configSettings.actionName = "Harpoon";
                         configSettings.actionIng = "Harpooning";
-                        configSettings.requiredItems = new String[] {};
-                        configSettings.requiredItemsAmount = new int[] {};
                         break;
                 }
             } else {

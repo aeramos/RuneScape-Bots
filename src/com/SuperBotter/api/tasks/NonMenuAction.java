@@ -3,6 +3,8 @@ package com.SuperBotter.api.tasks;
 import com.SuperBotter.api.ConfigSettings;
 import com.SuperBotter.api.Globals;
 import com.SuperBotter.api.Methods;
+import com.SuperBotter.api.RequiredItems;
+import com.runemate.game.api.hybrid.RuneScape;
 import com.runemate.game.api.hybrid.entities.GameObject;
 import com.runemate.game.api.hybrid.entities.LocatableEntity;
 import com.runemate.game.api.hybrid.entities.Npc;
@@ -20,27 +22,34 @@ import com.runemate.game.api.hybrid.region.Npcs;
 import com.runemate.game.api.hybrid.region.Players;
 import com.runemate.game.api.hybrid.util.Validatable;
 import com.runemate.game.api.script.Execution;
+import com.runemate.game.api.script.framework.LoopingBot;
 import com.runemate.game.api.script.framework.task.Task;
 
 public class NonMenuAction extends Task {
+    private LoopingBot bot;
     private Globals globals;
     private ConfigSettings configSettings;
     private Methods methods;
+    private RequiredItems requiredItems;
 
-    public NonMenuAction(Globals globals, ConfigSettings configSettings, Methods methods) {
+    public NonMenuAction(LoopingBot bot, Globals globals, ConfigSettings configSettings, Methods methods, RequiredItems requiredItems) {
+        this.bot = bot;
         this.globals = globals;
         this.methods = methods;
         this.configSettings = configSettings;
+        this.requiredItems = requiredItems;
     }
 
     @Override
     public boolean validate() {
-        // if the inventory is not full, the player isn't banking, and the inventory contains the required items
-        return !Inventory.isFull() && !Bank.isOpen() && (Inventory.containsAllOf(configSettings.requiredItems) || (!Inventory.containsAllOf(configSettings.requiredItems) && !configSettings.dontDrop));
+        // if the inventory is not full, the bot isn't dropping, the player isn't banking, and the inventory contains the required items / isn't banking
+        return RuneScape.isLoggedIn() && !globals.isDropping && !Inventory.isFull() && !Bank.isOpen() && (requiredItems.getMissingItems().length == 0 || !configSettings.dontDrop);
     }
     @Override
     public void execute() {
-        if (Inventory.containsAllOf(configSettings.requiredItems)) {
+        bot.setLoopDelay(100, 300);
+        // if the player has all of the items it needs
+        if (requiredItems.getMissingItems().length == 0) {
             Player player = Players.getLocal();
             if (player != null) {
                 // if the player is in the area or if they using a custom area

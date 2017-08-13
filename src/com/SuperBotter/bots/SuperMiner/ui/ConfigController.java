@@ -161,7 +161,7 @@ public class ConfigController implements Initializable {
                         configSettings.bank = new Banks(Banks.BankName.AL_KHARID);
                         Item_ComboBox.getItems().addAll("Adamantite ore", "Coal", "Copper ore", "Gold ore", "Iron ore", "Mithril ore", "Silver ore", "Tin ore");
                         break;
-                    /* Commented out until the default web supports the crafting guild or until I learn how to use custom webs
+                    /*// Commented out until the default web supports the crafting guild or until I learn how to use custom webs
                     case "Crafting Guild":
                         configSettings.botArea = new Area.Rectangular(new Coordinate(2943, 3291, 0), new Coordinate(2937, 3276, 0));
                         configSettings.bank = new Banks(Banks.BankName.CLAN_CAMP);

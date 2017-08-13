@@ -1,6 +1,7 @@
 package com.SuperBotter.api.tasks;
 
 import com.SuperBotter.api.Globals;
+import com.SuperBotter.api.RequiredItems;
 import com.runemate.game.api.hybrid.input.Keyboard;
 import com.runemate.game.api.hybrid.input.Mouse;
 import com.runemate.game.api.hybrid.local.hud.interfaces.InterfaceWindows;
@@ -10,94 +11,112 @@ import com.runemate.game.api.hybrid.queries.results.SpriteItemQueryResults;
 import com.runemate.game.api.rs3.local.hud.interfaces.eoc.ActionBar;
 import com.runemate.game.api.rs3.queries.results.ActionBarQueryResults;
 import com.runemate.game.api.script.Execution;
+import com.runemate.game.api.script.framework.LoopingBot;
 import com.runemate.game.api.script.framework.task.Task;
 
 import java.util.Objects;
 
 public class Drop extends Task {
+    private LoopingBot bot;
     private Globals globals;
-    private String[] requiredItems;
+    private RequiredItems requiredItems;
 
-    public Drop(Globals globals, String[] requiredItems) {
+    public Drop(LoopingBot bot, Globals globals, RequiredItems requiredItems) {
+        this.bot = bot;
         this.globals = globals;
         this.requiredItems = requiredItems;
     }
 
     @Override
     public boolean validate() {
-        // if the inventory is full
-        return Inventory.isFull();
+        if (globals.isDropping || Inventory.isFull()) {
+            globals.isDropping = true;
+            return true;
+        } else {
+            return false;
+        }
     }
+
+    /*  Iterate through inventory items
+        If it is not a required item, drop + break (end task & restart)
+    */
     @Override
     public void execute() {
-        boolean droppingDone = false;
-        while (!droppingDone) {
-            Keyboard.type(" ", false); // press space just in case the full inventory prompt is in the chatbox
-            SpriteItemQueryResults originalInv = Inventory.newQuery().results();
-            for (int i = 0; i < originalInv.size(); i++) {
-                boolean canDrop = true;
-                SpriteItemQueryResults currentInv = Inventory.newQuery().results();
-                if (currentInv.size() <= i) {
-                    i = 0;
-                }
-                // if the current item in the inventory is an item the bot needs, don't drop it
-                String currentItemName = currentInv.get(i).getDefinition().getName();
-                for (int j = 0; j < requiredItems.length; j++) {
-                    if (Objects.equals(currentItemName, requiredItems[j])) {
-                        canDrop = false;
-                    }
-                }
-                if (canDrop) {
-                    // if the first inventory action is "Drop" (can drop with the action bar keybind)
-                    if (Objects.equals(currentInv.get(i).getDefinition().getInventoryActions().get(0), "Drop")) {
-                        ActionBarQueryResults initialItemOnBar = ActionBar.newQuery().names(currentItemName).results();
-                        // if the item is not on the action bar
-                        if (initialItemOnBar == null || initialItemOnBar.size() == 0) {
-                            ActionBarQueryResults emptySlots = ActionBar.getEmptySlots();
-                            // if there are empty slots on the action bar
-                            if (emptySlots != null && emptySlots.size() != 0 && emptySlots.get(0) != null) {
-                                globals.currentAction = "Dragging " + currentItemName + " to Action Bar";
-                                final int j = i;
-                                // drag item to Action Bar for no longer than 5 seconds
-                                Execution.delayUntil(() -> Mouse.drag(currentInv.get(j), emptySlots.get(0).getBounds(), Mouse.Button.LEFT), 5000);
+        bot.setLoopDelay(50, 100);
+        // scan the inv for stuff to drop
+        SpriteItemQueryResults inventory = Inventory.newQuery().results();
+        Keyboard.type(" ", false); // press space just in case the full inventory prompt is in the chatbox
+        if (inventory != null) {
+            for (int i = 0; i < inventory.size(); i++) {
+                SpriteItem item = inventory.get(i);
+                if (item != null) {
+                    String itemName = item.getDefinition().getName();
+                    boolean dontDrop = false;
+                    if (requiredItems.getNumberOfItems() > 0) {
+                        for (int j = 0; j < requiredItems.getNumberOfItems(); j++) {
+                            if (Objects.equals(itemName, requiredItems.getName(j))) {
+                                dontDrop = true;
+                                break; // no need to keep scanning the required items if we already found a match
                             }
                         }
-                        ActionBarQueryResults itemOnBar = ActionBar.newQuery().names(currentItemName).results();
-                        // if the item is on the action bar
-                        if (itemOnBar != null && itemOnBar.size() != 0) {
-                            // drop it with the action bar
-                            actionBarDrop(itemOnBar);
-                        }
                     }
-                    SpriteItemQueryResults itemInInventory = Inventory.newQuery().names(currentItemName).results();
-                    // if the item is still in the inventory (it never got on the action bar or the drop failed)
-                    if (itemInInventory != null && itemInInventory.size() != 0) {
-                        // manually drop it
-                        manuallyDrop(itemInInventory);
+                    if (!dontDrop) {
+                        dropItem(item);
+                        return; // leave the for loop after the item is dropped so the inventory gets refreshed
                     }
                 }
-                if (!Inventory.containsAnyExcept(requiredItems) || globals.botIsStopped) {
-                    droppingDone = true;
-                    break;
+            }
+            // After it has iterated through all the items and nothing was dropped, its time to stop droppping
+            globals.isDropping = false;
+        }
+    }
+
+    private void dropItem(SpriteItem item) {
+        String itemName = item.getDefinition().getName();
+        if (Inventory.getQuantity(itemName) > 1) {
+            ActionBarQueryResults actionBar = getActionBar(itemName);
+            if (actionBar != null) {
+                actionBarDrop(actionBar);
+            } else {
+                if (!moveToActionBar(item, itemName)) {
+                    manuallyDrop(item, itemName);
+                }
+            }
+        } else {
+            manuallyDrop(item, itemName);
+        }
+    }
+
+    private ActionBarQueryResults getActionBar(String itemName) {
+        ActionBarQueryResults queryResults = ActionBar.newQuery().names(itemName).results();
+        if (queryResults != null && queryResults.size() != 0 && queryResults.get(0) != null) {
+            return queryResults;
+        } else {
+            return null;
+        }
+    }
+
+    private boolean moveToActionBar(SpriteItem item, String itemName) {
+        ActionBarQueryResults emptySlots = ActionBar.newQuery().filled(false).empty(true).results();
+        // if there are empty slots on the action bar
+        if (emptySlots != null && emptySlots.size() != 0) {
+            for (int i = 0; i < emptySlots.size(); i++) {
+                // code to bypass actionbar bug
+                // Link: https://www.runemate.com/community/threads/13693/
+                if (emptySlots.get(i) != null && emptySlots.get(i).getName() == null) {
+                    globals.currentAction = "Dragging " + itemName + " to Action Bar";
+                    // drag item to Action Bar for no longer than 5 seconds
+                    return Execution.delayUntil(() -> Mouse.drag(item, emptySlots.get(0).getBounds(), Mouse.Button.LEFT), 5000);
                 }
             }
         }
+        return false; // if it has reached this part of the code that means that there were no empty slots
     }
-    private void manuallyDrop(SpriteItemQueryResults itemsToDrop) {
-        if (!(itemsToDrop == null || itemsToDrop.isEmpty())) {
+    private void manuallyDrop(SpriteItem itemToDrop, String itemName) {
+        if (itemToDrop != null) {
+            globals.currentAction = "Dropping " + itemName + " manually";
             if (InterfaceWindows.getInventory().isOpen()) {
-                Execution.delayUntil(() -> {
-                    for (SpriteItem item : itemsToDrop) {
-                        globals.currentAction = "Dropping " + item.getDefinition().getName() + " manually";
-                        // drop them
-                        if (item.interact("Drop")) {
-                            // wait until the player is ready to drop another or until 3 seconds have passed
-                            Execution.delayUntil(() -> !item.isValid(), 3000);
-                        }
-                    }
-                    return true;
-                }, 60000);
-                // if the inventory is closed
+                Execution.delayUntil(() -> itemToDrop.interact("Drop"));
             } else {
                 // open the inventory
                 InterfaceWindows.getInventory().open();
@@ -105,7 +124,7 @@ public class Drop extends Task {
         }
     }
     private void actionBarDrop(ActionBarQueryResults itemsToDrop) {
-        if (!(itemsToDrop == null || itemsToDrop.isEmpty())) {
+        if (itemsToDrop != null && !itemsToDrop.isEmpty()) {
             for (int i = 0; i < itemsToDrop.size(); i++) {
                 if (itemsToDrop.get(i) != null) {
                     globals.currentAction = "Dropping " + itemsToDrop.get(i).getName() + " with the Action Bar";
@@ -113,8 +132,21 @@ public class Drop extends Task {
                     if (keybind != null) {
                         final int j = i; // delay can't use non-final variables
                         Keyboard.pressKey(keybind.codePointAt(0)); // hold the Action Bar keybind
-                        Execution.delayUntil(() -> !Inventory.contains(itemsToDrop.get(j).getName()), 30000);
+                        Execution.delayUntil(() -> !Inventory.contains(itemsToDrop.get(j).getName()), 10000);
                         Keyboard.releaseKey(keybind.codePointAt(0));
+                    } else {
+                        final int j = i;
+                        Execution.delayUntil(() -> {
+                            for (int k = 0; k < Inventory.getQuantity(itemsToDrop.get(j).getName()); k++) {
+                                if (Inventory.contains(itemsToDrop.get(j).getName())) {
+                                    Execution.delay(100, 150);
+                                    itemsToDrop.get(j).interact("Drop");
+                                } else {
+                                    return true;
+                                }
+                            }
+                            return true;
+                        }, 40000);
                     }
                 }
             }

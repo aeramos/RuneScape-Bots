@@ -1,6 +1,8 @@
 package com.SuperBotter.api.ui;
 
 import com.SuperBotter.api.ConfigSettings;
+import com.runemate.game.api.client.ClientUI;
+import com.runemate.game.api.hybrid.Environment;
 import com.runemate.game.api.hybrid.util.Resources;
 import com.runemate.game.api.script.data.ScriptMetaData;
 import com.runemate.game.api.script.framework.core.BotPlatform;
@@ -8,6 +10,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
 import java.io.IOException;
@@ -65,8 +68,9 @@ public class Info extends GridPane implements Initializable {
 
         try {
             loader.load(stream.get());
-        } catch (IOException | InterruptedException | ExecutionException e) {
-            e.printStackTrace();
+        } catch (IOException | InterruptedException | ExecutionException | NullPointerException e) {
+            ClientUI.showAlert(metaData.getName() + ": Unable to load GUI. Please restart the bot.", Color.RED);
+            Environment.getBot().stop();
         }
     }
 
@@ -82,7 +86,7 @@ public class Info extends GridPane implements Initializable {
             runtime_T.textProperty().set("" + i.runtime);
             currentAction_T.textProperty().set(i.currentAction);
 
-        }catch(Exception e){
+        } catch(Exception e){
             e.printStackTrace();
         }
     }

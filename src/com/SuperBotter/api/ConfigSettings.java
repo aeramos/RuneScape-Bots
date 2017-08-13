@@ -11,8 +11,6 @@ public class ConfigSettings {
     public boolean guiWait = true;
     public boolean startButtonPressed = false;
     public boolean dontDrop;
-    public String[] requiredItems = new String[]{};
-    public int[] requiredItemsAmount = new int[]{};
     public int radius = -1;
     public Area botArea;
     public String botAreaName = null;
