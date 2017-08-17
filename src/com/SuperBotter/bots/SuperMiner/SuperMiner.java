@@ -68,7 +68,7 @@ public class SuperMiner extends TaskBot implements EmbeddableUI, InventoryListen
     @Override
     public ObjectProperty<? extends Node> botInterfaceProperty() {
         if (botInterfaceProperty == null) {
-            botInterfaceProperty = new SimpleObjectProperty<>(new Config(new ConfigController(getMetaData(), configSettings), getPlatform(), getMetaData().getName()));
+            botInterfaceProperty = new SimpleObjectProperty<>(new Config(new ConfigController(getMetaData(), configSettings), getPlatform(), Environment.getBot()));
         }
         return botInterfaceProperty;
     }

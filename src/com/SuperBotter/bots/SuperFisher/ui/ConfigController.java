@@ -1,6 +1,6 @@
 package com.SuperBotter.bots.SuperFisher.ui;
 
-import com.SuperBotter.api.Banks;
+import com.SuperBotter.api.Bank;
 import com.SuperBotter.api.ConfigSettings;
 import com.SuperBotter.api.RequiredItems;
 import com.runemate.game.api.hybrid.location.Area;
@@ -157,22 +157,22 @@ public class ConfigController implements Initializable {
                         break;
                     case "Al Kharid west":
                         configSettings.botArea = new Area.Rectangular(new Coordinate(3255, 3159, 0), new Coordinate(3258, 3164, 0));
-                        configSettings.bank = new Banks(Banks.BankName.AL_KHARID);
+                        configSettings.bank = new Bank(Bank.BankName.AL_KHARID);
                         Item_ComboBox.getItems().addAll("Raw anchovies", "Raw herring", "Raw sardine", "Raw shrimps");
                         break;
                     case "Lum Bridge":
                         configSettings.botArea = new Area.Rectangular(new Coordinate(3239, 3241, 0), new Coordinate(3242, 3257, 0));
-                        configSettings.bank = new Banks(Banks.BankName.COMBAT_ACADEMY);
+                        configSettings.bank = new Bank(Bank.BankName.COMBAT_ACADEMY);
                         Item_ComboBox.getItems().addAll("Raw pike", "Raw salmon", "Raw trout");
                         break;
                     case "Lumbridge Church":
                         configSettings.botArea = new Area.Rectangular(new Coordinate(3256, 3203, 0), new Coordinate(3258, 3207, 0));
-                        configSettings.bank = new Banks(Banks.BankName.COMBAT_ACADEMY);
+                        configSettings.bank = new Bank(Bank.BankName.COMBAT_ACADEMY);
                         Item_ComboBox.getItems().addAll("Raw crayfish");
                         break;
                     case "Lumbridge Swamp east":
                         configSettings.botArea = new Area.Rectangular(new Coordinate(3239, 3146, 0), new Coordinate(3246, 3157, 0));
-                        configSettings.bank = new Banks(Banks.BankName.COMBAT_ACADEMY);
+                        configSettings.bank = new Bank(Bank.BankName.COMBAT_ACADEMY);
                         Item_ComboBox.getItems().addAll("Raw anchovies", "Raw herring", "Raw sardine", "Raw shrimps");
                         break;
                 }

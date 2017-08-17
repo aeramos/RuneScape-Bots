@@ -3,16 +3,16 @@ package com.SuperBotter.api;
 import com.runemate.game.api.hybrid.location.Area;
 import com.runemate.game.api.hybrid.location.Coordinate;
 
-public class Banks {
+public class Bank {
     public enum BankName {
-        AL_KHARID, CABBAGE_FACEPUNCH_BONANZA, CLAN_CAMP, COMBAT_ACADEMY, DRAYNOR, VARROCK_EAST, VARROCK_WEST
+        AL_KHARID, CABBAGE_FACEPUNCH_BONANZA, CLAN_CAMP, COMBAT_ACADEMY, DRAYNOR, FALADOR_EAST, SHATTERED_WORLDS, VARROCK_EAST, VARROCK_WEST
     }
 
     public Area area;
     public String name;
     public String type;
 
-    public Banks(BankName bankName) {
+    public Bank(BankName bankName) {
         switch (bankName) {
             case AL_KHARID:
                 area = new Area.Rectangular(new Coordinate(3272, 3168, 0), new Coordinate(3268, 3161, 0));
@@ -33,6 +33,16 @@ public class Banks {
                 area = new Area.Circular(new Coordinate(3215, 3257, 0), 5);
                 name = "Combat Academy bank chest";
                 type = "Bank chest";
+                break;
+            case FALADOR_EAST:
+                area = new Area.Rectangular(new Coordinate(3009, 3355, 0), new Coordinate(3018, 3358, 0));
+                name = "Falador East bank";
+                type = "Bank booth";
+                break;
+            case SHATTERED_WORLDS:
+                area = new Area.Circular(new Coordinate(3174, 3149, 0), 5);
+                name = "Shattered Worlds bank";
+                type = "Banker";
                 break;
             case DRAYNOR:
                 area = new Area.Rectangular(new Coordinate(3097, 3246, 0), new Coordinate(3092, 3240, 0));

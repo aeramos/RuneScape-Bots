@@ -14,7 +14,7 @@ public class ConfigSettings {
     public int radius = -1;
     public Area botArea;
     public String botAreaName = null;
-    public Banks bank = null;
+    public Bank bank = null;
     public String itemName = null;
     public String interactWithName = null;
     public String actionName = null;

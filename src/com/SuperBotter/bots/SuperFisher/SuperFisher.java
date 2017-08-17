@@ -67,7 +67,7 @@ public class SuperFisher extends TaskBot implements EmbeddableUI, InventoryListe
     @Override
     public ObjectProperty<? extends Node> botInterfaceProperty() {
         if (botInterfaceProperty == null) {
-            botInterfaceProperty = new SimpleObjectProperty<>(new Config(new ConfigController(getMetaData(), configSettings, requiredItems), getPlatform(), getMetaData().getName()));
+            botInterfaceProperty = new SimpleObjectProperty<>(new Config(new ConfigController(getMetaData(), configSettings, requiredItems), getPlatform(), Environment.getBot()));
         }
         return botInterfaceProperty;
     }
