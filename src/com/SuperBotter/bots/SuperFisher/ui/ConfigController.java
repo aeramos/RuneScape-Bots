@@ -2,7 +2,7 @@ package com.SuperBotter.bots.SuperFisher.ui;
 
 import com.SuperBotter.api.Bank;
 import com.SuperBotter.api.ConfigSettings;
-import com.SuperBotter.api.RequiredItems;
+import com.SuperBotter.api.ProtectedItems;
 import com.runemate.game.api.hybrid.location.Area;
 import com.runemate.game.api.hybrid.location.Coordinate;
 import com.runemate.game.api.script.data.ScriptMetaData;
@@ -33,7 +33,7 @@ import java.util.ResourceBundle;
 public class ConfigController implements Initializable {
     private ScriptMetaData metaData;
     private ConfigSettings configSettings;
-    private RequiredItems requiredItems;
+    private ProtectedItems protectedItems;
 
     // ComboBox
     @FXML
@@ -56,10 +56,10 @@ public class ConfigController implements Initializable {
     @FXML
     private Slider radius_S;
 
-    public ConfigController(ScriptMetaData metaData, ConfigSettings configSettings, RequiredItems requiredItems) {
+    public ConfigController(ScriptMetaData metaData, ConfigSettings configSettings, ProtectedItems protectedItems) {
         this.metaData = metaData;
         this.configSettings = configSettings;
-        this.requiredItems = requiredItems;
+        this.protectedItems = protectedItems;
     }
 
     @Override
@@ -200,7 +200,7 @@ public class ConfigController implements Initializable {
             }
             if(Item_ComboBox.getSelectionModel().getSelectedItem() != null) {
                 configSettings.itemName = Item_ComboBox.getSelectionModel().getSelectedItem().toString();
-                requiredItems.reset();
+                protectedItems.reset();
                 switch (configSettings.itemName) {
                     case "Raw anchovies":
                     case "Raw shrimps":
@@ -217,13 +217,13 @@ public class ConfigController implements Initializable {
                     case "Raw sardine":
                         configSettings.actionName = "Bait";
                         configSettings.actionIng = "Baiting";
-                        requiredItems.add("Fishing bait", 0);
+                        protectedItems.add("Fishing bait", 0, 2);
                         break;
                     case "Raw salmon":
                     case "Raw trout":
                         configSettings.actionName = "Lure";
                         configSettings.actionIng = "Luring";
-                        requiredItems.add("Feather", 0);
+                        protectedItems.add("Feather", 0, 2);
                         break;
                     case "Raw tuna":
                     case "Raw swordfish":
