@@ -3,7 +3,7 @@ package com.SuperBotter.bots.SuperFisher;
 import com.SuperBotter.api.ConfigSettings;
 import com.SuperBotter.api.Globals;
 import com.SuperBotter.api.Methods;
-import com.SuperBotter.api.RequiredItems;
+import com.SuperBotter.api.ProtectedItems;
 import com.SuperBotter.api.tasks.Drop;
 import com.SuperBotter.api.tasks.NonMenuAction;
 import com.SuperBotter.api.tasks.Store;
@@ -51,7 +51,7 @@ public class SuperFisher extends TaskBot implements EmbeddableUI, InventoryListe
     private Globals globals;
     private Methods methods;
     private ConfigSettings configSettings;
-    private RequiredItems requiredItems;
+    private ProtectedItems protectedItems;
 
     public SuperFisher() {
         startingXP = Skill.FISHING.getExperience();
@@ -59,7 +59,7 @@ public class SuperFisher extends TaskBot implements EmbeddableUI, InventoryListe
         methods = new Methods();
         configSettings = new ConfigSettings();
         configSettings.interactWithName = "Fishing spot";
-        requiredItems = new RequiredItems();
+        protectedItems = new ProtectedItems();
         itemCount = 0;
         executor = Executors.newScheduledThreadPool(1);
         setEmbeddableUI(this);
@@ -67,7 +67,7 @@ public class SuperFisher extends TaskBot implements EmbeddableUI, InventoryListe
     @Override
     public ObjectProperty<? extends Node> botInterfaceProperty() {
         if (botInterfaceProperty == null) {
-            botInterfaceProperty = new SimpleObjectProperty<>(new Config(new ConfigController(getMetaData(), configSettings, requiredItems), getPlatform(), Environment.getBot()));
+            botInterfaceProperty = new SimpleObjectProperty<>(new Config(new ConfigController(getMetaData(), configSettings, protectedItems), getPlatform(), Environment.getBot()));
         }
         return botInterfaceProperty;
     }
@@ -128,14 +128,15 @@ public class SuperFisher extends TaskBot implements EmbeddableUI, InventoryListe
             return;
         }
         Execution.delayUntil(() -> (configSettings.startButtonPressed));
+        protectedItems.add("Strange rock", 0, 0);
         // Set the EmbeddableUI property to reflect your InfoController GUI
         Platform.runLater(() -> setToInfoProperty());
         setLoopDelay(0);
-        add(new NonMenuAction((LoopingBot)Environment.getBot(), globals, configSettings, methods, requiredItems));
+        add(new NonMenuAction((LoopingBot)Environment.getBot(), globals, configSettings, methods, protectedItems));
         if (configSettings.dontDrop) {
-            add(new Store((LoopingBot)Environment.getBot(), globals, configSettings, methods, requiredItems));
+            add(new Store((LoopingBot)Environment.getBot(), globals, configSettings, methods, protectedItems));
         } else {
-            add(new Drop((LoopingBot)Environment.getBot(), globals, requiredItems));
+            add(new Drop((LoopingBot)Environment.getBot(), globals, protectedItems));
         }
         // there's no point in adding the time it takes for the user to config the bot
         stopWatch.start();

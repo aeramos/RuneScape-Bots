@@ -14,6 +14,8 @@ import com.runemate.game.api.hybrid.location.navigation.web.WebPathBuilder;
 import com.runemate.game.api.hybrid.region.Region;
 import com.runemate.game.api.script.Execution;
 
+import java.lang.reflect.Array;
+
 public class Methods {
     private WebPathBuilder webPathBuilder;
     public Methods() {
@@ -63,5 +65,17 @@ public class Methods {
             Execution.delayUntil(() -> !RuneScape.isLoggedIn(), 7500);
         }
         Environment.getBot().stop();
+    }
+
+    public static <T> T[] concatenate (T[] a, T[] b) {
+        int aLength = a.length;
+        int bLength = b.length;
+
+        @SuppressWarnings("unchecked")
+        T[] c = (T[]) Array.newInstance(a.getClass().getComponentType(), aLength+bLength);
+        System.arraycopy(a, 0, c, 0, aLength);
+        System.arraycopy(b, 0, c, aLength, bLength);
+
+        return c;
     }
 }

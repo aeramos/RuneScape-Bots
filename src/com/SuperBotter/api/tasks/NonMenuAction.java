@@ -3,7 +3,7 @@ package com.SuperBotter.api.tasks;
 import com.SuperBotter.api.ConfigSettings;
 import com.SuperBotter.api.Globals;
 import com.SuperBotter.api.Methods;
-import com.SuperBotter.api.RequiredItems;
+import com.SuperBotter.api.ProtectedItems;
 import com.runemate.game.api.hybrid.RuneScape;
 import com.runemate.game.api.hybrid.entities.GameObject;
 import com.runemate.game.api.hybrid.entities.LocatableEntity;
@@ -30,26 +30,26 @@ public class NonMenuAction extends Task {
     private Globals globals;
     private ConfigSettings configSettings;
     private Methods methods;
-    private RequiredItems requiredItems;
+    private ProtectedItems protectedItems;
 
-    public NonMenuAction(LoopingBot bot, Globals globals, ConfigSettings configSettings, Methods methods, RequiredItems requiredItems) {
+    public NonMenuAction(LoopingBot bot, Globals globals, ConfigSettings configSettings, Methods methods, ProtectedItems protectedItems) {
         this.bot = bot;
         this.globals = globals;
         this.methods = methods;
         this.configSettings = configSettings;
-        this.requiredItems = requiredItems;
+        this.protectedItems = protectedItems;
     }
 
     @Override
     public boolean validate() {
         // if the inventory is not full, the bot isn't dropping, the player isn't banking, and the inventory contains the required items / isn't banking
-        return RuneScape.isLoggedIn() && !globals.isDropping && !Inventory.isFull() && !Bank.isOpen() && (requiredItems.getMissingItems().length == 0 || !configSettings.dontDrop);
+        return RuneScape.isLoggedIn() && !globals.isDropping && !Inventory.isFull() && !Bank.isOpen() && (protectedItems.getMissingRequiredItems().length == 0 || !configSettings.dontDrop);
     }
     @Override
     public void execute() {
         bot.setLoopDelay(100, 300);
         // if the player has all of the items it needs
-        if (requiredItems.getMissingItems().length == 0) {
+        if (protectedItems.getMissingRequiredItems().length == 0) {
             Player player = Players.getLocal();
             if (player != null) {
                 // if the player is in the area or if they using a custom area

@@ -3,7 +3,7 @@ package com.SuperBotter.bots.SuperMiner;
 import com.SuperBotter.api.ConfigSettings;
 import com.SuperBotter.api.Globals;
 import com.SuperBotter.api.Methods;
-import com.SuperBotter.api.RequiredItems;
+import com.SuperBotter.api.ProtectedItems;
 import com.SuperBotter.api.tasks.Drop;
 import com.SuperBotter.api.tasks.NonMenuAction;
 import com.SuperBotter.api.tasks.Store;
@@ -51,7 +51,7 @@ public class SuperMiner extends TaskBot implements EmbeddableUI, InventoryListen
     private Globals globals;
     private Methods methods;
     private ConfigSettings configSettings;
-    private RequiredItems requiredItems;
+    private ProtectedItems protectedItems;
 
     public SuperMiner() {
         startingXP = Skill.MINING.getExperience();
@@ -60,7 +60,7 @@ public class SuperMiner extends TaskBot implements EmbeddableUI, InventoryListen
         configSettings = new ConfigSettings();
         configSettings.actionName = "Mine";
         configSettings.actionIng = "Mining";
-        requiredItems = new RequiredItems();
+        protectedItems = new ProtectedItems();
         itemCount = 0;
         executor = Executors.newScheduledThreadPool(1);
         setEmbeddableUI(this);
@@ -129,14 +129,15 @@ public class SuperMiner extends TaskBot implements EmbeddableUI, InventoryListen
             return;
         }
         Execution.delayUntil(() -> (configSettings.startButtonPressed));
+        protectedItems.add("Strange rock", 0, 0);
         // Set the EmbeddableUI property to reflect your InfoController GUI
         Platform.runLater(() -> setToInfoProperty());
         setLoopDelay(0); // each Task sets its own loop delay in execute, so this will ensure that the bot gets started as soon as possible
-        add(new NonMenuAction((LoopingBot)Environment.getBot(), globals, configSettings, methods, requiredItems));
+        add(new NonMenuAction((LoopingBot)Environment.getBot(), globals, configSettings, methods, protectedItems));
         if (configSettings.dontDrop) {
-            add(new Store((LoopingBot)Environment.getBot(), globals, configSettings, methods, requiredItems));
+            add(new Store((LoopingBot)Environment.getBot(), globals, configSettings, methods, protectedItems));
         } else {
-            add(new Drop((LoopingBot)Environment.getBot(), globals, requiredItems));
+            add(new Drop((LoopingBot)Environment.getBot(), globals, protectedItems));
         }
         // there's no point in adding the time it takes for the user to config the bot
         stopWatch.start();

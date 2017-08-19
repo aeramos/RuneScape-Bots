@@ -1,7 +1,7 @@
 package com.SuperBotter.api.tasks;
 
 import com.SuperBotter.api.Globals;
-import com.SuperBotter.api.RequiredItems;
+import com.SuperBotter.api.ProtectedItems;
 import com.runemate.game.api.hybrid.input.Keyboard;
 import com.runemate.game.api.hybrid.input.Mouse;
 import com.runemate.game.api.hybrid.local.hud.interfaces.InterfaceWindows;
@@ -19,12 +19,12 @@ import java.util.Objects;
 public class Drop extends Task {
     private LoopingBot bot;
     private Globals globals;
-    private RequiredItems requiredItems;
+    private ProtectedItems protectedItems;
 
-    public Drop(LoopingBot bot, Globals globals, RequiredItems requiredItems) {
+    public Drop(LoopingBot bot, Globals globals, ProtectedItems protectedItems) {
         this.bot = bot;
         this.globals = globals;
-        this.requiredItems = requiredItems;
+        this.protectedItems = protectedItems;
     }
 
     @Override
@@ -38,7 +38,7 @@ public class Drop extends Task {
     }
 
     /*  Iterate through inventory items
-        If it is not a required item, drop + break (end task & restart)
+        If it is not a protected item, drop + break (end task & restart)
     */
     @Override
     public void execute() {
@@ -52,9 +52,9 @@ public class Drop extends Task {
                 if (item != null) {
                     String itemName = item.getDefinition().getName();
                     boolean dontDrop = false;
-                    if (requiredItems.getNumberOfItems() > 0) {
-                        for (int j = 0; j < requiredItems.getNumberOfItems(); j++) {
-                            if (Objects.equals(itemName, requiredItems.getName(j))) {
+                    if (protectedItems.getNumberOfItems() > 0) {
+                        for (int j = 0; j < protectedItems.getNumberOfItems(); j++) {
+                            if (Objects.equals(itemName, protectedItems.getName(j))) {
                                 dontDrop = true;
                                 break; // no need to keep scanning the required items if we already found a match
                             }
