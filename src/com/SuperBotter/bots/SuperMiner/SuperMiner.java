@@ -7,6 +7,7 @@ import com.SuperBotter.api.ProtectedItems;
 import com.SuperBotter.api.tasks.Drop;
 import com.SuperBotter.api.tasks.NonMenuAction;
 import com.SuperBotter.api.tasks.Store;
+import com.SuperBotter.api.tasks.Urn;
 import com.SuperBotter.api.ui.Config;
 import com.SuperBotter.api.ui.Info;
 import com.SuperBotter.api.ui.InfoController;
@@ -33,6 +34,7 @@ import javafx.scene.paint.Color;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 public class SuperMiner extends TaskBot implements EmbeddableUI, InventoryListener{
     // General variables and statistics
@@ -68,13 +70,13 @@ public class SuperMiner extends TaskBot implements EmbeddableUI, InventoryListen
     @Override
     public ObjectProperty<? extends Node> botInterfaceProperty() {
         if (botInterfaceProperty == null) {
-            botInterfaceProperty = new SimpleObjectProperty<>(new Config(new ConfigController(getMetaData(), configSettings), getPlatform(), Environment.getBot()));
+            botInterfaceProperty = new SimpleObjectProperty<>(new Config(new ConfigController(getMetaData(), configSettings, protectedItems), getPlatform(), Environment.getBot()));
         }
         return botInterfaceProperty;
     }
     // When called, switch the botInterfaceProperty to reflect the Info
     private void setToInfoProperty(){
-        info = new Info(getPlatform(), getMetaData(), configSettings, "mined");
+        info = new Info(this, configSettings, "mined");
         botInterfaceProperty.set(info);
         executor.scheduleAtFixedRate(updateInfo, 0, 1, TimeUnit.SECONDS);
     }
@@ -129,10 +131,14 @@ public class SuperMiner extends TaskBot implements EmbeddableUI, InventoryListen
             return;
         }
         Execution.delayUntil(() -> (configSettings.startButtonPressed));
-        protectedItems.add("Strange rock", 0, 0);
+        protectedItems.add("Strange rock", 0, ProtectedItems.Status.SAVED);
         // Set the EmbeddableUI property to reflect your InfoController GUI
         Platform.runLater(() -> setToInfoProperty());
         setLoopDelay(0); // each Task sets its own loop delay in execute, so this will ensure that the bot gets started as soon as possible
+        // if urns are being used
+        if (protectedItems.getNames(Pattern.compile(" urn")).length != 0) {
+            add(new Urn((LoopingBot)Environment.getBot(), globals, protectedItems));
+        }
         add(new NonMenuAction((LoopingBot)Environment.getBot(), globals, configSettings, methods, protectedItems));
         if (configSettings.dontDrop) {
             add(new Store((LoopingBot)Environment.getBot(), globals, configSettings, methods, protectedItems));

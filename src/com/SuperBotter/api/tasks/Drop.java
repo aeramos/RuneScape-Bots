@@ -89,7 +89,7 @@ public class Drop extends Task {
 
     private ActionBarQueryResults getActionBar(String itemName) {
         ActionBarQueryResults queryResults = ActionBar.newQuery().names(itemName).results();
-        if (queryResults != null && queryResults.size() != 0 && queryResults.get(0) != null) {
+        if (queryResults != null && queryResults.size() != 0 && queryResults.get(0) != null && queryResults.get(0).getActions().get(0).equals("Drop")) {
             return queryResults;
         } else {
             return null;

@@ -32,6 +32,8 @@ public class NonMenuAction extends Task {
     private Methods methods;
     private ProtectedItems protectedItems;
 
+    private Integer[] requiredItems;
+
     public NonMenuAction(LoopingBot bot, Globals globals, ConfigSettings configSettings, Methods methods, ProtectedItems protectedItems) {
         this.bot = bot;
         this.globals = globals;
@@ -42,14 +44,15 @@ public class NonMenuAction extends Task {
 
     @Override
     public boolean validate() {
+        requiredItems = protectedItems.getMissingItems(new ProtectedItems.Status[]{ProtectedItems.Status.REQUIRED});
         // if the inventory is not full, the bot isn't dropping, the player isn't banking, and the inventory contains the required items / isn't banking
-        return RuneScape.isLoggedIn() && !globals.isDropping && !Inventory.isFull() && !Bank.isOpen() && (protectedItems.getMissingRequiredItems().length == 0 || !configSettings.dontDrop);
+        return RuneScape.isLoggedIn() && !globals.isDropping && !Inventory.isFull() && !Bank.isOpen() && (requiredItems.length == 0 || !configSettings.dontDrop);
     }
     @Override
     public void execute() {
         bot.setLoopDelay(100, 300);
         // if the player has all of the items it needs
-        if (protectedItems.getMissingRequiredItems().length == 0) {
+        if (requiredItems.length == 0) {
             Player player = Players.getLocal();
             if (player != null) {
                 // if the player is in the area or if they using a custom area
@@ -130,7 +133,7 @@ public class NonMenuAction extends Task {
                 }
             }
         } else {
-            Methods.shutdownBot(globals, "Stopping bot - ran out of required items");
+            Methods.shutdownBot(bot, globals, "Ran out of required items", true);
         }
     }
 }

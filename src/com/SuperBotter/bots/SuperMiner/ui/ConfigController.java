@@ -2,6 +2,7 @@ package com.SuperBotter.bots.SuperMiner.ui;
 
 import com.SuperBotter.api.Bank;
 import com.SuperBotter.api.ConfigSettings;
+import com.SuperBotter.api.ProtectedItems;
 import com.runemate.game.api.hybrid.location.Area;
 import com.runemate.game.api.hybrid.location.Coordinate;
 import com.runemate.game.api.script.data.ScriptMetaData;
@@ -18,6 +19,7 @@ import javafx.scene.text.Text;
 import java.net.URL;
 import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.regex.Pattern;
 
 /**
  *  Java FX Controller for the Config class
@@ -32,21 +34,18 @@ import java.util.ResourceBundle;
 public class ConfigController implements Initializable {
     private ScriptMetaData metaData;
     private ConfigSettings configSettings;
+    private ProtectedItems protectedItems;
 
     // ComboBox
     @FXML
-    private ComboBox Location_ComboBox;
-    @FXML
-    private ComboBox Item_ComboBox;
+    private ComboBox Location_ComboBox, Item_ComboBox, Urn_ComboBox;
 
     // Start button
     @FXML
     private Button Start_BT;
 
     @FXML
-    private RadioButton Bank_BT;
-    @FXML
-    private RadioButton Power_BT;
+    private RadioButton Bank_BT, Power_BT;
 
     @FXML
     private Text name_T, version_T, author_T, radius_T, radiusValue_T, bankOrPower_T;
@@ -54,9 +53,10 @@ public class ConfigController implements Initializable {
     @FXML
     private Slider radius_S;
 
-    public ConfigController(ScriptMetaData metaData, ConfigSettings configSettings) {
+    public ConfigController(ScriptMetaData metaData, ConfigSettings configSettings, ProtectedItems protectedItems) {
         this.metaData = metaData;
         this.configSettings = configSettings;
+        this.protectedItems = protectedItems;
     }
 
     @Override
@@ -78,11 +78,20 @@ public class ConfigController implements Initializable {
                 "Varrock south-east",
                 "Varrock south-west"
         );
+        Urn_ComboBox.getItems().addAll(
+                "No urn",
+                "Cracked mining urn",
+                "Fragile mining urn",
+                "Mining urn",
+                "Strong mining urn",
+                "Decorated mining urn"
+        );
         Start_BT.setOnAction(getStart_BTAction());
         Bank_BT.setOnAction(getBank_BTAction());
         Power_BT.setOnAction(getPower_BTAction());
         Location_ComboBox.setOnAction(getLocation_ComboBoxEvent());
         Item_ComboBox.setOnAction(getItem_ComboBoxEvent());
+        Urn_ComboBox.setOnAction(getUrn_ComboBoxEvent());
 
         // custom radius
         radius_T.setVisible(false);
@@ -217,33 +226,51 @@ public class ConfigController implements Initializable {
                     configSettings.botAreaName = Location_ComboBox.getSelectionModel().getSelectedItem().toString() + " mine";
                 }
                 Item_ComboBox.setDisable(false);
-            } else {
-                Item_ComboBox.setDisable(true);
             }
         };
     }
     private EventHandler<ActionEvent> getItem_ComboBoxEvent() {
         return event -> {
-            Start_BT.setDisable(true);
-            Bank_BT.setSelected(false);
-            Power_BT.setSelected(false);
             if(Item_ComboBox.getSelectionModel().getSelectedItem() != null) {
                 configSettings.itemName = Item_ComboBox.getSelectionModel().getSelectedItem().toString();
                 configSettings.interactWithName = configSettings.itemName + " rocks";
+                Urn_ComboBox.setDisable(false);
+
+                // If the urn + the bank/nobank have been done, enable start
+                if (Urn_ComboBox.getSelectionModel().getSelectedItem() != null) {
+                    if (!Objects.equals(Location_ComboBox.getSelectionModel().getSelectedItem().toString(), "Custom Location (powermining only)")) {
+                        Bank_BT.setDisable(false);
+                        Power_BT.setDisable(false);
+                    }
+                    if (Bank_BT.isSelected() || Power_BT.isSelected()) {
+                        Start_BT.setDisable(false);
+                    }
+                }
+            }
+        };
+    }
+
+    private EventHandler<ActionEvent> getUrn_ComboBoxEvent() {
+        return event -> {
+            if(Urn_ComboBox.getSelectionModel().getSelectedItem() != null) {
+                String selection = Urn_ComboBox.getSelectionModel().getSelectedItem().toString();
+                protectedItems.remove(Pattern.compile(" urn"));
+                if (!selection.equals("No urn")) {
+                    protectedItems.add(selection + " (r)", 1, ProtectedItems.Status.WANTED);
+                    protectedItems.add(selection, 0, ProtectedItems.Status.HELD);
+                    protectedItems.add(selection + " (full)", 0, ProtectedItems.Status.HELD);
+                }
                 if (Objects.equals(Location_ComboBox.getSelectionModel().getSelectedItem().toString(), "Custom Location (powermining only)")) {
-                    Power_BT.setDisable(true);
-                    Bank_BT.setDisable(true);
                     Power_BT.setSelected(true);
-                    Bank_BT.setSelected(false);
                     configSettings.dontDrop = false;
-                    Start_BT.setDisable(false);
                 } else {
                     Bank_BT.setDisable(false);
                     Power_BT.setDisable(false);
                 }
-            } else {
-                Bank_BT.setDisable(true);
-                Power_BT.setDisable(true);
+                // If the item + the bank/nobank have been done, enable start
+                if (Item_ComboBox.getSelectionModel().getSelectedItem() != null && (Bank_BT.isSelected() || Power_BT.isSelected())) {
+                    Start_BT.setDisable(false);
+                }
             }
         };
     }

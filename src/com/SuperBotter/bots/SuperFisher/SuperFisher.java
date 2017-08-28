@@ -7,6 +7,7 @@ import com.SuperBotter.api.ProtectedItems;
 import com.SuperBotter.api.tasks.Drop;
 import com.SuperBotter.api.tasks.NonMenuAction;
 import com.SuperBotter.api.tasks.Store;
+import com.SuperBotter.api.tasks.Urn;
 import com.SuperBotter.api.ui.Config;
 import com.SuperBotter.api.ui.Info;
 import com.SuperBotter.api.ui.InfoController;
@@ -33,6 +34,7 @@ import javafx.scene.paint.Color;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 public class SuperFisher extends TaskBot implements EmbeddableUI, InventoryListener{
     // General variables and statistics
@@ -73,7 +75,7 @@ public class SuperFisher extends TaskBot implements EmbeddableUI, InventoryListe
     }
     // When called, switch the botInterfaceProperty to reflect the Info
     private void setToInfoProperty(){
-        info = new Info(getPlatform(), getMetaData(), configSettings, "caught");
+        info = new Info(this, configSettings, "caught");
         botInterfaceProperty.set(info);
         executor.scheduleAtFixedRate(updateInfo, 0, 1, TimeUnit.SECONDS);
     }
@@ -128,10 +130,14 @@ public class SuperFisher extends TaskBot implements EmbeddableUI, InventoryListe
             return;
         }
         Execution.delayUntil(() -> (configSettings.startButtonPressed));
-        protectedItems.add("Strange rock", 0, 0);
+        protectedItems.add("Strange rock", 0, ProtectedItems.Status.SAVED);
         // Set the EmbeddableUI property to reflect your InfoController GUI
         Platform.runLater(() -> setToInfoProperty());
         setLoopDelay(0);
+        // if urns are being used
+        if (protectedItems.getNames(Pattern.compile(" urn")).length != 0) {
+            add(new Urn((LoopingBot)Environment.getBot(), globals, protectedItems));
+        }
         add(new NonMenuAction((LoopingBot)Environment.getBot(), globals, configSettings, methods, protectedItems));
         if (configSettings.dontDrop) {
             add(new Store((LoopingBot)Environment.getBot(), globals, configSettings, methods, protectedItems));

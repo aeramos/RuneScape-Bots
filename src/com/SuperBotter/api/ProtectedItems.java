@@ -3,36 +3,41 @@ package com.SuperBotter.api;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Inventory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
 public class ProtectedItems {
+    public enum Status {
+        // HELD -     Just hold in inventory
+        // SAVED -    Bank
+        // WANTED -   Don't drop + withdraw from bank if available
+        // REQUIRED - Don't drop + withdraw from bank if available + if its not available, stop the bot
+        HELD, SAVED, WANTED, REQUIRED
+    }
+
     private List<String> names = new ArrayList<String>();
     private List<Integer> amounts = new ArrayList<Integer>();
-
-    // 0 = Don't drop
-    // 1 = Don't drop + withdraw from bank if available
-    // 2 = Don't drop + withdraw from bank if available + if its not available, stop the bot
-    private List<Integer> statuses = new ArrayList<Integer>();
+    private List<Status> statuses = new ArrayList<Status>();
 
     public ProtectedItems() {}
 
-    public ProtectedItems(String name, Integer amount, int status) {
+    public ProtectedItems(String name, Integer amount, Status status) {
         add(name, amount, status);
     }
 
-    public ProtectedItems(String[] names, int[] amounts, int[] statuses) {
+    public ProtectedItems(String[] names, int[] amounts, Status[] statuses) {
         add(names, amounts, statuses);
     }
 
     public void reset() {
         names = new ArrayList<String>();
         amounts = new ArrayList<Integer>();
-        statuses = new ArrayList<Integer>();
+        statuses = new ArrayList<Status>();
     }
 
-    public void add(String name, int amount, int status) {
+    public void add(String name, int amount, Status status) {
         if (amount >= 0) {
             for (int i = 0; i < names.size(); i++) {
                 if (Objects.equals(names.get(i), name)) {
@@ -46,7 +51,7 @@ public class ProtectedItems {
         }
     }
 
-    public void add(String[] names, int[] amounts, int[] statuses) {
+    public void add(String[] names, int[] amounts, Status[] statuses) {
         for (int i = 0; i < names.length; i++) {
             add(names[i], amounts[i], statuses[i]);
         }
@@ -126,6 +131,17 @@ public class ProtectedItems {
         return list.toArray(new String[0]);
     }
 
+    public String[] getNames(Pattern regex) {
+        ArrayList<String> list = new ArrayList<String>();
+        for (int i = 0; i < getNumberOfItems(); i++) {
+            // if there is a match, add it to the list
+            if (regex.matcher(names.get(i)).find()) {
+                list.add(names.get(i));
+            }
+        }
+        return list.toArray(new String[0]);
+    }
+
     public Integer getAmount(int index) {
         return amounts.get(index);
     }
@@ -134,12 +150,12 @@ public class ProtectedItems {
         return amounts.toArray(new Integer[0]);
     }
 
-    public Integer getStatus(int index) {
+    public Status getStatus(int index) {
         return statuses.get(index);
     }
 
-    public Integer[] getStatuses() {
-        return statuses.toArray(new Integer[0]);
+    public Status[] getStatuses() {
+        return statuses.toArray(new Status[0]);
     }
 
     public boolean isEmpty() {
@@ -159,6 +175,17 @@ public class ProtectedItems {
         return null;
     }
 
+    public Integer[] getIndices(Pattern regex) {
+        ArrayList<Integer> list = new ArrayList<Integer>();
+        for (int i = 0; i < getNumberOfItems(); i++) {
+            // if there is a match, add it to the list
+            if (regex.matcher(names.get(i)).find()) {
+                list.add(i);
+            }
+        }
+        return list.toArray(new Integer[0]);
+    }
+
     public Integer[] getIndices(String[] names) {
         ArrayList<Integer> list = new ArrayList<Integer>();
         for (int i = 0; i < names.length; i++) {
@@ -170,7 +197,17 @@ public class ProtectedItems {
         return list.toArray(new Integer[0]);
     }
 
-    // All items that can't be dropped
+    public Integer[] getIndices(Status status) {
+        ArrayList<Integer> list = new ArrayList<Integer>();
+        for (int i = 0; i < statuses.size(); i++) {
+            if (statuses.get(i) == status) {
+                list.add(i);
+            }
+        }
+        return list.toArray(new Integer[0]);
+    }
+
+    // All items that can't be dropped that aren't in the inventory right now
     public Integer[] getMissingItems() {
         ArrayList<Integer> list = new ArrayList<Integer>();
         for (int i = 0; i < getNumberOfItems(); i++) {
@@ -182,65 +219,21 @@ public class ProtectedItems {
         return list.toArray(new Integer[0]);
     }
 
-    public Integer[] getRequiredItems() {
-        ArrayList<Integer> list = new ArrayList<Integer>();
-        for (int i = 0; i < statuses.size(); i++) {
-            if (statuses.get(i) == 2) {
-                list.add(i);
-            }
-        }
-        return list.toArray(new Integer[0]);
-    }
-
-    public Integer[] getMissingRequiredItems() {
+    public Integer[] getMissingItems(Status status) {
         ArrayList<Integer> list = new ArrayList<Integer>();
         Integer[] missingItems = getMissingItems();
         for (int i = 0; i < missingItems.length; i++) {
-            if (statuses.get(missingItems[i]) == 2) {
+            if (statuses.get(missingItems[i]) == status) {
                 list.add(i);
             }
         }
         return list.toArray(new Integer[0]);
     }
 
-    public Integer[] getWantedItems() {
+    public Integer[] getMissingItems(Status[] statuses) {
         ArrayList<Integer> list = new ArrayList<Integer>();
-        for (int i = 0; i < statuses.size(); i++) {
-            if (statuses.get(i) == 1) {
-                list.add(i);
-            }
-        }
-        return list.toArray(new Integer[0]);
-    }
-
-    public Integer[] getMissingWantedItems() {
-        ArrayList<Integer> list = new ArrayList<Integer>();
-        Integer[] missingItems = getMissingItems();
-        for (int i = 0; i < missingItems.length; i++) {
-            if (statuses.get(missingItems[i]) == 1) {
-                list.add(i);
-            }
-        }
-        return list.toArray(new Integer[0]);
-    }
-
-    public Integer[] getProtectedItems() {
-        ArrayList<Integer> list = new ArrayList<Integer>();
-        for (int i = 0; i < statuses.size(); i++) {
-            if (statuses.get(i) == 0) {
-                list.add(i);
-            }
-        }
-        return list.toArray(new Integer[0]);
-    }
-
-    public Integer[] getMissingProtectedItems() {
-        ArrayList<Integer> list = new ArrayList<Integer>();
-        Integer[] missingItems = getMissingItems();
-        for (int i = 0; i < missingItems.length; i++) {
-            if (statuses.get(missingItems[i]) == 0) {
-                list.add(i);
-            }
+        for (Status status : statuses) {
+            Collections.addAll(list, getMissingItems(status));
         }
         return list.toArray(new Integer[0]);
     }

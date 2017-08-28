@@ -1,6 +1,6 @@
 package com.SuperBotter.api;
 
-import com.runemate.game.api.hybrid.Environment;
+import com.runemate.game.api.client.ClientUI;
 import com.runemate.game.api.hybrid.RuneScape;
 import com.runemate.game.api.hybrid.entities.Player;
 import com.runemate.game.api.hybrid.location.Coordinate;
@@ -13,6 +13,8 @@ import com.runemate.game.api.hybrid.location.navigation.web.WebPath;
 import com.runemate.game.api.hybrid.location.navigation.web.WebPathBuilder;
 import com.runemate.game.api.hybrid.region.Region;
 import com.runemate.game.api.script.Execution;
+import com.runemate.game.api.script.framework.AbstractBot;
+import javafx.scene.paint.Color;
 
 import java.lang.reflect.Array;
 
@@ -58,13 +60,28 @@ public class Methods {
         // if the path is null, meaning that the coordinate is not in the web, then the method returns false
         return web.getPathBuilder().build(playerLocation, playerLocation) != null;
     }
-    public static void shutdownBot(Globals globals, String reason) {
-        globals.currentAction = reason;
-        while (RuneScape.isLoggedIn()) {
-            RuneScape.logout();
-            Execution.delayUntil(() -> !RuneScape.isLoggedIn(), 7500);
+
+    public static void shutdownBot(AbstractBot bot, String reason, boolean logout) {
+        ClientUI.showAlert(bot.getMetaData().getName() + ": " + reason, Color.RED);
+
+        // I know its ugly, but I don't want the bots to just be sitting there.
+        if (logout) {
+            for (int i = 0; i < 3; i++) {
+                if (RuneScape.isLoggedIn()) {
+                    if (RuneScape.logout()) {
+                        Execution.delayUntil(() -> !RuneScape.isLoggedIn(), 5000);
+                    }
+                } else {
+                    break;
+                }
+            }
         }
-        Environment.getBot().stop();
+        bot.stop();
+    }
+
+    public static void shutdownBot(AbstractBot bot, Globals globals, String reason,  boolean logout) {
+        globals.currentAction = "Stopping bot: " + reason;
+        shutdownBot(bot, reason, logout);
     }
 
     public static <T> T[] concatenate (T[] a, T[] b) {

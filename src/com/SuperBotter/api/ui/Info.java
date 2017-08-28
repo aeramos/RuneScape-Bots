@@ -1,16 +1,13 @@
 package com.SuperBotter.api.ui;
 
 import com.SuperBotter.api.ConfigSettings;
-import com.runemate.game.api.client.ClientUI;
-import com.runemate.game.api.hybrid.Environment;
+import com.SuperBotter.api.Methods;
 import com.runemate.game.api.hybrid.util.Resources;
-import com.runemate.game.api.script.data.ScriptMetaData;
-import com.runemate.game.api.script.framework.core.BotPlatform;
+import com.runemate.game.api.script.framework.AbstractBot;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.GridPane;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
 import java.io.IOException;
@@ -29,7 +26,7 @@ import java.util.concurrent.Future;
 
 public class Info extends GridPane implements Initializable {
 
-    private ScriptMetaData metaData;
+    private AbstractBot bot;
     private ConfigSettings configSettings;
     private String acquiredVerb;
 
@@ -38,9 +35,9 @@ public class Info extends GridPane implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        name_T.textProperty().set(metaData.getName());
-        version_T.textProperty().set("Version " + metaData.getVersion());
-        author_T.textProperty().set("By " + metaData.getAuthor());
+        name_T.textProperty().set(bot.getMetaData().getName());
+        version_T.textProperty().set("Version " + bot.getMetaData().getVersion());
+        author_T.textProperty().set("By " + bot.getMetaData().getAuthor());
         itemPerHourLabel_T.textProperty().set(configSettings.itemName + " per hour: ");
         itemCountLabel_T.textProperty().set(configSettings.itemName + " " + acquiredVerb + ": ");
         setVisible(true);
@@ -50,17 +47,16 @@ public class Info extends GridPane implements Initializable {
     // listeners to. In this case the property contains our controller class
     // (this)
 
-    public Info(BotPlatform botPlatform, ScriptMetaData metaData, ConfigSettings configSettings, String acquiredVerb) {
-        this.metaData = metaData;
+    public Info(AbstractBot bot, ConfigSettings configSettings, String acquiredVerb) {
+        this.bot = bot;
         this.configSettings = configSettings;
         this.acquiredVerb = acquiredVerb;
 
         // Load the fxml file using RuneMate's Resources class.
         FXMLLoader loader = new FXMLLoader();
-
         // Input your Info FXML file location here.
         // NOTE: DO NOT FORGET TO ADD IT TO MANIFEST AS A RESOURCE
-        Future<InputStream> stream = botPlatform.invokeLater(() -> Resources.getAsStream("com/SuperBotter/api/ui/Info.fxml"));
+        Future<InputStream> stream = bot.getPlatform().invokeLater(() -> Resources.getAsStream("com/SuperBotter/api/ui/Info.fxml"));
 
         // Set this class as root AND Controller for the Java FX GUI
         loader.setController(this);
@@ -69,8 +65,7 @@ public class Info extends GridPane implements Initializable {
         try {
             loader.load(stream.get());
         } catch (IOException | InterruptedException | ExecutionException | NullPointerException e) {
-            ClientUI.showAlert(metaData.getName() + ": Unable to load GUI. Please restart the bot.", Color.RED);
-            Environment.getBot().stop();
+            Methods.shutdownBot(bot, "Unable to load GUI. Please restart the bot.", false);
         }
     }
 
