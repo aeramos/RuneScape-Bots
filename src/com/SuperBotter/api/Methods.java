@@ -14,7 +14,7 @@ import com.runemate.game.api.hybrid.location.navigation.web.WebPathBuilder;
 import com.runemate.game.api.hybrid.region.Region;
 import com.runemate.game.api.script.Execution;
 import com.runemate.game.api.script.framework.AbstractBot;
-import javafx.scene.paint.Color;
+import com.runemate.game.api.script.framework.logger.BotLogger;
 
 import java.lang.reflect.Array;
 
@@ -62,7 +62,7 @@ public class Methods {
     }
 
     public static void shutdownBot(AbstractBot bot, String reason, boolean logout) {
-        ClientUI.showAlert(bot.getMetaData().getName() + ": " + reason, Color.RED);
+        ClientUI.showAlert(BotLogger.Level.SEVERE, bot.getMetaData().getName() + ": " + reason);
 
         // I know its ugly, but I don't want the bots to just be sitting there.
         if (logout) {
@@ -76,7 +76,7 @@ public class Methods {
                 }
             }
         }
-        bot.stop();
+        bot.stop(bot.getMetaData().getName() + ": " + reason);
     }
 
     public static void shutdownBot(AbstractBot bot, Globals globals, String reason,  boolean logout) {

@@ -10,10 +10,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.Slider;
+import javafx.scene.control.*;
 import javafx.scene.text.Text;
 
 import java.net.URL;
@@ -38,7 +35,10 @@ public class ConfigController implements Initializable {
 
     // ComboBox
     @FXML
-    private ComboBox Location_ComboBox, Item_ComboBox, Urn_ComboBox;
+    private ComboBox Location_ComboBox, Urn_ComboBox;
+
+    @FXML
+    private MenuButton Item_Menu;
 
     // Start button
     @FXML
@@ -64,7 +64,7 @@ public class ConfigController implements Initializable {
         name_T.textProperty().set(metaData.getName());
         version_T.textProperty().set("Version " + metaData.getVersion());
         author_T.textProperty().set("By " + metaData.getAuthor());
-        Item_ComboBox.promptTextProperty().set("Fish");
+        Item_Menu.textProperty().set("Fish");
         Power_BT.textProperty().set("Powerfish");
         Location_ComboBox.getItems().addAll(
                 "Custom Location (powerfishing only)",
@@ -85,7 +85,6 @@ public class ConfigController implements Initializable {
         Bank_BT.setOnAction(getBank_BTAction());
         Power_BT.setOnAction(getPower_BTAction());
         Location_ComboBox.setOnAction(getLocation_ComboBoxEvent());
-        Item_ComboBox.setOnAction(getItem_ComboBoxEvent());
         Urn_ComboBox.setOnAction(getUrn_ComboBoxEvent());
 
         // custom radius
@@ -130,10 +129,61 @@ public class ConfigController implements Initializable {
             }
         };
     }
+
+    private void addItemOptions(String... items) {
+        for (int i = 0; i < items.length; i++) {
+            CheckMenuItem item = new CheckMenuItem(items[i]);
+            item.setOnAction((action) -> {
+                if (item.isSelected()) {
+                    String itemText = item.getText();
+                    switch (itemText) {
+                        case "Raw anchovies":
+                        case "Raw shrimps":
+                            configSettings.interactableItems.add(itemText, "Fishing spot", "Net", "Netting", "caught");
+                            break;
+                        case "Raw crayfish":
+                        case "Raw lobster":
+                            configSettings.interactableItems.add(itemText, "Fishing spot", "Cage", "Caging", "caught");
+                            break;
+                        case "Raw herring":
+                        case "Raw pike":
+                        case "Raw sardine":
+                            configSettings.interactableItems.add(itemText, "Fishing spot", "Bait", "Baiting", "caught");
+                            protectedItems.add("Fishing bait", 0, ProtectedItems.Status.REQUIRED);
+                            break;
+                        case "Raw salmon":
+                        case "Raw trout":
+                            configSettings.interactableItems.add(itemText, "Fishing spot", "Lure", "Luring", "caught");
+                            protectedItems.add("Feather", 0, ProtectedItems.Status.REQUIRED);
+                            break;
+                        case "Raw tuna":
+                        case "Raw swordfish":
+                        case "Raw shark":
+                            configSettings.interactableItems.add(itemText, "Fishing spot", "Harpoon", "Harpooning", "caught");
+                            break;
+                    }
+                } else {
+                    configSettings.interactableItems.remove(configSettings.interactableItems.getIndexByItemName(item.getText()));
+                }
+                Urn_ComboBox.setDisable(false);
+
+                // If the urn + the bank/nobank have been done, enable start
+                if (Urn_ComboBox.getSelectionModel().getSelectedItem() != null) {
+                    if (!Objects.equals(Location_ComboBox.getSelectionModel().getSelectedItem().toString(), "Custom Location (powermining only)")) {
+                        Bank_BT.setDisable(false);
+                        Power_BT.setDisable(false);
+                    }
+                    if ((Bank_BT.isSelected() || Power_BT.isSelected()) && configSettings.interactableItems.size() > 0) {
+                        Start_BT.setDisable(false);
+                    }
+                }
+            });
+            Item_Menu.getItems().add(item);
+        }
+    }
+
     private EventHandler<ActionEvent> getLocation_ComboBoxEvent(){
-        return event ->{
-            Item_ComboBox.getSelectionModel().clearSelection();
-            Item_ComboBox.getItems().clear();
+        return event -> {
             Start_BT.setDisable(true);
             Bank_BT.setDisable(true);
             Power_BT.setDisable(true);
@@ -159,87 +209,39 @@ public class ConfigController implements Initializable {
                         radiusValue_T.setVisible(true);
                         configSettings.radius = 10; // the default amount
                         configSettings.dontDrop = false;
-                        Item_ComboBox.getItems().addAll("Raw anchovies", "Raw crayfish", "Raw herring", "Raw pike", "Raw salmon", "Raw sardine", "Raw shrimps", "Raw trout");
+                        addItemOptions("Raw anchovies", "Raw crayfish", "Raw herring", "Raw lobster", "Raw pike", "Raw salmon", "Raw sardine", "Raw shrimps", "Raw trout");
                         break;
                     case "Al Kharid west":
                         configSettings.botArea = new Area.Rectangular(new Coordinate(3255, 3159, 0), new Coordinate(3258, 3164, 0));
                         configSettings.bank = new Bank(Bank.BankName.AL_KHARID);
-                        Item_ComboBox.getItems().addAll("Raw anchovies", "Raw herring", "Raw sardine", "Raw shrimps");
+                        addItemOptions("Raw anchovies", "Raw herring", "Raw sardine", "Raw shrimps");
                         break;
                     case "Lum Bridge":
                         configSettings.botArea = new Area.Rectangular(new Coordinate(3239, 3241, 0), new Coordinate(3242, 3257, 0));
                         configSettings.bank = new Bank(Bank.BankName.COMBAT_ACADEMY);
-                        Item_ComboBox.getItems().addAll("Raw pike", "Raw salmon", "Raw trout");
+                        addItemOptions("Raw pike", "Raw salmon", "Raw trout");
                         break;
                     case "Lumbridge Church":
                         configSettings.botArea = new Area.Rectangular(new Coordinate(3256, 3203, 0), new Coordinate(3258, 3207, 0));
                         configSettings.bank = new Bank(Bank.BankName.COMBAT_ACADEMY);
-                        Item_ComboBox.getItems().addAll("Raw crayfish");
+                        addItemOptions("Raw crayfish");
                         break;
                     case "Lumbridge Swamp east":
                         configSettings.botArea = new Area.Rectangular(new Coordinate(3239, 3146, 0), new Coordinate(3246, 3157, 0));
                         configSettings.bank = new Bank(Bank.BankName.COMBAT_ACADEMY);
-                        Item_ComboBox.getItems().addAll("Raw anchovies", "Raw herring", "Raw sardine", "Raw shrimps");
+                        addItemOptions("Raw anchovies", "Raw herring", "Raw sardine", "Raw shrimps");
                         break;
                 }
-                configSettings.botAreaName = Location_ComboBox.getSelectionModel().getSelectedItem().toString() + " fishing spot";
-                Item_ComboBox.setDisable(false);
+                if (Objects.equals(Location_ComboBox.getSelectionModel().getSelectedItem().toString(), "Custom Location (powermining only)")) {
+                    configSettings.botAreaName = null;
+                } else {
+                    configSettings.botAreaName = Location_ComboBox.getSelectionModel().getSelectedItem().toString() + " fishing spot";
+                }
+                Item_Menu.setDisable(false);
             }
         };
     }
-    private EventHandler<ActionEvent> getItem_ComboBoxEvent() {
-        return event -> {
-            if(Item_ComboBox.getSelectionModel().getSelectedItem() != null) {
-                configSettings.itemName = Item_ComboBox.getSelectionModel().getSelectedItem().toString();
-                protectedItems.removeAllExcept(Pattern.compile(" urn"));
-                switch (configSettings.itemName) {
-                    case "Raw anchovies":
-                    case "Raw shrimps":
-                        configSettings.actionName = "Net";
-                        configSettings.actionIng = "Netting";
-                        break;
-                    case "Raw crayfish":
-                    case "Raw lobster":
-                        configSettings.actionName = "Cage";
-                        configSettings.actionIng = "Caging";
-                        break;
-                    case "Raw herring":
-                    case "Raw pike":
-                    case "Raw sardine":
-                        configSettings.actionName = "Bait";
-                        configSettings.actionIng = "Baiting";
-                        protectedItems.add("Fishing bait", 0, ProtectedItems.Status.REQUIRED);
-                        break;
-                    case "Raw salmon":
-                    case "Raw trout":
-                        configSettings.actionName = "Lure";
-                        configSettings.actionIng = "Luring";
-                        protectedItems.add("Feather", 0, ProtectedItems.Status.REQUIRED);
-                        break;
-                    case "Raw tuna":
-                    case "Raw swordfish":
-                    case "Raw shark":
-                        configSettings.actionName = "Harpoon";
-                        configSettings.actionIng = "Harpooning";
-                        break;
-                }
-                Urn_ComboBox.setDisable(false);
 
-                // If the urn + the bank/nobank have been done, enable start
-                if (Urn_ComboBox.getSelectionModel().getSelectedItem() != null) {
-                    if (!Objects.equals(Location_ComboBox.getSelectionModel().getSelectedItem().toString(), "Custom Location (powerfishing only)")) {
-                        Bank_BT.setDisable(false);
-                        Power_BT.setDisable(false);
-                    }
-                    if (Bank_BT.isSelected() || Power_BT.isSelected()) {
-                        Start_BT.setDisable(false);
-                    }
-                }
-            } else {
-                protectedItems.removeAllExcept(Pattern.compile(" urn"));
-            }
-        };
-    }
     private EventHandler<ActionEvent> getUrn_ComboBoxEvent() {
         return event -> {
             if(Urn_ComboBox.getSelectionModel().getSelectedItem() != null) {
@@ -258,7 +260,7 @@ public class ConfigController implements Initializable {
                     Power_BT.setDisable(false);
                 }
                 // If the item + the bank/nobank have been done, enable start
-                if (Item_ComboBox.getSelectionModel().getSelectedItem() != null && (Bank_BT.isSelected() || Power_BT.isSelected())) {
+                if (configSettings.interactableItems.getNames().length > 0 && (Bank_BT.isSelected() || Power_BT.isSelected())) {
                     Start_BT.setDisable(false);
                 }
             }

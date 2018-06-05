@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
-<fx:root hgap="5.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="250.0" prefWidth="600.0" type="javafx.scene.layout.GridPane" vgap="5.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root hgap="5.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="250.0" prefWidth="600.0" type="javafx.scene.layout.GridPane" vgap="5.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
     <columnConstraints>
         <ColumnConstraints />
     </columnConstraints>
@@ -42,7 +42,6 @@
                               <Insets />
                            </GridPane.margin>
                         </ComboBox>
-                        <ComboBox fx:id="Item_ComboBox" disable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="Item_ComboBox" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                         <Text fx:id="bankOrPower_T" strokeType="OUTSIDE" strokeWidth="0.0" text="OR" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER">
                            <font>
                               <Font size="18.0" />
@@ -66,6 +65,7 @@
                         <Slider fx:id="radius_S" max="50.0" value="10.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="BOTTOM" />
                         <Text fx:id="radiusValue_T" strokeType="OUTSIDE" strokeWidth="0.0" text="10" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="BOTTOM" />
                         <ComboBox fx:id="Urn_ComboBox" disable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="Urn" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        <MenuButton fx:id="Item_Menu" disable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Item_Menu" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                      </children>
                   </GridPane>
                   <Text fx:id="name_T" strokeType="OUTSIDE" strokeWidth="0.0" text="name_T" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.valignment="TOP">

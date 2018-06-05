@@ -3,10 +3,12 @@ package com.SuperBotter.api.ui;
 import com.SuperBotter.api.ConfigSettings;
 import com.SuperBotter.api.Methods;
 import com.runemate.game.api.hybrid.util.Resources;
+import com.runemate.game.api.hybrid.util.calculations.CommonMath;
 import com.runemate.game.api.script.framework.AbstractBot;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ComboBox;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 
@@ -16,41 +18,36 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-
-/**
- *  InfoController GUI for the SuperMiner Bot
- *
- *  This will show various live stats on the bot
- *      (updated every time updateInfo() is run, which is run at the end of each task
- */
+import java.util.concurrent.TimeUnit;
 
 public class Info extends GridPane implements Initializable {
-
     private AbstractBot bot;
     private ConfigSettings configSettings;
-    private String acquiredVerb;
+    private InfoUpdate infoUpdate;
+    private String itemType;
 
     @FXML
-    private Text name_T, version_T, author_T, itemPerHourLabel_T, itemCountLabel_T, itemPerHour_T, itemCount_T, xpPerHour_T, xpGained_T, runtime_T, currentAction_T;
+    private Text name_T, version_T, author_T, itemPerHourText, itemCountText, itemPerHour, itemCount, xpPerHour, xpGained, runtime, currentAction, itemSelectText;
+    @FXML
+    private ComboBox itemSelect;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         name_T.textProperty().set(bot.getMetaData().getName());
         version_T.textProperty().set("Version " + bot.getMetaData().getVersion());
         author_T.textProperty().set("By " + bot.getMetaData().getAuthor());
-        itemPerHourLabel_T.textProperty().set(configSettings.itemName + " per hour: ");
-        itemCountLabel_T.textProperty().set(configSettings.itemName + " " + acquiredVerb + ": ");
+        itemSelectText.setText(itemType + ": ");
+        itemSelect.getItems().addAll(configSettings.interactableItems.getNames());
+        itemSelect.setOnAction(event -> update(infoUpdate));
+        itemSelect.getSelectionModel().select(0);
         setVisible(true);
     }
 
-    // An object property is a container of an object, which can be added
-    // listeners to. In this case the property contains our controller class
-    // (this)
-
-    public Info(AbstractBot bot, ConfigSettings configSettings, String acquiredVerb) {
+    public Info(AbstractBot bot, ConfigSettings configSettings, InfoUpdate infoUpdate, String itemType) {
         this.bot = bot;
         this.configSettings = configSettings;
-        this.acquiredVerb = acquiredVerb;
+        this.infoUpdate = infoUpdate;
+        this.itemType = itemType;
 
         // Load the fxml file using RuneMate's Resources class.
         FXMLLoader loader = new FXMLLoader();
@@ -69,21 +66,16 @@ public class Info extends GridPane implements Initializable {
         }
     }
 
-    // This method will update the text that is presented to the end user
-    public void update(InfoController infoController) {
-        try {
-            InfoController i = infoController;
-
-            itemPerHour_T.textProperty().set("" + i.itemPerHour);
-            itemCount_T.textProperty().set("" + i.itemCount);
-            xpPerHour_T.textProperty().set("" + i.xpPerHour);
-            xpGained_T.textProperty().set("" + i.xpGained);
-            runtime_T.textProperty().set("" + i.runtime);
-            currentAction_T.textProperty().set(i.currentAction);
-
-        } catch(Exception e){
-            e.printStackTrace();
-        }
+    public void update(InfoUpdate infoUpdate) {
+        this.infoUpdate = infoUpdate;
+        int i = itemSelect.getSelectionModel().getSelectedIndex();
+        itemCountText.setText(configSettings.interactableItems.getNames()[i] + " " + configSettings.interactableItems.getPastTenses()[i] + ": ");
+        itemCount.setText(String.valueOf(configSettings.interactableItems.getAmounts()[i]));
+        itemPerHourText.setText(configSettings.interactableItems.getNames()[i] + " per hour: ");
+        itemPerHour.setText(String.valueOf((long)CommonMath.rate(TimeUnit.HOURS, infoUpdate.getRuntime(), configSettings.interactableItems.getAmounts()[i])));
+        xpGained.setText(String.valueOf(infoUpdate.getXpDifference()));
+        xpPerHour.setText(String.valueOf((long)CommonMath.rate(TimeUnit.HOURS, infoUpdate.getRuntime(), infoUpdate.getXpDifference())));
+        runtime.setText(infoUpdate.getRuntimeAsString());
+        currentAction.setText(infoUpdate.getCurrentAction());
     }
-
 }

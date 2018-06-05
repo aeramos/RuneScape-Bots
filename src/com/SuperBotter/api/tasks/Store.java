@@ -34,7 +34,7 @@ public class Store extends Task {
     }
     @Override
     public boolean validate() {
-        missingItems = missingItems = protectedItems.getMissingItems(new ProtectedItems.Status[]{ProtectedItems.Status.REQUIRED, ProtectedItems.Status.WANTED});
+        missingItems = protectedItems.getMissingItems(new ProtectedItems.Status[]{ProtectedItems.Status.REQUIRED, ProtectedItems.Status.WANTED});
         return RuneScape.isLoggedIn() && (Inventory.isFull() || Bank.isOpen() || missingItems != null);
     }
     @Override
@@ -46,7 +46,7 @@ public class Store extends Task {
             bankIsOpen = Execution.delayUntil(() -> Bank.open(), 5000);
         }
         if (configSettings.bank.area.contains(Players.getLocal()) || bankIsOpen) {
-            globals.path = null; // the bot is no longer following this path, so it can be reset
+            globals.path = null; // the bot is no longer following this path, so it can be cleared
             if (bankIsOpen) {
                 // REQUIRED, WANTED, and HELD items
                 String[] cantBeBanked = Methods.concatenate(Methods.concatenate(protectedItems.getNames(protectedItems.getIndices(ProtectedItems.Status.REQUIRED)), protectedItems.getNames(protectedItems.getIndices(ProtectedItems.Status.WANTED))), protectedItems.getNames(protectedItems.getIndices(ProtectedItems.Status.HELD)));

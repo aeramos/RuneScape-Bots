@@ -15,8 +15,5 @@ public class ConfigSettings {
     public Area botArea;
     public String botAreaName = null;
     public Bank bank = null;
-    public String itemName = null;
-    public String interactWithName = null;
-    public String actionName = null;
-    public String actionIng = null;
+    public InteractableItems interactableItems = new InteractableItems();
 }

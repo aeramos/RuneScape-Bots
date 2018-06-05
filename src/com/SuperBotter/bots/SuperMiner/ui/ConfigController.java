@@ -10,10 +10,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.Slider;
+import javafx.scene.control.*;
 import javafx.scene.text.Text;
 
 import java.net.URL;
@@ -38,7 +35,10 @@ public class ConfigController implements Initializable {
 
     // ComboBox
     @FXML
-    private ComboBox Location_ComboBox, Item_ComboBox, Urn_ComboBox;
+    private ComboBox Location_ComboBox, Urn_ComboBox;
+
+    @FXML
+    private MenuButton Item_Menu;
 
     // Start button
     @FXML
@@ -64,7 +64,7 @@ public class ConfigController implements Initializable {
         name_T.textProperty().set(metaData.getName());
         version_T.textProperty().set("Version " + metaData.getVersion());
         author_T.textProperty().set("By " + metaData.getAuthor());
-        Item_ComboBox.promptTextProperty().set("Ore");
+        Item_Menu.textProperty().setValue("Ore");
         Power_BT.textProperty().set("Powermine");
         Location_ComboBox.getItems().addAll(
                 "Custom Location (powermining only)",
@@ -90,7 +90,6 @@ public class ConfigController implements Initializable {
         Bank_BT.setOnAction(getBank_BTAction());
         Power_BT.setOnAction(getPower_BTAction());
         Location_ComboBox.setOnAction(getLocation_ComboBoxEvent());
-        Item_ComboBox.setOnAction(getItem_ComboBoxEvent());
         Urn_ComboBox.setOnAction(getUrn_ComboBoxEvent());
 
         // custom radius
@@ -135,10 +134,36 @@ public class ConfigController implements Initializable {
             }
         };
     }
+
+    private void addItemOptions(String... items) {
+        for (int i = 0; i < items.length; i++) {
+            CheckMenuItem item = new CheckMenuItem(items[i]);
+            item.setOnAction((action) -> {
+                if (item.isSelected()) {
+                    configSettings.interactableItems.add(item.getText(), item.getText() + " rocks", "Mine", "Mining", "mined");
+                } else {
+                    configSettings.interactableItems.remove(configSettings.interactableItems.getIndexByItemName(item.getText()));
+                }
+                Urn_ComboBox.setDisable(false);
+
+                // If the urn + the bank/nobank have been done, enable start
+                if (Urn_ComboBox.getSelectionModel().getSelectedItem() != null) {
+                    if (!Objects.equals(Location_ComboBox.getSelectionModel().getSelectedItem().toString(), "Custom Location (powermining only)")) {
+                        Bank_BT.setDisable(false);
+                        Power_BT.setDisable(false);
+                    }
+                    if ((Bank_BT.isSelected() || Power_BT.isSelected()) && configSettings.interactableItems.size() > 0) {
+                        Start_BT.setDisable(false);
+                    }
+                }
+            });
+            Item_Menu.getItems().add(item);
+        }
+    }
+
     private EventHandler<ActionEvent> getLocation_ComboBoxEvent() {
         return event -> {
-            Item_ComboBox.getSelectionModel().clearSelection();
-            Item_ComboBox.getItems().clear();
+            Item_Menu.getItems().clear();
             Start_BT.setDisable(true);
             Bank_BT.setDisable(true);
             Power_BT.setDisable(true);
@@ -164,12 +189,12 @@ public class ConfigController implements Initializable {
                         radiusValue_T.setVisible(true);
                         configSettings.radius = 10; // the default amount
                         configSettings.dontDrop = false;
-                        Item_ComboBox.getItems().addAll("Adamantite ore", "Clay", "Coal", "Copper ore", "Gold ore", "Iron ore", "Mithril ore", "Runite ore", "Silver ore", "Tin ore");
+                        addItemOptions("Adamantite ore", "Clay", "Coal", "Copper ore", "Gold ore", "Iron ore", "Mithril ore", "Runite ore", "Silver ore", "Tin ore");
                         break;
                     case "Al Kharid":
                         configSettings.botArea = new Area.Rectangular(new Coordinate(3292, 3285, 0), new Coordinate(3309, 3315, 0));
                         configSettings.bank = new Bank(Bank.BankName.AL_KHARID);
-                        Item_ComboBox.getItems().addAll("Adamantite ore", "Coal", "Copper ore", "Gold ore", "Iron ore", "Mithril ore", "Silver ore", "Tin ore");
+                        addItemOptions("Adamantite ore", "Coal", "Copper ore", "Gold ore", "Iron ore", "Mithril ore", "Silver ore", "Tin ore");
                         break;
                     /*// Commented out until the default web supports the crafting guild or until I learn how to use custom webs
                     case "Crafting Guild":
@@ -181,43 +206,43 @@ public class ConfigController implements Initializable {
                     case "Draynor":
                         configSettings.botArea = new Area.Rectangular(new Coordinate(3138, 3315, 0), new Coordinate(3143, 3320, 0));
                         configSettings.bank = new Bank(Bank.BankName.CABBAGE_FACEPUNCH_BONANZA);
-                        Item_ComboBox.getItems().addAll("Clay");
+                        addItemOptions("Clay");
                         break;
                     case "Dwarven Mine":
                         configSettings.botArea = new Area.Rectangular(new Coordinate(3033, 9759, 0), new Coordinate(3059, 9786, 0));
                         configSettings.bank = new Bank(Bank.BankName.FALADOR_EAST);
-                        Item_ComboBox.getItems().addAll("Adamantite ore", "Coal", "Copper ore", "Gold ore", "Iron ore", "Mithril ore", "Tin ore");
+                        addItemOptions("Adamantite ore", "Coal", "Copper ore", "Gold ore", "Iron ore", "Mithril ore", "Tin ore");
                         break;
                     case "Falador south-west":
                         configSettings.botArea = new Area.Rectangular(new Coordinate(2930, 3340, 0), new Coordinate(2922, 3334, 0));
                         configSettings.bank = new Bank(Bank.BankName.CLAN_CAMP);
-                        Item_ComboBox.getItems().addAll("Coal", "Copper ore", "Iron ore", "Tin ore");
+                        addItemOptions("Coal", "Copper ore", "Iron ore", "Tin ore");
                         break;
                     case "Lumbridge Swamp east":
                         configSettings.botArea = new Area.Rectangular(new Coordinate(3233, 3151, 0), new Coordinate(3223, 3145, 0));
                         configSettings.bank = new Bank(Bank.BankName.AL_KHARID);
-                        Item_ComboBox.getItems().addAll("Copper ore", "Tin ore");
+                        addItemOptions("Copper ore", "Tin ore");
                         new Bank(Bank.BankName.AL_KHARID);
                         break;
                     case "Lumbridge Swamp west":
                         configSettings.botArea = new Area.Rectangular(new Coordinate(3149, 3152, 0), new Coordinate(3144, 3144, 0));
                         configSettings.bank = new Bank(Bank.BankName.DRAYNOR);
-                        Item_ComboBox.getItems().addAll("Adamantite ore", "Coal", "Mithril ore");
+                        addItemOptions("Adamantite ore", "Coal", "Mithril ore");
                         break;
                     case "Rimmington":
                         configSettings.botArea = new Area.Rectangular(new Coordinate(2981, 3242, 0), new Coordinate(2964, 3229, 0));
                         configSettings.bank = new Bank(Bank.BankName.CLAN_CAMP);
-                        Item_ComboBox.getItems().addAll("Clay", "Copper ore", "Gold ore", "Iron ore", "Tin ore");
+                        addItemOptions("Clay", "Copper ore", "Gold ore", "Iron ore", "Tin ore");
                         break;
                     case "Varrock south-east":
                         configSettings.botArea = new Area.Rectangular(new Coordinate(3280, 3361, 0), new Coordinate(3291, 3371, 0));
                         configSettings.bank = new Bank(Bank.BankName.VARROCK_EAST);
-                        Item_ComboBox.getItems().addAll("Copper ore", "Iron ore", "Tin ore");
+                        addItemOptions("Copper ore", "Iron ore", "Tin ore");
                         break;
                     case "Varrock south-west":
                         configSettings.botArea = new Area.Rectangular(new Coordinate(3171, 3364, 0), new Coordinate(3188, 3380, 0));
                         configSettings.bank = new Bank(Bank.BankName.VARROCK_WEST);
-                        Item_ComboBox.getItems().addAll("Clay", "Iron ore", "Silver ore", "Tin ore");
+                        addItemOptions("Clay", "Iron ore", "Silver ore", "Tin ore");
                         break;
                 }
                 if (Objects.equals(Location_ComboBox.getSelectionModel().getSelectedItem().toString(), "Custom Location (powermining only)")) {
@@ -225,27 +250,7 @@ public class ConfigController implements Initializable {
                 } else {
                     configSettings.botAreaName = Location_ComboBox.getSelectionModel().getSelectedItem().toString() + " mine";
                 }
-                Item_ComboBox.setDisable(false);
-            }
-        };
-    }
-    private EventHandler<ActionEvent> getItem_ComboBoxEvent() {
-        return event -> {
-            if(Item_ComboBox.getSelectionModel().getSelectedItem() != null) {
-                configSettings.itemName = Item_ComboBox.getSelectionModel().getSelectedItem().toString();
-                configSettings.interactWithName = configSettings.itemName + " rocks";
-                Urn_ComboBox.setDisable(false);
-
-                // If the urn + the bank/nobank have been done, enable start
-                if (Urn_ComboBox.getSelectionModel().getSelectedItem() != null) {
-                    if (!Objects.equals(Location_ComboBox.getSelectionModel().getSelectedItem().toString(), "Custom Location (powermining only)")) {
-                        Bank_BT.setDisable(false);
-                        Power_BT.setDisable(false);
-                    }
-                    if (Bank_BT.isSelected() || Power_BT.isSelected()) {
-                        Start_BT.setDisable(false);
-                    }
-                }
+                Item_Menu.setDisable(false);
             }
         };
     }
@@ -268,7 +273,7 @@ public class ConfigController implements Initializable {
                     Power_BT.setDisable(false);
                 }
                 // If the item + the bank/nobank have been done, enable start
-                if (Item_ComboBox.getSelectionModel().getSelectedItem() != null && (Bank_BT.isSelected() || Power_BT.isSelected())) {
+                if (configSettings.interactableItems.getNames().length > 0 && (Bank_BT.isSelected() || Power_BT.isSelected())) {
                     Start_BT.setDisable(false);
                 }
             }
