@@ -31,18 +31,6 @@ public class Info extends GridPane implements Initializable {
     @FXML
     private ComboBox itemSelect;
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        name_T.textProperty().set(bot.getMetaData().getName());
-        version_T.textProperty().set("Version " + bot.getMetaData().getVersion());
-        author_T.textProperty().set("By " + bot.getMetaData().getAuthor());
-        itemSelectText.setText(itemType + ": ");
-        itemSelect.getItems().addAll(configSettings.interactableItems.getNames());
-        itemSelect.setOnAction(event -> update(infoUpdate));
-        itemSelect.getSelectionModel().select(0);
-        setVisible(true);
-    }
-
     public Info(AbstractBot bot, ConfigSettings configSettings, InfoUpdate infoUpdate, String itemType) {
         this.bot = bot;
         this.configSettings = configSettings;
@@ -64,6 +52,18 @@ public class Info extends GridPane implements Initializable {
         } catch (IOException | InterruptedException | ExecutionException | NullPointerException e) {
             Methods.shutdownBot(bot, "Unable to load GUI. Please restart the bot.", false);
         }
+    }
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        name_T.textProperty().set(bot.getMetaData().getName());
+        version_T.textProperty().set("Version " + bot.getMetaData().getVersion());
+        author_T.textProperty().set("By " + bot.getMetaData().getAuthor());
+        itemSelectText.setText(itemType + ": ");
+        itemSelect.getItems().addAll(configSettings.interactableItems.getNames());
+        itemSelect.setOnAction(event -> update(infoUpdate));
+        itemSelect.getSelectionModel().select(0);
+        setVisible(true);
     }
 
     public void update(InfoUpdate infoUpdate) {

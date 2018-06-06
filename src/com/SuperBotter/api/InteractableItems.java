@@ -13,7 +13,8 @@ public class InteractableItems {
     private List<String> pastTenses = new ArrayList<>();
     private List<Integer> amounts = new ArrayList<>();
 
-    public InteractableItems() {}
+    public InteractableItems() {
+    }
 
     public InteractableItems(String name, String interactionName, String actionName, String actioning, String pastTense) {
         add(name, interactionName, actionName, actioning, pastTense);

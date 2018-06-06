@@ -20,41 +20,11 @@ import java.lang.reflect.Array;
 
 public class Methods {
     private WebPathBuilder webPathBuilder;
+
     public Methods() {
         webPathBuilder = Traversal.getDefaultWeb().getPathBuilder();
     }
-    public Path getPathTo(Coordinate destination, Player player) {
-        Path p = null;
-        // if the player isn't moving
-        if (player != null && !player.isMoving()) {
-            // if the destination is in the region
-            if (Region.getArea().contains(destination)) {
-                p = RegionPath.buildTo(destination);
-            } else {
-                p = webPathBuilder.buildTo(destination);
-            }
-            // last resort
-            if (p == null) {
-                p = BresenhamPath.buildTo(destination);
-            }
-        }
-        return p;
-    }
-    public Path getPathTo(Coordinate destination, Player player, Web customWeb) {
-        WebPath p = null;
-        if (player != null && !player.isMoving()) {
-            if (customWeb != null) {
-                p = customWeb.getPathBuilder().buildTo(destination);
-            }
-        } else {
-            return null;
-        }
-        if (p != null) {
-            return p;
-        } else {
-            return getPathTo(destination, player);
-        }
-    }
+
     public static boolean playerIsInWeb(Player player, Web web) {
         Coordinate playerLocation = player.getPosition(); // same coordinate to get a guaranteed reachable coordinate
         // if the path is null, meaning that the coordinate is not in the web, then the method returns false
@@ -79,20 +49,54 @@ public class Methods {
         bot.stop(bot.getMetaData().getName() + ": " + reason);
     }
 
-    public static void shutdownBot(AbstractBot bot, Globals globals, String reason,  boolean logout) {
+    public static void shutdownBot(AbstractBot bot, Globals globals, String reason, boolean logout) {
         globals.currentAction = "Stopping bot: " + reason;
         shutdownBot(bot, reason, logout);
     }
 
-    public static <T> T[] concatenate (T[] a, T[] b) {
+    public static <T> T[] concatenate(T[] a, T[] b) {
         int aLength = a.length;
         int bLength = b.length;
 
         @SuppressWarnings("unchecked")
-        T[] c = (T[]) Array.newInstance(a.getClass().getComponentType(), aLength+bLength);
+        T[] c = (T[])Array.newInstance(a.getClass().getComponentType(), aLength + bLength);
         System.arraycopy(a, 0, c, 0, aLength);
         System.arraycopy(b, 0, c, aLength, bLength);
 
         return c;
+    }
+
+    public Path getPathTo(Coordinate destination, Player player) {
+        Path p = null;
+        // if the player isn't moving
+        if (player != null && !player.isMoving()) {
+            // if the destination is in the region
+            if (Region.getArea().contains(destination)) {
+                p = RegionPath.buildTo(destination);
+            } else {
+                p = webPathBuilder.buildTo(destination);
+            }
+            // last resort
+            if (p == null) {
+                p = BresenhamPath.buildTo(destination);
+            }
+        }
+        return p;
+    }
+
+    public Path getPathTo(Coordinate destination, Player player, Web customWeb) {
+        WebPath p = null;
+        if (player != null && !player.isMoving()) {
+            if (customWeb != null) {
+                p = customWeb.getPathBuilder().buildTo(destination);
+            }
+        } else {
+            return null;
+        }
+        if (p != null) {
+            return p;
+        } else {
+            return getPathTo(destination, player);
+        }
     }
 }

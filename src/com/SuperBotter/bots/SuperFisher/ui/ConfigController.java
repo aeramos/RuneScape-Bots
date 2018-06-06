@@ -19,14 +19,14 @@ import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 
 /**
- *  Java FX Controller for the Config class
- *  The controller class is where the logic and implementation of GUI events go.
- *
- *  All settings are disabled until location is chosen
- *      Only the start button and the ore selector needs to be disabled, but this way makes the user keep on going down the list of options
- *  When location is chosen, ores at that mine are allowed to be chosen
- *  Then the user can decide if they want to bank the ores they mine or powermine
- *  Then the user can press start and the bot will begin, following the options they selected
+ * Java FX Controller for the Config class
+ * The controller class is where the logic and implementation of GUI events go.
+ * <p>
+ * All settings are disabled until location is chosen
+ * Only the start button and the ore selector needs to be disabled, but this way makes the user keep on going down the list of options
+ * When location is chosen, ores at that mine are allowed to be chosen
+ * Then the user can decide if they want to bank the ores they mine or powermine
+ * Then the user can press start and the bot will begin, following the options they selected
  */
 public class ConfigController implements Initializable {
     private ScriptMetaData metaData;
@@ -107,6 +107,7 @@ public class ConfigController implements Initializable {
             }
         };
     }
+
     private EventHandler<ActionEvent> getBank_BTAction() {
         return event -> {
             try {
@@ -118,6 +119,7 @@ public class ConfigController implements Initializable {
             }
         };
     }
+
     private EventHandler<ActionEvent> getPower_BTAction() {
         return event -> {
             try {
@@ -182,7 +184,7 @@ public class ConfigController implements Initializable {
         }
     }
 
-    private EventHandler<ActionEvent> getLocation_ComboBoxEvent(){
+    private EventHandler<ActionEvent> getLocation_ComboBoxEvent() {
         return event -> {
             Start_BT.setDisable(true);
             Bank_BT.setDisable(true);
@@ -194,7 +196,7 @@ public class ConfigController implements Initializable {
             radius_S.setVisible(false);
             radiusValue_T.setVisible(false);
             configSettings.radius = -1;
-            if(Location_ComboBox.getSelectionModel().getSelectedItem() != null) {
+            if (Location_ComboBox.getSelectionModel().getSelectedItem() != null) {
                 switch (Location_ComboBox.getSelectionModel().getSelectedItem().toString()) {
                     case "Custom Location (powerfishing only)":
                         configSettings.botArea = null;
@@ -244,7 +246,7 @@ public class ConfigController implements Initializable {
 
     private EventHandler<ActionEvent> getUrn_ComboBoxEvent() {
         return event -> {
-            if(Urn_ComboBox.getSelectionModel().getSelectedItem() != null) {
+            if (Urn_ComboBox.getSelectionModel().getSelectedItem() != null) {
                 String selection = Urn_ComboBox.getSelectionModel().getSelectedItem().toString();
                 protectedItems.remove(Pattern.compile(" urn"));
                 if (!selection.equals("No urn")) {

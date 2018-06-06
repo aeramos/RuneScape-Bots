@@ -48,6 +48,7 @@ public class NonMenuAction extends Task {
         // if the inventory is not full, the bot isn't dropping, the player isn't banking, and the inventory contains the required items / isn't banking
         return RuneScape.isLoggedIn() && !globals.isDropping && !Inventory.isFull() && !Bank.isOpen() && (requiredItems.length == 0 || !configSettings.dontDrop);
     }
+
     @Override
     public void execute() {
         bot.setLoopDelay(100, 300);

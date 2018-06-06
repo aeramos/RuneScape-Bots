@@ -32,11 +32,13 @@ public class Store extends Task {
         this.methods = methods;
         this.protectedItems = protectedItems;
     }
+
     @Override
     public boolean validate() {
         missingItems = protectedItems.getMissingItems(new ProtectedItems.Status[]{ProtectedItems.Status.REQUIRED, ProtectedItems.Status.WANTED});
         return RuneScape.isLoggedIn() && (Inventory.isFull() || Bank.isOpen() || missingItems != null);
     }
+
     @Override
     public void execute() {
         bot.setLoopDelay(50, 200);

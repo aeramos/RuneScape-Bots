@@ -16,7 +16,7 @@ public class Urn extends Task {
 
     private String baseUrnName;
 
-    public Urn (LoopingBot bot, Globals globals, ProtectedItems protectedItems) {
+    public Urn(LoopingBot bot, Globals globals, ProtectedItems protectedItems) {
         this.bot = bot;
         this.globals = globals;
         this.protectedItems = protectedItems;

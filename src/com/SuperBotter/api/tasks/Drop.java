@@ -112,6 +112,7 @@ public class Drop extends Task {
         }
         return false; // if it has reached this part of the code that means that there were no empty slots
     }
+
     private void manuallyDrop(SpriteItem itemToDrop, String itemName) {
         if (itemToDrop != null) {
             globals.currentAction = "Dropping " + itemName + " manually";
@@ -123,6 +124,7 @@ public class Drop extends Task {
             }
         }
     }
+
     private void actionBarDrop(ActionBarQueryResults itemsToDrop) {
         if (itemsToDrop != null && !itemsToDrop.isEmpty()) {
             for (int i = 0; i < itemsToDrop.size(); i++) {

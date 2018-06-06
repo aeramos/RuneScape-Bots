@@ -4,13 +4,13 @@ import com.runemate.game.api.hybrid.location.Area;
 import com.runemate.game.api.hybrid.location.Coordinate;
 
 public class Bank {
-    public enum BankName {
-        AL_KHARID, CABBAGE_FACEPUNCH_BONANZA, CLAN_CAMP, COMBAT_ACADEMY, DRAYNOR, FALADOR_EAST, SHATTERED_WORLDS, VARROCK_EAST, VARROCK_WEST
-    }
-
     public Area area;
     public String name;
     public String type;
+
+    public enum BankName {
+        AL_KHARID, CABBAGE_FACEPUNCH_BONANZA, CLAN_CAMP, COMBAT_ACADEMY, DRAYNOR, FALADOR_EAST, SHATTERED_WORLDS, VARROCK_EAST, VARROCK_WEST
+    }
 
     public Bank(BankName bankName) {
         switch (bankName) {

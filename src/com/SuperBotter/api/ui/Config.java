@@ -15,15 +15,7 @@ import java.util.ResourceBundle;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-/**
- * Java FX Gui for configuring SuperMiner bot settings before it starts
- */
 public class Config extends GridPane implements Initializable {
-    @Override
-    public void initialize(URL arg0, ResourceBundle arg1) {
-        setVisible(true);
-    }
-
     public Config(Object configController, BotPlatform botPlatform, AbstractBot bot) {
         // Load the fxml file using RuneMate's Resources class.
         FXMLLoader loader = new FXMLLoader();
@@ -44,6 +36,10 @@ public class Config extends GridPane implements Initializable {
         } catch (IOException | InterruptedException | ExecutionException | NullPointerException e) {
             Methods.shutdownBot(bot, "Unable to load GUI. Please restart the bot.", false);
         }
+    }
 
+    @Override
+    public void initialize(URL arg0, ResourceBundle arg1) {
+        setVisible(true);
     }
 }

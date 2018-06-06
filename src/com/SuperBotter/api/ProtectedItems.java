@@ -9,6 +9,9 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 
 public class ProtectedItems {
+    private List<String> names = new ArrayList<String>();
+    private List<Integer> amounts = new ArrayList<Integer>();
+    private List<Status> statuses = new ArrayList<Status>();
     public enum Status {
         // HELD -     Just hold in inventory
         // SAVED -    Bank
@@ -17,11 +20,8 @@ public class ProtectedItems {
         HELD, SAVED, WANTED, REQUIRED
     }
 
-    private List<String> names = new ArrayList<String>();
-    private List<Integer> amounts = new ArrayList<Integer>();
-    private List<Status> statuses = new ArrayList<Status>();
-
-    public ProtectedItems() {}
+    public ProtectedItems() {
+    }
 
     public ProtectedItems(String name, Integer amount, Status status) {
         add(name, amount, status);

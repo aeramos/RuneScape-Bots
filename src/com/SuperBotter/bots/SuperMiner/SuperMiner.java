@@ -35,7 +35,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
-public class SuperMiner extends TaskBot implements EmbeddableUI, InventoryListener{
+public class SuperMiner extends TaskBot implements EmbeddableUI, InventoryListener {
     // General variables and statistics
     private int startingXP;
 
@@ -91,6 +91,26 @@ public class SuperMiner extends TaskBot implements EmbeddableUI, InventoryListen
     }
 
     @Override
+    public void onResume() {
+        globals.currentAction = "Resuming";
+        stopWatch.start();
+    }
+
+    @Override
+    public void onStop() {
+        stopWatch.stop();
+        globals.botIsStopped = true;
+        executor.shutdown();
+        executor.shutdownNow();
+    }
+
+    @Override
+    public void onPause() {
+        stopWatch.stop();
+        globals.currentAction = "Paused";
+    }
+
+    @Override
     public void onStart(String... args) {
         stopWatch.reset();
         try {
@@ -131,22 +151,5 @@ public class SuperMiner extends TaskBot implements EmbeddableUI, InventoryListen
 
         // don't add the time it takes for the user to config the bot
         stopWatch.start();
-    }
-    @Override
-    public void onPause() {
-        stopWatch.stop();
-        globals.currentAction = "Paused";
-    }
-    @Override
-    public void onResume() {
-        globals.currentAction = "Resuming";
-        stopWatch.start();
-    }
-    @Override
-    public void onStop() {
-        stopWatch.stop();
-        globals.botIsStopped = true;
-        executor.shutdown();
-        executor.shutdownNow();
     }
 }
