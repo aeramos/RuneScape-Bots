@@ -15,15 +15,24 @@ import com.runemate.game.api.script.Execution;
 import com.runemate.game.api.script.framework.LoopingBot;
 import com.runemate.game.api.script.framework.task.Task;
 
+import java.util.ArrayList;
+
+import static com.SuperBotter.api.Methods.concatenate;
+import static com.SuperBotter.api.Methods.shutdownBot;
+
 // had to name it Store instead of Bank to prevent conflicts with RuneMate's Bank (in the API)
 public class Store extends Task {
-    private LoopingBot bot;
-    private Globals globals;
-    private ConfigSettings configSettings;
-    private Methods methods;
-    private ProtectedItems protectedItems;
+    private final LoopingBot bot;
+    private final Globals globals;
+    private final ConfigSettings configSettings;
+    private final Methods methods;
+    private final ProtectedItems protectedItems;
 
-    private Integer[] missingItems;
+    private ArrayList<Integer[]> missingItems;
+    private ArrayList<Integer[]> amountsToWithdraw;
+    private ArrayList<String[]> itemNames;
+    private ArrayList<ProtectedItems.Status[]> missingStatuses;
+    private boolean areMissingItems;
 
     public Store(LoopingBot bot, Globals globals, ConfigSettings configSettings, Methods methods, ProtectedItems protectedItems) {
         this.bot = bot;
@@ -31,17 +40,44 @@ public class Store extends Task {
         this.configSettings = configSettings;
         this.methods = methods;
         this.protectedItems = protectedItems;
+        this.missingItems = new ArrayList<>();
+        this.amountsToWithdraw = new ArrayList<>();
+        this.itemNames = new ArrayList<>();
+        this.missingStatuses = new ArrayList<>();
     }
 
     @Override
     public boolean validate() {
-        missingItems = protectedItems.getMissingItems(new ProtectedItems.Status[]{ProtectedItems.Status.REQUIRED, ProtectedItems.Status.WANTED});
-        return RuneScape.isLoggedIn() && (Inventory.isFull() || Bank.isOpen() || missingItems != null);
+        this.missingItems.clear();
+        this.amountsToWithdraw.clear();
+        this.itemNames.clear();
+        this.missingStatuses.clear();
+        this.areMissingItems = false;
+
+        Integer[] tempMissing = protectedItems.getMissingItems(ProtectedItems.Status.REQUIRED, ProtectedItems.Status.WANTED);
+        if (tempMissing.length > 0) {
+            areMissingItems = true;
+        }
+        missingItems.add(tempMissing);
+        amountsToWithdraw.add(protectedItems.getAmounts(tempMissing));
+        itemNames.add(protectedItems.getNames(tempMissing));
+        missingStatuses.add(protectedItems.getStatuses(tempMissing));
+        for (ProtectedItems itemProtected : configSettings.collectableItems.getProtectedItems(false)) {
+            Integer[] tempItems = itemProtected.getMissingItems(ProtectedItems.Status.REQUIRED, ProtectedItems.Status.WANTED);
+            if (tempItems.length > 0) {
+                areMissingItems = true;
+            }
+            missingItems.add(tempItems);
+            amountsToWithdraw.add(itemProtected.getAmounts(tempItems));
+            itemNames.add(itemProtected.getNames(tempItems));
+            missingStatuses.add(itemProtected.getStatuses(tempItems));
+        }
+        return RuneScape.isLoggedIn() && (Inventory.isFull() || Bank.isOpen() || areMissingItems);
     }
 
     @Override
     public void execute() {
-        bot.setLoopDelay(50, 200);
+        bot.setLoopDelay(50, 100);
         GameObject bankChest = GameObjects.newQuery().names(configSettings.bank.type).results().nearest();
         boolean bankIsOpen = false;
         if (bankChest != null && bankChest.isVisible()) {
@@ -50,53 +86,51 @@ public class Store extends Task {
         if (configSettings.bank.area.contains(Players.getLocal()) || bankIsOpen) {
             globals.path = null; // the bot is no longer following this path, so it can be cleared
             if (bankIsOpen) {
-                // REQUIRED, WANTED, and HELD items
-                String[] cantBeBanked = Methods.concatenate(Methods.concatenate(protectedItems.getNames(protectedItems.getIndices(ProtectedItems.Status.REQUIRED)), protectedItems.getNames(protectedItems.getIndices(ProtectedItems.Status.WANTED))), protectedItems.getNames(protectedItems.getIndices(ProtectedItems.Status.HELD)));
-
-                // if the inventory contains anything that CAN be banked
+                String[] cantBeBanked = protectedItems.getNames(ProtectedItems.Status.REQUIRED, ProtectedItems.Status.WANTED, ProtectedItems.Status.HELD);
+                for (ProtectedItems itemProtected : configSettings.collectableItems.getProtectedItems(false)) {
+                    cantBeBanked = concatenate(cantBeBanked, itemProtected.getNames(ProtectedItems.Status.REQUIRED, ProtectedItems.Status.WANTED, ProtectedItems.Status.HELD));
+                }
                 if (Inventory.containsAnyExcept(cantBeBanked)) {
-                    // if the inventory contains anything that CAN'T be banked, don't deposit all
                     if (Inventory.containsAnyOf(cantBeBanked)) {
-                        globals.currentAction = "Banking";
-                        // Bank everything except for the requiredItems and the wantedItems
-                        Execution.delayUntil(() -> Bank.depositAllExcept(cantBeBanked), 30000);
+                        globals.currentAction = "Depositing items";
+                        final String[] cantBeBankedFinal = cantBeBanked;
+                        Execution.delayUntil(() -> Bank.depositAllExcept(cantBeBankedFinal), 30000);
                     } else {
                         globals.currentAction = "Depositing inventory";
                         Execution.delayUntil(() -> Bank.depositInventory(), 5000);
                     }
-                } else if (missingItems.length != 0) {
+                } else if (areMissingItems) {
                     globals.currentAction = "Banking";
-                    for (int i = 0; i < missingItems.length; i++) {
-                        String itemName = protectedItems.getName(missingItems[i]);
-                        int amountToWithdraw = protectedItems.getAmount(missingItems[i]) - Inventory.getQuantity(itemName);
-                        int amountInBank = Bank.getQuantity(itemName);
+                    for (int i = 0; i < missingItems.size(); i++) {
+                        int arrayLength = missingItems.get(i).length;
+                        for (int j = 0; j < arrayLength; j++) {
+                            String itemName = itemNames.get(i)[j];
+                            int amountToWithdraw = amountsToWithdraw.get(i)[j] - Inventory.getQuantity(itemName);
+                            int amountInBank = Bank.getQuantity(itemName);
 
-                        // if the banking bug occurs, update the amount in bank with the true amount
-                        // Link: https://www.runemate.com/community/threads/13685/
-                        if (Bank.getQuantity(itemName) > amountInBank) {
-                            amountInBank = Bank.getQuantity(itemName);
-                        }
-
-                        if (amountInBank != 0) {
-                            if (itemName.contains(" urn (r)")) {
-                                protectedItems.remove(itemName);
-                                protectedItems.add(itemName, 0, ProtectedItems.Status.HELD);
+                            // if the banking bug occurs, update the amount in bank with the true amount
+                            // Link: https://www.runemate.com/community/threads/13685/
+                            if (Bank.getQuantity(itemName) > amountInBank) {
+                                amountInBank = Bank.getQuantity(itemName);
                             }
-                            if (amountInBank >= amountToWithdraw) {
-                                globals.currentAction = "Withdrawing " + amountToWithdraw + " " + itemName + " from bank";
-                                // bot has 10 seconds to withdraw the amount needed
+
+                            if ((amountInBank >= amountToWithdraw && amountInBank > 0) || missingStatuses.get(i)[j] == ProtectedItems.Status.WANTED) {
+                                if (itemName.contains(" urn (r)")) {
+                                    protectedItems.remove(itemName);
+                                    protectedItems.add(itemName, 0, ProtectedItems.Status.HELD);
+                                    j--;
+                                    arrayLength--;
+                                }
+                                globals.currentAction = "Withdrawing " + (amountToWithdraw > 0 ? amountToWithdraw + " " : "") + itemName + " from bank";
                                 Execution.delayUntil(() -> Bank.withdraw(itemName, amountToWithdraw), 10000);
-                                break; // leave the for loop (one action per loop)
-
-                                // if the item was just wanted, take all that you can
                             } else {
-                                final int amountInBank2 = amountInBank;
-                                Execution.delayUntil(() -> Bank.withdraw(itemName, amountInBank2), 10000);
+                                if (i == 0) {
+                                    shutdownBot(bot, globals, "Ran out of required item: " + itemName, true);
+                                } else {
+                                    configSettings.collectableItems.setEnabled(i - 1, false);
+                                    break;
+                                }
                             }
-
-                            // if the item is required, stop the bot
-                        } else if (protectedItems.getStatus(missingItems[i]) == ProtectedItems.Status.REQUIRED) {
-                            Methods.shutdownBot(bot, globals, "Ran out of required items", true);
                         }
                     }
                 } else { // only the bank was open

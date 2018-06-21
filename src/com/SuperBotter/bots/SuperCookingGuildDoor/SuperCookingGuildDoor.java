@@ -99,7 +99,6 @@ public class SuperCookingGuildDoor extends TaskBot implements EmbeddableUI{
     public void onStop() {
         stopWatch.stop();
         globals.currentAction = "Stopped";
-        globals.botIsStopped = true;
         executor.shutdown();
     }
 }

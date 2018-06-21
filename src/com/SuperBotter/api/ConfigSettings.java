@@ -15,5 +15,5 @@ public class ConfigSettings {
     public Area botArea;
     public String botAreaName = null;
     public Bank bank = null;
-    public InteractableItems interactableItems = new InteractableItems();
+    public CollectableItems collectableItems = new CollectableItems();
 }

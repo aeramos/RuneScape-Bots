@@ -60,7 +60,7 @@ public class Info extends GridPane implements Initializable {
         version_T.textProperty().set("Version " + bot.getMetaData().getVersion());
         author_T.textProperty().set("By " + bot.getMetaData().getAuthor());
         itemSelectText.setText(itemType + ": ");
-        itemSelect.getItems().addAll(configSettings.interactableItems.getNames());
+        itemSelect.getItems().addAll(configSettings.collectableItems.getNames(true));
         itemSelect.setOnAction(event -> update(infoUpdate));
         itemSelect.getSelectionModel().select(0);
         setVisible(true);
@@ -69,10 +69,10 @@ public class Info extends GridPane implements Initializable {
     public void update(InfoUpdate infoUpdate) {
         this.infoUpdate = infoUpdate;
         int i = itemSelect.getSelectionModel().getSelectedIndex();
-        itemCountText.setText(configSettings.interactableItems.getNames()[i] + " " + configSettings.interactableItems.getPastTenses()[i] + ": ");
-        itemCount.setText(String.valueOf(configSettings.interactableItems.getAmounts()[i]));
-        itemPerHourText.setText(configSettings.interactableItems.getNames()[i] + " per hour: ");
-        itemPerHour.setText(String.valueOf((long)CommonMath.rate(TimeUnit.HOURS, infoUpdate.getRuntime(), configSettings.interactableItems.getAmounts()[i])));
+        itemCountText.setText(configSettings.collectableItems.getNames(true)[i] + " " + configSettings.collectableItems.getPastTenses(true)[i] + ": ");
+        itemCount.setText(String.valueOf(configSettings.collectableItems.getAmounts(true)[i]));
+        itemPerHourText.setText(configSettings.collectableItems.getNames(true)[i] + " per hour: ");
+        itemPerHour.setText(String.valueOf((long)CommonMath.rate(TimeUnit.HOURS, infoUpdate.getRuntime(), configSettings.collectableItems.getAmounts(true)[i])));
         xpGained.setText(String.valueOf(infoUpdate.getXpDifference()));
         xpPerHour.setText(String.valueOf((long)CommonMath.rate(TimeUnit.HOURS, infoUpdate.getRuntime(), infoUpdate.getXpDifference())));
         runtime.setText(infoUpdate.getRuntimeAsString());
