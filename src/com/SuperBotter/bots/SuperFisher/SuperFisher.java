@@ -12,14 +12,14 @@ import com.runemate.game.api.hybrid.location.Coordinate;
 public class SuperFisher extends SuperBot {
     public SuperFisher() {
         super(Skill.FISHING, new Location[]{
-                new Location("Al Kharid west", new Area.Rectangular(new Coordinate(3255, 3159, 0), new Coordinate(3258, 3164, 0)), new Bank(Bank.BankName.AL_KHARID), genInteractableItems("Raw anchovies", "Raw herring", "Raw sardine", "Raw shrimps")),
-                new Location("Lum Bridge", new Area.Rectangular(new Coordinate(3239, 3241, 0), new Coordinate(3242, 3257, 0)), new Bank(Bank.BankName.COMBAT_ACADEMY), genInteractableItems("Raw pike", "Raw salmon", "Raw trout")),
-                new Location("Lumbridge Church", new Area.Rectangular(new Coordinate(3256, 3203, 0), new Coordinate(3258, 3207, 0)), new Bank(Bank.BankName.COMBAT_ACADEMY), genInteractableItems("Raw crayfish")),
-                new Location("Lumbridge Swamp east", new Area.Rectangular(new Coordinate(3239, 3146, 0), new Coordinate(3246, 3157, 0)), new Bank(Bank.BankName.COMBAT_ACADEMY), genInteractableItems("Raw anchovies", "Raw herring", "Raw sardine", "Raw shrimps"))
+                new Location("Al Kharid west", new Area.Rectangular(new Coordinate(3255, 3159, 0), new Coordinate(3258, 3164, 0)), new Bank(Bank.BankName.AL_KHARID), genCollectableItems("Raw anchovies", "Raw herring", "Raw sardine", "Raw shrimps")),
+                new Location("Lum Bridge", new Area.Rectangular(new Coordinate(3239, 3241, 0), new Coordinate(3242, 3257, 0)), new Bank(Bank.BankName.COMBAT_ACADEMY), genCollectableItems("Raw pike", "Raw salmon", "Raw trout")),
+                new Location("Lumbridge Church", new Area.Rectangular(new Coordinate(3256, 3203, 0), new Coordinate(3258, 3207, 0)), new Bank(Bank.BankName.COMBAT_ACADEMY), genCollectableItems("Raw crayfish")),
+                new Location("Lumbridge Swamp east", new Area.Rectangular(new Coordinate(3239, 3146, 0), new Coordinate(3246, 3157, 0)), new Bank(Bank.BankName.COMBAT_ACADEMY), genCollectableItems("Raw anchovies", "Raw herring", "Raw sardine", "Raw shrimps"))
         }, new String[]{"Cracked fishing", "Fragile fishing", "Fishing", "Strong fishing", "Decorated fishing"}, "Fish", "Powerfish", "Powerfishing");
     }
 
-    private static CollectableItems genInteractableItems(String... items) {
+    private static CollectableItems genCollectableItems(String... items) {
         String[] interactionNames = new String[items.length];
         String[] actionNames = new String[items.length];
         String[] actionIngs = new String[items.length];
