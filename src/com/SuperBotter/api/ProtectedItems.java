@@ -78,7 +78,7 @@ public class ProtectedItems {
     }
 
     public void remove(Pattern regex) {
-        for (int i = 0; i < getNumberOfItems(); i++) {
+        for (int i = 0; i < size(); i++) {
             // if there is not a match, remove it
             if (regex.matcher(names.get(i)).find()) {
                 remove(i);
@@ -87,7 +87,7 @@ public class ProtectedItems {
     }
 
     public void removeAllExcept(int index) {
-        for (int i = 0; i < getNumberOfItems(); i++) {
+        for (int i = 0; i < size(); i++) {
             if (i != index) {
                 remove(i);
             }
@@ -95,7 +95,7 @@ public class ProtectedItems {
     }
 
     public void removeAllExcept(Integer[] indices) {
-        for (int i = 0; i < getNumberOfItems(); i++) {
+        for (int i = 0; i < size(); i++) {
             for (int j = 0; j < indices.length; j++) {
                 if (i != indices[j]) {
                     remove(i);
@@ -105,7 +105,7 @@ public class ProtectedItems {
     }
 
     public void removeAllExcept(Pattern regex) {
-        for (int i = 0; i < getNumberOfItems(); i++) {
+        for (int i = 0; i < size(); i++) {
             // if there is not a match, remove it
             if (!regex.matcher(names.get(i)).find()) {
                 remove(i);
@@ -124,7 +124,7 @@ public class ProtectedItems {
     public String[] getNames(Integer[] indices) {
         ArrayList<String> list = new ArrayList<String>();
         for (int j = 0; j < indices.length; j++) {
-            if (indices[j] < getNumberOfItems()) {
+            if (indices[j] < size()) {
                 list.add(getName(indices[j]));
             }
         }
@@ -133,7 +133,7 @@ public class ProtectedItems {
 
     public String[] getNames(Pattern regex) {
         ArrayList<String> list = new ArrayList<String>();
-        for (int i = 0; i < getNumberOfItems(); i++) {
+        for (int i = 0; i < size(); i++) {
             // if there is a match, add it to the list
             if (regex.matcher(names.get(i)).find()) {
                 list.add(names.get(i));
@@ -190,7 +190,7 @@ public class ProtectedItems {
         return statuses.isEmpty();
     }
 
-    public int getNumberOfItems() {
+    public int size() {
         return statuses.size();
     }
 
@@ -205,7 +205,7 @@ public class ProtectedItems {
 
     public Integer[] getIndices(Pattern regex) {
         ArrayList<Integer> list = new ArrayList<Integer>();
-        for (int i = 0; i < getNumberOfItems(); i++) {
+        for (int i = 0; i < size(); i++) {
             // if there is a match, add it to the list
             if (regex.matcher(names.get(i)).find()) {
                 list.add(i);
@@ -238,7 +238,7 @@ public class ProtectedItems {
     // All items that can't be dropped that aren't in the inventory right now
     public Integer[] getMissingItems() {
         ArrayList<Integer> list = new ArrayList<Integer>();
-        for (int i = 0; i < getNumberOfItems(); i++) {
+        for (int i = 0; i < size(); i++) {
             int amountOfItem = Inventory.getQuantity(getName(i));
             if (amountOfItem < getAmount(i) || amountOfItem == 0) {
                 list.add(i);

@@ -50,7 +50,7 @@ public class SuperBot extends TaskBot implements EmbeddableUI, InventoryListener
     private final ConfigSettings configSettings;
     private final ProtectedItems protectedItems;
 
-    private Skill skill;
+    private final Skill skill;
 
     public SuperBot(Skill skill, Location[] locations, String[] urns, String itemType, String power, String powerIng) {
         this.skill = skill;
@@ -152,7 +152,7 @@ public class SuperBot extends TaskBot implements EmbeddableUI, InventoryListener
         if (configSettings.dontDrop) {
             add(new Store((LoopingBot)Environment.getBot(), globals, configSettings, methods, protectedItems));
         } else {
-            add(new Drop((LoopingBot)Environment.getBot(), globals, protectedItems));
+            add(new Drop((LoopingBot)Environment.getBot(), globals, protectedItems, configSettings.collectableItems));
         }
 
         // don't add the time it takes for the user to config the bot
