@@ -21,10 +21,14 @@ public class SuperMiner extends SuperBot {
                 new Location("Rimmington", new Area.Rectangular(new Coordinate(2981, 3242, 0), new Coordinate(2964, 3229, 0)), new Bank(Bank.BankName.CLAN_CAMP), genCollectableItems("Clay", "Copper ore", "Gold ore", "Iron ore", "Tin ore")),
                 new Location("Varrock south-east", new Area.Rectangular(new Coordinate(3280, 3361, 0), new Coordinate(3291, 3371, 0)), new Bank(Bank.BankName.VARROCK_EAST), genCollectableItems("Copper ore", "Iron ore", "Tin ore")),
                 new Location("Varrock south-west", new Area.Rectangular(new Coordinate(3171, 3364, 0), new Coordinate(3188, 3380, 0)), new Bank(Bank.BankName.VARROCK_WEST), genCollectableItems("Clay", "Iron ore", "Silver ore", "Tin ore"))
-        }, new String[]{"Cracked mining", "Fragile mining", "Mining", "Strong mining", "Decorated mining"}, "Ore", "Powermine", "Powermining");
+        }, genCollectableItems(), new String[]{"Cracked mining", "Fragile mining", "Mining", "Strong mining", "Decorated mining"}, "Ore", "Powermine", "Powermining");
     }
 
     private static CollectableItems genCollectableItems(String... items) {
+        if (items.length == 0) {
+            return genCollectableItems("Adamantite ore", "Clay", "Coal", "Copper ore", "Gold ore", "Iron ore", "Mithril ore", "Runite ore", "Silver ore", "Tin ore");
+        }
+
         String[] interactionNames = new String[items.length];
         String[] actionNames = new String[items.length];
         String[] actionIngs = new String[items.length];

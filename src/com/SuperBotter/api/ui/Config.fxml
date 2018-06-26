@@ -4,88 +4,75 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
-<fx:root hgap="5.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="250.0" prefWidth="600.0" type="javafx.scene.layout.GridPane" vgap="5.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
-    <columnConstraints>
-        <ColumnConstraints />
-    </columnConstraints>
-    <rowConstraints>
-        <RowConstraints />
-    </rowConstraints>
-    <children>
-        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="250.0" prefWidth="600.0">
+<fx:root alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="250.0" prefWidth="600.0" type="GridPane" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+   <columnConstraints>
+      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints maxHeight="100.0" minHeight="72.0" prefHeight="81.0" vgrow="SOMETIMES" />
+      <RowConstraints maxHeight="339.0" minHeight="10.0" prefHeight="174.0" vgrow="SOMETIMES" />
+   </rowConstraints>
+   <children>
+      <GridPane alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+         <columnConstraints>
+            <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="200.0" minWidth="10.0" prefWidth="200.0" />
+            <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="450.0" />
+            <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="200.0" minWidth="10.0" prefWidth="200.0" />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+         </rowConstraints>
          <children>
-            <GridPane prefHeight="250.0" prefWidth="600.0">
-               <columnConstraints>
-                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-               </columnConstraints>
-               <rowConstraints>
-                  <RowConstraints maxHeight="100.0" minHeight="72.0" prefHeight="81.0" vgrow="SOMETIMES" />
-                  <RowConstraints maxHeight="339.0" minHeight="10.0" prefHeight="174.0" vgrow="SOMETIMES" />
-               </rowConstraints>
-               <children>
-                  <GridPane GridPane.rowIndex="1">
-                     <columnConstraints>
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="200.0" minWidth="10.0" prefWidth="200.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="378.0" minWidth="10.0" prefWidth="295.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="200.0" minWidth="10.0" prefWidth="200.0" />
-                     </columnConstraints>
-                     <rowConstraints>
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                     </rowConstraints>
-                     <children>
-                        <ComboBox fx:id="Location_ComboBox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="Location" GridPane.columnIndex="1">
-                           <GridPane.margin>
-                              <Insets />
-                           </GridPane.margin>
-                        </ComboBox>
-                        <Text fx:id="bankOrPower_T" strokeType="OUTSIDE" strokeWidth="0.0" text="OR" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER">
-                           <font>
-                              <Font size="18.0" />
-                           </font>
-                        </Text>
-                        <RadioButton fx:id="Bank_BT" disable="true" mnemonicParsing="false" text="Bank" textAlignment="RIGHT" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER">
-                           <toggleGroup>
-                              <ToggleGroup fx:id="DropType_TG" />
-                           </toggleGroup>
-                        </RadioButton>
-                        <RadioButton fx:id="Power_BT" disable="true" mnemonicParsing="false" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER">
-                           <toggleGroup>
-                              <ToggleGroup fx:id="DropType_TG1" />
-                           </toggleGroup>
-                        </RadioButton>
-                        <Button fx:id="Start_BT" disable="true" mnemonicParsing="false" prefHeight="34.0" prefWidth="89.0" text="Start" textOverrun="CLIP" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="CENTER" />
-                        <Text fx:id="radius_T" strokeType="OUTSIDE" strokeWidth="0.0" text="Radius" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="TOP">
-                           <font>
-                              <Font size="18.0" />
-                           </font></Text>
-                        <Slider fx:id="radius_S" max="50.0" value="10.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="BOTTOM" />
-                        <Text fx:id="radiusValue_T" strokeType="OUTSIDE" strokeWidth="0.0" text="10" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="BOTTOM" />
-                        <ComboBox fx:id="Urn_ComboBox" disable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="Urn" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                        <MenuButton fx:id="Item_Menu" disable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Item_Menu" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                     </children>
-                  </GridPane>
-                  <Text fx:id="name_T" strokeType="OUTSIDE" strokeWidth="0.0" text="name_T" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.valignment="TOP">
-                     <font>
-                        <Font size="24.0" />
-                     </font>
-                  </Text>
-                  <Text fx:id="version_T" strokeType="OUTSIDE" strokeWidth="0.0" text="version_T" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
-                     <font>
-                        <Font size="24.0" />
-                     </font>
-                  </Text>
-                  <Text fx:id="author_T" strokeType="OUTSIDE" strokeWidth="0.0" text="author_T" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
-                     <font>
-                        <Font size="24.0" />
-                     </font>
-                  </Text>
-               </children>
-            </GridPane>
+            <ComboBox fx:id="Location_ComboBox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="Location" GridPane.columnIndex="1">
+               <GridPane.margin>
+                  <Insets />
+               </GridPane.margin>
+            </ComboBox>
+            <Text fx:id="bankOrPower_T" strokeType="OUTSIDE" strokeWidth="0.0" text="OR" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Text>
+            <RadioButton fx:id="Bank_BT" disable="true" mnemonicParsing="false" text="Bank" textAlignment="RIGHT" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER">
+               <toggleGroup>
+                  <ToggleGroup fx:id="DropType_TG" />
+               </toggleGroup>
+            </RadioButton>
+            <RadioButton fx:id="Power_BT" disable="true" mnemonicParsing="false" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER">
+               <toggleGroup>
+                  <ToggleGroup fx:id="DropType_TG1" />
+               </toggleGroup>
+            </RadioButton>
+            <Button fx:id="Start_BT" disable="true" mnemonicParsing="false" prefHeight="34.0" prefWidth="89.0" text="Start" textOverrun="CLIP" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="CENTER" />
+            <Text fx:id="radius_T" strokeType="OUTSIDE" strokeWidth="0.0" text="Radius" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="TOP">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Text>
+            <Slider fx:id="radius_S" max="50.0" value="10.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="BOTTOM" />
+            <Text fx:id="radiusValue_T" strokeType="OUTSIDE" strokeWidth="0.0" text="10" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="BOTTOM" />
+            <ComboBox fx:id="Urn_ComboBox" disable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="Urn" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <MenuButton fx:id="Item_Menu" disable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Item_Menu" GridPane.columnIndex="1" GridPane.rowIndex="1" />
          </children>
-        </AnchorPane>
-    </children>
+      </GridPane>
+      <Text fx:id="name_T" strokeType="OUTSIDE" strokeWidth="0.0" text="name_T" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.valignment="TOP">
+         <font>
+            <Font size="24.0" />
+         </font>
+      </Text>
+      <Text fx:id="version_T" strokeType="OUTSIDE" strokeWidth="0.0" text="version_T" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+         <font>
+            <Font size="24.0" />
+         </font>
+      </Text>
+      <Text fx:id="author_T" strokeType="OUTSIDE" strokeWidth="0.0" text="author_T" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
+         <font>
+            <Font size="24.0" />
+         </font>
+      </Text>
+   </children>
 </fx:root>

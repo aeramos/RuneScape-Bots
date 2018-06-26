@@ -34,6 +34,7 @@ import java.util.regex.Pattern;
 
 public class SuperBot extends TaskBot implements EmbeddableUI, InventoryListener {
     private final Location[] locations;
+    private final CollectableItems allItems;
     private final String[] urns;
     private final String itemType;
     private final String power;
@@ -52,10 +53,11 @@ public class SuperBot extends TaskBot implements EmbeddableUI, InventoryListener
 
     private final Skill skill;
 
-    public SuperBot(Skill skill, Location[] locations, String[] urns, String itemType, String power, String powerIng) {
+    public SuperBot(Skill skill, Location[] locations, CollectableItems allItems, String[] urns, String itemType, String power, String powerIng) {
         this.skill = skill;
         startingXP = skill.getExperience();
         this.locations = locations;
+        this.allItems = allItems;
         this.urns = urns;
         this.itemType = itemType;
         this.power = power;
@@ -71,7 +73,7 @@ public class SuperBot extends TaskBot implements EmbeddableUI, InventoryListener
     @Override
     public ObjectProperty<? extends Node> botInterfaceProperty() {
         if (botInterfaceProperty == null) {
-            botInterfaceProperty = new SimpleObjectProperty<>(new Config(new ConfigController(getMetaData(), configSettings, protectedItems, locations, urns, itemType, power, powerIng), getPlatform(), Environment.getBot()));
+            botInterfaceProperty = new SimpleObjectProperty<>(new Config(new ConfigController(getMetaData(), configSettings, protectedItems, locations, allItems, urns, itemType, power), getPlatform(), Environment.getBot()));
         }
         return botInterfaceProperty;
     }

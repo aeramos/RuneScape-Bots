@@ -102,16 +102,17 @@ public class Drop extends Task {
     private boolean moveToActionBar(SpriteItem item, String itemName) {
         ActionBarQueryResults emptySlots = ActionBar.newQuery().filled(false).empty(true).results();
 
-        if (emptySlots != null && emptySlots.size() != 0) {
-            // code to bypass actionbar bug
-            // Link: https://www.runemate.com/community/threads/13693/
-            if (emptySlots.get(0) != null && emptySlots.get(0).getName() == null) {
-                globals.currentAction = "Dragging " + itemName + " to Action Bar";
-                // drag item to Action Bar for no longer than 5 seconds
-                return Execution.delayUntil(() -> Mouse.drag(item, emptySlots.get(0).getBounds(), Mouse.Button.LEFT), 5000);
+        if (emptySlots != null) {
+            for (ActionBar.Slot slot : emptySlots) {
+                // if it's not the 13th or 14th slot
+                // Link: https://www.runemate.com/community/threads/13693/
+                if (slot.getIndex() < 12) {
+                    globals.currentAction = "Dragging " + itemName + " to Action Bar";
+                    return Execution.delayUntil(() -> Mouse.drag(item, emptySlots.get(0).getBounds(), Mouse.Button.LEFT), 5000);
+                }
             }
         }
-        return false; // if it has reached this part of the code that means that there were no empty slots
+        return false; // if it has reached this part of the code that means that there were no empty slots (or they were in the broken slots)
     }
 
     private void manuallyDrop(SpriteItem item, String itemName) {

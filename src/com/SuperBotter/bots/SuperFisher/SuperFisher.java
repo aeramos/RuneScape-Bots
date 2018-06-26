@@ -16,10 +16,14 @@ public class SuperFisher extends SuperBot {
                 new Location("Lum Bridge", new Area.Rectangular(new Coordinate(3239, 3241, 0), new Coordinate(3242, 3257, 0)), new Bank(Bank.BankName.COMBAT_ACADEMY), genCollectableItems("Raw pike", "Raw salmon", "Raw trout")),
                 new Location("Lumbridge Church", new Area.Rectangular(new Coordinate(3256, 3203, 0), new Coordinate(3258, 3207, 0)), new Bank(Bank.BankName.COMBAT_ACADEMY), genCollectableItems("Raw crayfish")),
                 new Location("Lumbridge Swamp east", new Area.Rectangular(new Coordinate(3239, 3146, 0), new Coordinate(3246, 3157, 0)), new Bank(Bank.BankName.COMBAT_ACADEMY), genCollectableItems("Raw anchovies", "Raw herring", "Raw sardine", "Raw shrimps"))
-        }, new String[]{"Cracked fishing", "Fragile fishing", "Fishing", "Strong fishing", "Decorated fishing"}, "Fish", "Powerfish", "Powerfishing");
+        }, genCollectableItems(), new String[]{"Cracked fishing", "Fragile fishing", "Fishing", "Strong fishing", "Decorated fishing"}, "Fish", "Powerfish", "Powerfishing");
     }
 
     private static CollectableItems genCollectableItems(String... items) {
+        if (items.length == 0) {
+            return genCollectableItems("Raw anchovies", "Raw crayfish", "Raw herring", "Raw lobster", "Raw pike", "Raw salmon", "Raw sardine", "Raw shark", "Raw shrimps", "Raw swordfish", "Raw trout", "Raw tuna");
+        }
+
         String[] interactionNames = new String[items.length];
         String[] actionNames = new String[items.length];
         String[] actionIngs = new String[items.length];
