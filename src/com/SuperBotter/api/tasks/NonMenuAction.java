@@ -138,12 +138,14 @@ public class NonMenuAction extends Task {
                 }
                 // if the player is not in the area
             } else {
-                globals.currentAction = "Going to " + configSettings.botAreaName;
-                if (globals.path == null) {
-                    globals.path = methods.getPathTo(configSettings.botArea.getRandomCoordinate(), player);
-                }
-                if (globals.path != null) {
-                    globals.path.step();
+                if (player.getAnimationId() == -1) {
+                    globals.currentAction = "Going to " + configSettings.botAreaName;
+                    if (globals.path == null) {
+                        globals.path = methods.getPathTo(configSettings.botArea.getRandomCoordinate(), player);
+                    }
+                    if (globals.path != null) {
+                        globals.path.step();
+                    }
                 }
             }
         }

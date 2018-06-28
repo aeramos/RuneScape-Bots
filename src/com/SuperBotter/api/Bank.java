@@ -9,7 +9,7 @@ public class Bank {
     public String type;
 
     public enum BankName {
-        AL_KHARID, CABBAGE_FACEPUNCH_BONANZA, CLAN_CAMP, COMBAT_ACADEMY, DRAYNOR, FALADOR_EAST, SHATTERED_WORLDS, VARROCK_EAST, VARROCK_WEST
+        AL_KHARID, BURTHORPE, CABBAGE_FACEPUNCH_BONANZA, CLAN_CAMP, COMBAT_ACADEMY, DRAYNOR, EDGEVILLE, FALADOR_EAST, SHATTERED_WORLDS, VARROCK_EAST, VARROCK_WEST
     }
 
     public Bank(BankName bankName) {
@@ -19,6 +19,10 @@ public class Bank {
                 name = "Al Kharid bank";
                 type = "Bank booth";
                 break;
+            case BURTHORPE:
+                area = new Area.Circular(new Coordinate(2888, 3535, 0), 5);
+                name = "Burthorpe bank";
+                type = "Bank booth";
             case CABBAGE_FACEPUNCH_BONANZA:
                 area = new Area.Circular(new Coordinate(3170, 3280, 0), 5);
                 name = "Cabbage Facepunch Bonanza bank chest";
@@ -34,6 +38,10 @@ public class Bank {
                 name = "Combat Academy bank chest";
                 type = "Bank chest";
                 break;
+            case EDGEVILLE:
+                area = new Area.Rectangular(new Coordinate(3091, 3488, 0), new Coordinate(3098, 3499, 0));
+                name = "Edgeville bank";
+                type = "Counter";
             case FALADOR_EAST:
                 area = new Area.Rectangular(new Coordinate(3009, 3355, 0), new Coordinate(3018, 3358, 0));
                 name = "Falador East bank";
