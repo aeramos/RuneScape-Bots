@@ -9,6 +9,7 @@ import com.runemate.game.api.hybrid.entities.GameObject;
 import com.runemate.game.api.hybrid.entities.LocatableEntity;
 import com.runemate.game.api.hybrid.entities.Npc;
 import com.runemate.game.api.hybrid.entities.Player;
+import com.runemate.game.api.hybrid.entities.definitions.GameObjectDefinition;
 import com.runemate.game.api.hybrid.local.Camera;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Bank;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Inventory;
@@ -86,9 +87,10 @@ public class NonMenuAction extends Task {
                     boolean isGameObject = false;
                     LocatableEntity locatableEntity = null;
                     int collectableItemID = -1;
-                    if (gameObject != null && gameObject.getDefinition() != null) {
+                    GameObjectDefinition definition;
+                    if (gameObject != null && (definition = gameObject.getDefinition()) != null) {
                         locatableEntity = gameObject;
-                        collectableItemID = configSettings.collectableItems.getIndexByInteractionName(gameObject.getDefinition().getName(), false);
+                        collectableItemID = configSettings.collectableItems.getIndexByInteractionName(definition.getName(), false);
                         isGameObject = true;
                     } else if ((npc = Npcs.newQuery().names(configSettings.collectableItems.getInteractionNames(false)).within(configSettings.botArea).results().nearest()) != null && npc.getDefinition() != null) {
                         locatableEntity = npc;

@@ -48,7 +48,7 @@ public class Drop extends Task {
         Keyboard.type(" ", false); // press space just in case the full inventory prompt is in the chatbox
         for (int i = 0; i < inventory.size(); i++) {
             SpriteItem item = inventory.get(i);
-            if (item != null) {
+            if (item != null && item.getDefinition() != null) {
                 String itemName = item.getDefinition().getName();
                 boolean dontDrop = false;
                 for (int j = 0; j < protectedItems.size(); j++) {
