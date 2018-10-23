@@ -149,7 +149,12 @@ public class Store extends Task {
                 }
             }
         } else {
-            if (Players.getLocal().getAnimationId() == -1) {
+            int animationId = 0;
+            try { // player might not be loaded fully. Only seen twice afaik but it's good to be safe.
+                animationId = Players.getLocal().getAnimationId();
+            } catch (NullPointerException ignored){
+            }
+            if (animationId == -1) {
                 globals.currentAction = "Going to " + configSettings.bank.name;
                 if (globals.path == null) {
                     globals.path = methods.getPathTo(configSettings.bank.area.getRandomCoordinate(), Players.getLocal());
