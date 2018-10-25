@@ -63,52 +63,15 @@ public class ProtectedItems {
         statuses.remove(index);
     }
 
-    public void remove(Integer[] indices) {
-        for (int i = 0; i < indices.length; i++) {
-            remove(i);
-        }
-    }
-
     public void remove(String name) {
         remove(getIndex(name));
-    }
-
-    public void remove(String[] names) {
-        remove(getIndices(names));
     }
 
     public void remove(Pattern regex) {
         for (int i = 0; i < size(); i++) {
             // if there is not a match, remove it
             if (regex.matcher(names.get(i)).find()) {
-                remove(i);
-            }
-        }
-    }
-
-    public void removeAllExcept(int index) {
-        for (int i = 0; i < size(); i++) {
-            if (i != index) {
-                remove(i);
-            }
-        }
-    }
-
-    public void removeAllExcept(Integer[] indices) {
-        for (int i = 0; i < size(); i++) {
-            for (int j = 0; j < indices.length; j++) {
-                if (i != indices[j]) {
-                    remove(i);
-                }
-            }
-        }
-    }
-
-    public void removeAllExcept(Pattern regex) {
-        for (int i = 0; i < size(); i++) {
-            // if there is not a match, remove it
-            if (!regex.matcher(names.get(i)).find()) {
-                remove(i);
+                remove(i--);
             }
         }
     }
